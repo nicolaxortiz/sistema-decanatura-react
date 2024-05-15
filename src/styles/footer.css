@@ -1,0 +1,26 @@
+.footer-box{
+    background-color: #4b4b4b;
+    position:relative;
+    bottom: 0;
+    left: 0;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    padding: 10px ;
+}
+
+.title-footer{
+    font-weight: 600;
+}
+
+.row-footer{
+    color: #afafaf;
+}
+
+@media screen and (min-width: 768px) {
+    
+  }
+  
+  @media screen and (min-width: 1024px) {
+    
+  }

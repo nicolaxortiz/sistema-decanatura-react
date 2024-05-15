@@ -1,0 +1,16 @@
+.logo-img {
+    width: 40%;
+}
+
+.header-box{
+    padding: 15px 20px;
+    background-color: #ffffff;
+}
+
+.info-box{
+    background-color: #4b4b4b;
+    color: #f5f5f5;
+    font-size: 16px;
+    text-align: right;
+    padding: 16px 15px;
+}

@@ -1,0 +1,62 @@
+.option-box{
+    background-color: rgb(235, 235, 235);
+    margin: 20px auto !important;
+    border-radius: 15px;
+    padding: 10px 0px;
+    width: 90%;
+    box-shadow: 0px 0px 28px -5px rgba(0,0,0,0.41);
+}
+
+.option{
+    background-color: #ffffff;
+    border-radius: 50%;
+    text-align: center;
+    padding: 5px 5px;
+    width: fit-content;
+    height: fit-content;
+    margin: 10px auto;
+    border: #4b4b4b 3px solid;
+    cursor: pointer;
+}
+
+.option-selected{
+    background-color: #bebebe;
+    border-radius: 50%;
+    text-align: center;
+    padding: 5px 5px;
+    width: fit-content;
+    height: fit-content;
+    margin: 10px auto;
+    border: #4b4b4b 3px solid;
+}
+
+@media screen and (min-width: 768px) {
+    .option-box{
+        width: 70%;
+    }
+
+    .option{
+        padding: 15px 15px;
+        border: #4b4b4b 5px solid;
+    }
+
+    .option-selected{
+        background-color: #bebebe;
+        padding: 15px 15px;
+        border: #4b4b4b 5px solid;
+    }
+
+
+}
+
+@media screen and (min-width: 1024px) {
+    .option-box{
+        width: 60%;
+    }
+
+    .option{
+        padding: 15px 15px;
+        border: #4b4b4b 5px solid;
+    }
+
+}
