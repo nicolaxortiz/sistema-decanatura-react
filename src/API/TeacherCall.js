@@ -2,8 +2,8 @@ import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-export async function getAll() {
-  const response = await axios.get(apiUrl + "/api/docentes/");
+export async function getAll(filter) {
+  const response = await axios.get(apiUrl + "/api/docentes/" + filter);
 
   return response;
 }
@@ -44,6 +44,14 @@ export async function updateTeacher(id, teacher) {
 
 export async function createOne(teacher) {
   const response = await axios.post(apiUrl + "/api/docentes/", teacher);
+
+  return response;
+}
+
+export async function updateState(id, esActivo) {
+  const response = await axios.put(apiUrl + "/api/docentes/" + id, {
+    esActivo: esActivo,
+  });
 
   return response;
 }

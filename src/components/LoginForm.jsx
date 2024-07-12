@@ -70,6 +70,12 @@ export const LoginForm = () => {
               setLoading(false);
               setOpen(true);
             }, 3000);
+          } else if (error.response.status === 401) {
+            setMessage("Docente inactivo, comuniquese con decanatura");
+            setTimeout(() => {
+              setLoading(false);
+              setOpen(true);
+            }, 3000);
           } else if (error.response.status === 500) {
             setMessage("Error: intentelo mas tarde");
             setTimeout(() => {

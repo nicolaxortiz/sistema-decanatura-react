@@ -16,8 +16,14 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { theme } from "../resources/theme.js";
 import CircularProgress from "@mui/material/CircularProgress";
+import PersonOffIcon from "@mui/icons-material/PersonOff";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import * as APIDocentes from "../API/TeacherCall";
 
 const style = {
@@ -39,6 +45,7 @@ function AllTeachers() {
   const [openSnack, setOpenSnack] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
+  const [filterState, setFilterState] = React.useState(true);
 
   const handleClick = () => {
     setOpenSnack(true);
@@ -81,31 +88,78 @@ function AllTeachers() {
     }
   };
 
+  const handleInactive = async (id, newState) => {
+    setLoading(true);
+    try {
+      const response = await APIDocentes.updateState(id, newState);
+
+      if (response.status === 200) {
+        setLoading(false);
+        setMessage("El estado del docente fue actualizado");
+        setCode("success");
+        handleClick();
+      }
+    } catch (error) {
+      setMessage("Error al actualizar, intentelo nuevamente");
+      setCode("error");
+      handleClick();
+    }
+  };
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await APIDocentes.getAll();
+        const response = await APIDocentes.getAll(filterState);
 
         if (response.status === 200) {
           setTeacherData(response.data.teachers);
         }
       } catch (error) {
-        handleClose();
-        setMessage("Error al traer los datos, intentelo nuevamente");
-        setCode("error");
-        handleClick();
+        setTeacherData();
+        if (error.response.status === 404) {
+          handleClose();
+          setMessage("No se encontraron campos para dicho filtro");
+          setCode("error");
+          handleClick();
+        } else {
+          handleClose();
+          setMessage("Error al traer los datos, intentelo nuevamente");
+          setCode("error");
+          handleClick();
+        }
       }
     };
 
     fetchData();
-  }, [loading]);
+  }, [loading, filterState]);
 
   return (
     <>
       <div className="table-form">
         <Grid xs={12}>
-          <div className="title-form">Listado de docentes</div>
+          <div className="title-form">
+            Listado de docentes {filterState ? "activos" : "inactivos"}
+          </div>
         </Grid>
+
+        <Grid xs={12} sx={{ display: "flex", justifyContent: "end" }}>
+          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <InputLabel id="demo-simple-select-label">Filtro</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={filterState}
+              label="Filtro"
+              onChange={(e) => {
+                setFilterState(e.target.value);
+              }}
+            >
+              <MenuItem value={true}>Activos</MenuItem>
+              <MenuItem value={false}>Inactivos</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+
         <TableContainer>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
@@ -116,6 +170,7 @@ function AllTeachers() {
                 <TableCell>Campus</TableCell>
                 <TableCell>Unidad academica</TableCell>
                 <TableCell>Vinculación</TableCell>
+                <TableCell>Estado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -130,6 +185,23 @@ function AllTeachers() {
                   <TableCell>{row.campus}</TableCell>
                   <TableCell>{row.unidadAcademica}</TableCell>
                   <TableCell>{row.vinculacion}</TableCell>
+                  <TableCell>
+                    {filterState ? (
+                      <PersonOffIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          handleInactive(row._id, false);
+                        }}
+                      />
+                    ) : (
+                      <PersonAddIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          handleInactive(row._id, true);
+                        }}
+                      />
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -206,7 +278,7 @@ function AllTeachers() {
           </ThemeProvider>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>Cancelar</Button>
           <Button type="submit">
             {loading ? (
               <CircularProgress color="inherit" size={24} />
