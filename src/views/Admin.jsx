@@ -20,7 +20,12 @@ function Admin() {
         navigate("/");
         setUser();
       } else {
-        setUser(data);
+        if (data.role !== "admin") {
+          setUser(data);
+          navigate("/home");
+        } else {
+          setUser(data);
+        }
       }
     }
   }, []);
