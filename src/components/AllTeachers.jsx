@@ -81,7 +81,7 @@ function AllTeachers() {
           handleClick();
         }
       } catch (error) {
-        setMessage("Error al guardar, intentelo nuevamente");
+        setMessage("Error al guardar, inténtelo nuevamente");
         setCode("error");
         handleClick();
       }
@@ -100,7 +100,7 @@ function AllTeachers() {
         handleClick();
       }
     } catch (error) {
-      setMessage("Error al actualizar, intentelo nuevamente");
+      setMessage("Error al actualizar, inténtelo nuevamente");
       setCode("error");
       handleClick();
     }
@@ -111,19 +111,19 @@ function AllTeachers() {
       try {
         const response = await APIDocentes.getAll(filterState);
 
-        if (response.status === 200) {
+        if (response?.status === 200) {
           setTeacherData(response.data.teachers);
         }
       } catch (error) {
         setTeacherData();
-        if (error.response.status === 404) {
+        if (error.response?.status === 404) {
           handleClose();
           setMessage("No se encontraron campos para dicho filtro");
           setCode("error");
           handleClick();
         } else {
           handleClose();
-          setMessage("Error al traer los datos, intentelo nuevamente");
+          setMessage("Error al traer los datos, inténtelo nuevamente");
           setCode("error");
           handleClick();
         }
@@ -168,7 +168,7 @@ function AllTeachers() {
                 <TableCell>Apellidos</TableCell>
                 <TableCell>Facultad</TableCell>
                 <TableCell>Campus</TableCell>
-                <TableCell>Unidad academica</TableCell>
+                <TableCell>Unidad académica</TableCell>
                 <TableCell>Vinculación</TableCell>
                 <TableCell>Estado</TableCell>
               </TableRow>

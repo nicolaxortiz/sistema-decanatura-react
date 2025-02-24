@@ -13,13 +13,19 @@ import Alert from "@mui/material/Alert";
 import IconButton from "@mui/material/IconButton";
 import * as APIActividades from "../API/ActivityCall";
 import * as APIDocument from "../API/DocumentCall.js";
+import * as APITeacher from "../API/TeacherCall.js";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import EditIcon from "@mui/icons-material/Edit";
+import { UseContext } from "../context/UseContext.js";
+import { useNavigate } from "react-router-dom";
 
 function AllActivity() {
+  const navigate = useNavigate();
   const [activityData, setActivityData] = React.useState();
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
+  const { setUser, user } = React.useContext(UseContext);
 
   const handleClick = () => {
     setOpen(true);
@@ -45,6 +51,22 @@ function AllActivity() {
       setCode("error");
       handleClick();
     }
+  };
+
+  const handleEdit = async (document) => {
+    try {
+      const response = await APITeacher.getByDocument(document);
+
+      if (response.status === 200) {
+        const actualTeacher = response.data.teachers[0];
+        const StringTeacher = JSON.stringify(actualTeacher);
+        const userEdit = JSON.parse(localStorage.getItem("User"));
+        localStorage.setItem("UserEdit", JSON.stringify(userEdit));
+        localStorage.setItem("User", StringTeacher);
+        setUser(actualTeacher);
+        navigate("/home");
+      }
+    } catch (error) {}
   };
 
   React.useEffect(() => {
@@ -108,6 +130,15 @@ function AllActivity() {
                         }}
                       >
                         <PictureAsPdfIcon />
+                      </IconButton>
+                      <IconButton
+                        aria-label="edit"
+                        size="small"
+                        onClick={() => {
+                          handleEdit(row.idDocente.documento);
+                        }}
+                      >
+                        <EditIcon />
                       </IconButton>
                     </ThemeProvider>
                   </TableCell>

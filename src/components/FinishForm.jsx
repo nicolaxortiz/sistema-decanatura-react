@@ -12,6 +12,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
 function FinishForm() {
+  const navigate = useNavigate();
   const { user, actividades, setActividades, setUser, dataSchedule } =
     React.useContext(UseContext);
 
@@ -32,11 +33,23 @@ function FinishForm() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("User");
-    localStorage.removeItem("Activity");
-    localStorage.removeItem("Schedule");
-    setUser();
-    setActividades();
+    const dataStr = localStorage.getItem("UserEdit");
+    const data = JSON.parse(dataStr);
+
+    if (!data) {
+      localStorage.removeItem("User");
+      localStorage.removeItem("Activity");
+      localStorage.removeItem("Schedule");
+      setUser();
+      setActividades();
+    } else {
+      localStorage.removeItem("UserEdit");
+      localStorage.removeItem("Activity");
+      localStorage.removeItem("Schedule");
+      localStorage.setItem("User", dataStr);
+      setUser(data);
+      navigate("/admin");
+    }
   };
 
   const handlePDF = async () => {

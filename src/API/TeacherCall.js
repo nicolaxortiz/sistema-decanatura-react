@@ -3,7 +3,7 @@ import axios from "axios";
 const apiUrl = process.env.REACT_APP_API_URL;
 
 export async function getAll(filter) {
-  const response = await axios.get(apiUrl + "/api/docentes/" + filter);
+  const response = await axios.get(apiUrl + "/api/docentes/sort/" + filter);
 
   return response;
 }

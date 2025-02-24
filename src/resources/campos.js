@@ -245,7 +245,7 @@ export const Actividades = [
     nombre: "OACA: Vigía de Calidad",
     misional: "Docencia",
     convencion: "Procesos OACA",
-    producto: "Falso",
+    producto: "No aplica",
     descripcion:
       "Apoyo a los procesos de calidad del programa y de la institución",
   },

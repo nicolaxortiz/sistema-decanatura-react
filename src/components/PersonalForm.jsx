@@ -50,6 +50,9 @@ export default function PersonalForm() {
   });
 
   React.useEffect(() => {
+    console.log("intento");
+    console.log(user);
+
     const fetchData = async () => {
       setForm({
         _id: user?._id,

@@ -101,7 +101,7 @@ function ScheduleTable() {
     setOpen(false);
   };
 
-  const handleSubmitButton = async () => {
+  const handleSubmitButton = async (complete) => {
     setLoading(true);
     try {
       let response;
@@ -121,7 +121,14 @@ function ScheduleTable() {
       if (response.status === 200) {
         setTimeout(() => {
           setLoading(false);
-          navigate("/finish");
+          if (complete) {
+            navigate("/finish");
+          } else {
+            setLoading(false);
+            setMessage("Horario guardado con éxito");
+            setCode("success");
+            handleClick();
+          }
         }, 3000);
       } else if (response.status === 404) {
         setTimeout(() => {
@@ -222,8 +229,8 @@ function ScheduleTable() {
         </Grid>
 
         <ThemeProvider theme={theme}>
-          <Grid container rowSpacing={3}>
-            <Grid xs={12}>
+          <Grid container rowSpacing={3} columnSpacing={1}>
+            <Grid xs={6}>
               <Button
                 variant="contained"
                 fullWidth
@@ -231,7 +238,22 @@ function ScheduleTable() {
                   setDataSchedule([]);
                 }}
               >
-                Reestablecer datos del horario
+                Restablecer datos del horario
+              </Button>
+            </Grid>
+            <Grid xs={6}>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={() => {
+                  handleSubmitButton(false);
+                }}
+              >
+                {loading ? (
+                  <CircularProgress color="inherit" size={24} />
+                ) : (
+                  "Guardar progreso del horario"
+                )}
               </Button>
             </Grid>
           </Grid>
@@ -641,7 +663,7 @@ function ScheduleTable() {
                 variant="contained"
                 fullWidth
                 onClick={() => {
-                  handleSubmitButton();
+                  handleSubmitButton(true);
                 }}
               >
                 {loading ? (

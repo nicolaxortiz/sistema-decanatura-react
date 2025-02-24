@@ -85,7 +85,7 @@ function AdminDocument() {
 
           <Grid xs={12}>
             <div className="subtitle-finish">
-              A continuacion se puede realizar la descarga del formato de
+              A continuación se puede realizar la descarga del formato de
               distribución de las actividades de los docentes que han realizado
               el adecuado registro.
             </div>
@@ -93,14 +93,14 @@ function AdminDocument() {
 
           <Grid xs={12}>
             <div className="subtitle-finish">
-              En el caso de la falta de datos e informacion comuniquese con la
+              En el caso de la falta de datos e información comuníquese con la
               facultad pertinente y con el docente que se requiera.
             </div>
           </Grid>
 
           <Grid xs={12}>
             <div className="subtitle-finish" style={{ marginBottom: 10 }}>
-              - Unidades Tecnologicas de Santander ¡Lo hacemos posible!
+              - Unidades Tecnológicas de Santander ¡Lo hacemos posible!
             </div>
           </Grid>
 
