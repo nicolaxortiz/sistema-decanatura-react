@@ -8,6 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
+import Pagination from "@mui/material/Pagination";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -23,22 +24,12 @@ import Alert from "@mui/material/Alert";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import * as APIDocentes from "../API/TeacherCall";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import { UseContext } from "../context/UseContext.js";
 
 function AllTeachers() {
+  const { user, configuration } = React.useContext(UseContext);
   const [teacherData, setTeacherData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -46,6 +37,10 @@ function AllTeachers() {
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
   const [filterState, setFilterState] = React.useState(true);
+  const [searchName, setSearchName] = React.useState("");
+  const [totalPages, setTotalPages] = React.useState(0);
+  const [actualPage, setActualPage] = React.useState(1);
+  const [totalTeachers, setTotalTeachers] = React.useState();
 
   const handleClick = () => {
     setOpenSnack(true);
@@ -68,32 +63,34 @@ function AllTeachers() {
   };
 
   const handleNewUser = async (form) => {
-    if (form.documento > 0) {
-      setLoading(true);
-      try {
-        const response = await APIDocentes.createOne(form);
+    setLoading(true);
+    try {
+      const response = await APIDocentes.postTeacher(form);
 
-        if (response.status === 200) {
-          setLoading(false);
-          handleClose();
-          setMessage("Docente creado correctamente");
-          setCode("success");
-          handleClick();
-        }
-      } catch (error) {
-        setMessage("Error al guardar, inténtelo nuevamente");
-        setCode("error");
+      if (response.status === 200) {
+        setLoading(false);
+        handleClose();
+        setMessage("Docente creado correctamente");
+        setCode("success");
         handleClick();
       }
+    } catch (error) {
+      setLoading(false);
+      setMessage("Error al guardar, inténtelo nuevamente");
+      setCode("error");
+      handleClick();
     }
   };
 
-  const handleInactive = async (id, newState) => {
+  const handleChangeStatus = async (id, is_active) => {
     setLoading(true);
     try {
-      const response = await APIDocentes.updateState(id, newState);
+      const response = await APIDocentes.updateTeacher(id, {
+        is_active: !is_active,
+      });
 
       if (response.status === 200) {
+        fetchData();
         setLoading(false);
         setMessage("El estado del docente fue actualizado");
         setCode("success");
@@ -106,58 +103,97 @@ function AllTeachers() {
     }
   };
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await APIDocentes.getAll(filterState);
+  const handleChangePage = (event, value) => {
+    setActualPage(value);
+  };
 
-        if (response?.status === 200) {
-          setTeacherData(response.data.teachers);
-        }
-      } catch (error) {
-        setTeacherData();
-        if (error.response?.status === 404) {
-          handleClose();
-          setMessage("No se encontraron campos para dicho filtro");
-          setCode("error");
-          handleClick();
-        } else {
-          handleClose();
-          setMessage("Error al traer los datos, inténtelo nuevamente");
-          setCode("error");
-          handleClick();
-        }
+  const fetchData = async () => {
+    try {
+      const response = await APIDocentes.getAll(
+        user?.id,
+        filterState,
+        searchName,
+        actualPage
+      );
+
+      if (response?.status === 200) {
+        setTeacherData(response.data.teachers);
+        setTotalPages(Math.ceil(response.data.count / 8));
+        setTotalTeachers(response.data.count);
       }
-    };
+    } catch (error) {
+      setTeacherData();
+      if (error.response?.status === 404) {
+        handleClose();
+        setMessage("No se encontraron docentes que cumplan con el filtro");
+        setCode("error");
+        handleClick();
+      } else {
+        handleClose();
+        setMessage("Error al traer los datos, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
+    }
+  };
 
+  React.useEffect(() => {
     fetchData();
-  }, [loading, filterState]);
+  }, [loading, filterState, searchName, actualPage]);
+
+  React.useEffect(() => {
+    setActualPage(1);
+  }, [filterState]);
 
   return (
     <>
       <div className="table-form">
         <Grid xs={12}>
-          <div className="title-form">
+          <div className="title-finish">
             Listado de docentes {filterState ? "activos" : "inactivos"}
           </div>
         </Grid>
 
-        <Grid xs={12} sx={{ display: "flex", justifyContent: "end" }}>
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="demo-simple-select-label">Filtro</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={filterState}
-              label="Filtro"
-              onChange={(e) => {
-                setFilterState(e.target.value);
-              }}
-            >
-              <MenuItem value={true}>Activos</MenuItem>
-              <MenuItem value={false}>Inactivos</MenuItem>
-            </Select>
-          </FormControl>
+        <Grid container rowSpacing={2} columnSpacing={1}>
+          <Grid xs={10}>
+            <FormControl sx={{ m: 1, width: "50%" }} size="small">
+              <TextField
+                label="Nombre del docente"
+                size="small"
+                fullWidth
+                name="name"
+                value={searchName}
+                onChange={(event) => {
+                  setSearchName(event.target.value);
+                }}
+              />
+            </FormControl>
+          </Grid>
+
+          <Grid xs={2}>
+            <FormControl sx={{ m: 1, width: "90%" }} size="small">
+              <InputLabel id="demo-simple-select-label">Filtro</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={filterState}
+                fullWidth
+                label="Filtro"
+                onChange={(e) => {
+                  setFilterState(e.target.value);
+                }}
+              >
+                <MenuItem value={true}>Activos</MenuItem>
+                <MenuItem value={false}>Inactivos</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid xs={12} sx={{ marginLeft: 2 }}>
+            <p>
+              Mostrando {teacherData?.length} docentes de {totalTeachers}.
+            </p>
+          </Grid>
         </Grid>
 
         <TableContainer>
@@ -170,34 +206,34 @@ function AllTeachers() {
                 <TableCell>Campus</TableCell>
                 <TableCell>Unidad académica</TableCell>
                 <TableCell>Vinculación</TableCell>
-                <TableCell>Estado</TableCell>
+                <TableCell align="center">Estado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {teacherData?.map((row) => (
                 <TableRow
-                  key={row._id}
+                  key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell>{row.nombres}</TableCell>
-                  <TableCell>{row.apellidos}</TableCell>
-                  <TableCell>{row.facultad}</TableCell>
+                  <TableCell>{row.first_name}</TableCell>
+                  <TableCell>{row.last_name}</TableCell>
+                  <TableCell>{row.faculty}</TableCell>
                   <TableCell>{row.campus}</TableCell>
-                  <TableCell>{row.unidadAcademica}</TableCell>
-                  <TableCell>{row.vinculacion}</TableCell>
-                  <TableCell>
+                  <TableCell>{row.program_name}</TableCell>
+                  <TableCell>{row.employment_type}</TableCell>
+                  <TableCell align="center">
                     {filterState ? (
                       <PersonOffIcon
                         style={{ cursor: "pointer" }}
                         onClick={() => {
-                          handleInactive(row._id, false);
+                          handleChangeStatus(row.id, row.is_active);
                         }}
                       />
                     ) : (
                       <PersonAddIcon
                         style={{ cursor: "pointer" }}
                         onClick={() => {
-                          handleInactive(row._id, true);
+                          handleChangeStatus(row.id, row.is_active);
                         }}
                       />
                     )}
@@ -209,6 +245,18 @@ function AllTeachers() {
         </TableContainer>
 
         <ThemeProvider theme={theme}>
+          <Grid container rowSpacing={3} columnSpacing={1} marginTop={3}>
+            <Grid xs={12} sx={{ display: "flex", justifyContent: "center" }}>
+              <Pagination
+                count={totalPages}
+                page={actualPage}
+                color="pagination"
+                onChange={handleChangePage}
+                disabled={loading || !!searchName}
+              />
+            </Grid>
+          </Grid>
+
           <Grid container rowSpacing={3} columnSpacing={1} marginTop={5}>
             <Grid xs={12}>
               <Button variant="contained" fullWidth onClick={handleClickOpen}>
@@ -229,9 +277,13 @@ function AllTeachers() {
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
             handleNewUser({
-              documento: parseInt(formJson.documento),
-              correo: formJson.correo,
-              celular: parseInt(formJson.celular),
+              document: parseInt(formJson.document),
+              first_name: formJson.first_name,
+              last_name: formJson.last_name,
+              email: formJson.email,
+              campus: configuration?.campus_name,
+              program_name: configuration?.program_name,
+              program_id: user?.program_id,
             });
           },
         }}
@@ -246,8 +298,8 @@ function AllTeachers() {
             <TextField
               required
               margin="dense"
-              id="documento"
-              name="documento"
+              id="document"
+              name="document"
               label="Documento"
               type="number"
               fullWidth
@@ -257,10 +309,10 @@ function AllTeachers() {
             <TextField
               required
               margin="dense"
-              id="correo"
-              name="correo"
-              label="Correo electronico"
-              type="email"
+              id="first_name"
+              name="first_name"
+              label="Nombres"
+              type="text"
               fullWidth
               variant="standard"
             />
@@ -268,30 +320,44 @@ function AllTeachers() {
             <TextField
               required
               margin="dense"
-              id="celular"
-              name="celular"
-              label="Celular"
-              type="number"
+              id="last_name"
+              name="last_name"
+              label="Apellidos"
+              type="text"
+              fullWidth
+              variant="standard"
+            />
+            <br />
+            <TextField
+              required
+              margin="dense"
+              id="email"
+              name="email"
+              label="Correo electrónico"
+              type="email"
               fullWidth
               variant="standard"
             />
           </ThemeProvider>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
-          <Button type="submit">
-            {loading ? (
-              <CircularProgress color="inherit" size={24} />
-            ) : (
-              "Guardar"
-            )}
-          </Button>
+          <ThemeProvider theme={theme}>
+            <Button onClick={handleClose}>Cancelar</Button>
+            <Button type="submit">
+              {loading ? (
+                <CircularProgress color="inherit" size={24} />
+              ) : (
+                "Guardar"
+              )}
+            </Button>
+          </ThemeProvider>
         </DialogActions>
       </Dialog>
 
       <Snackbar
         open={openSnack}
         onClose={handleCloseSnack}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         autoHideDuration={6000}
       >
         <Alert

@@ -19,15 +19,7 @@ import Alert from "@mui/material/Alert";
 function ProductButton({ state, products }) {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
-  const {
-    actividades,
-    setActividades,
-    user,
-    setIsFirstActivity,
-    setTab,
-    tab,
-    isFirstActivity,
-  } = React.useContext(UseContext);
+  const { activities, user, setTab, tab } = React.useContext(UseContext);
 
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -46,31 +38,8 @@ function ProductButton({ state, products }) {
   };
 
   const handleSubmitButton = async () => {
-    setLoading(true);
-
-    try {
-      const response = await APIactividades.updateActivity(actividades?._id, {
-        actividad: products,
-      });
-
-      if (response.status === 200) {
-        setTimeout(() => {
-          setLoading(false);
-          navigate("/schedule");
-        }, 3000);
-      } else if (response.status === 404) {
-        setTimeout(() => {
-          setLoading(false);
-          setMessage("Error al guardar las actividades, intentelo nuevamente");
-          setCode("error");
-          handleClick();
-        }, 3000);
-      }
-    } catch (error) {
-      setLoading(false);
-      setMessage("Error, intentelo nuevamente");
-      setCode("error");
-      handleClick();
+    if (user && activities) {
+      navigate("/schedule");
     }
   };
   return (

@@ -16,6 +16,13 @@ export const theme = createTheme({
       contrastText: "#fff",
     },
 
+    pagination: {
+      light: "#c2d8c4",
+      main: "#93b3a8",
+      dark: "#6a8f8f",
+      contrastText: "#fff",
+    },
+
     alert: {
       light: "#e3585a",
       main: "#d84142",

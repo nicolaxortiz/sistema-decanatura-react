@@ -1,70 +1,69 @@
-.finish-box{
-    background-color: #fff;
-    width: 70%;
-    margin: 0 auto;
-    border-radius: 10px;
-    box-shadow: 0px 0px 28px -5px rgba(0,0,0,0.41);
-    padding: 0 30px;
-    margin-bottom: 65px;
-    margin-top: 45px;
+.finish-box {
+  background-color: #fff;
+  width: 70%;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0px 0px 28px -5px rgba(0, 0, 0, 0.41);
+  padding: 0 30px;
+  margin-bottom: 65px;
+  margin-top: 45px;
+  user-select: none;
 }
 
-.title-finish{
-    text-align: center;
-    font-weight: 500;
-    font-size: 16px;
-    background-color: #7b7b7b;
-    color: #fff;
-    border-radius: 5px;
-    padding: 10px 15px;
-    font-size: 18px;
-    margin: 15px 0;
+.title-finish {
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  background-color: #eeeeee;
+  color: #202020;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 18px;
+  margin: 15px 0;
 }
 
-.subtitle-finish{
-    font-size: 16px;
-    color: #000000;
+.subtitle-finish {
+  font-size: 16px;
+  color: #000000;
 }
 
-.img-box{
-    text-align: center;
+.img-box {
+  text-align: center;
 }
 
-.imgLogoUTS{
-    width: 50%;
+.imgLogoUTS {
+  width: 50%;
 }
 
 @media screen and (min-width: 768px) {
-    .finish-box{
-        width: 70%;
-    }
-
-    .title-finish{
-        font-size: 20px
-    }
-
-    .subtitle-finish{
-        font-size: 18px;
-    }
-
+  .finish-box {
+    width: 70%;
   }
-  
-  @media screen and (min-width: 1024px) {
-    .finish-box{
-        width: 50%;
-        margin-bottom: 60px;
-    }
 
-    .title-finish{
-        font-size: 24px
-    }
-
-    .subtitle-finish{
-        font-size: 20px;
-    }
-
-    .imgLogoUTS{
-        width: 20%;
-    }
-
+  .title-finish {
+    font-size: 20px;
   }
+
+  .subtitle-finish {
+    font-size: 18px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .finish-box {
+    width: 50%;
+    margin-bottom: 60px;
+  }
+
+  .title-finish {
+    font-size: 24px;
+  }
+
+  .subtitle-finish {
+    font-size: 20px;
+  }
+
+  .imgLogoUTS {
+    width: 20%;
+  }
+}

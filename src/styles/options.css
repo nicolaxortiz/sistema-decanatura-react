@@ -1,62 +1,63 @@
-.option-box{
-    background-color: rgb(235, 235, 235);
-    margin: 20px auto !important;
-    border-radius: 15px;
-    padding: 10px 0px;
-    width: 90%;
-    box-shadow: 0px 0px 28px -5px rgba(0,0,0,0.41);
+.option-box {
+  background-color: rgba(255, 255, 255, 0.521);
+  margin: 20px auto !important;
+  margin-top: 40px !important;
+  border-radius: 15px;
+  padding: 10px 0px;
+  box-shadow: 0px 0px 28px -5px rgba(0, 0, 0, 0.41);
+  user-select: none;
 }
 
-.option{
-    background-color: #ffffff;
-    border-radius: 50%;
-    text-align: center;
-    padding: 5px 5px;
-    width: fit-content;
-    height: fit-content;
-    margin: 10px auto;
-    border: #4b4b4b 3px solid;
-    cursor: pointer;
+.option {
+  background-color: #ffffff;
+  border-radius: 50%;
+  text-align: center;
+  padding: 5px 5px;
+  width: fit-content;
+  height: fit-content;
+  margin: 10px auto;
+  border: #4b4b4b 3px solid;
+  cursor: pointer;
 }
 
-.option-selected{
-    background-color: #bebebe;
-    border-radius: 50%;
-    text-align: center;
-    padding: 5px 5px;
-    width: fit-content;
-    height: fit-content;
-    margin: 10px auto;
-    border: #4b4b4b 3px solid;
+.option-selected {
+  background-color: #e0e0e0;
+  border-radius: 50%;
+  text-align: center;
+  padding: 5px 5px;
+  width: fit-content;
+  height: fit-content;
+  margin: 10px auto;
+}
+
+.option-title {
+  font-size: 16px;
+  text-align: center;
 }
 
 @media screen and (min-width: 768px) {
-    .option-box{
-        width: 70%;
-    }
+  .option-box {
+    width: 70%;
+  }
 
-    .option{
-        padding: 15px 15px;
-        border: #4b4b4b 5px solid;
-    }
+  .option {
+    padding: 15px 15px;
+    border: #4b4b4b 5px solid;
+  }
 
-    .option-selected{
-        background-color: #bebebe;
-        padding: 15px 15px;
-        border: #4b4b4b 5px solid;
-    }
-
-
+  .option-selected {
+    padding: 15px 15px;
+    border: #4b4b4b 5px solid;
+  }
 }
 
 @media screen and (min-width: 1024px) {
-    .option-box{
-        width: 60%;
-    }
+  .option-box {
+    width: 50%;
+  }
 
-    .option{
-        padding: 15px 15px;
-        border: #4b4b4b 5px solid;
-    }
-
+  .option {
+    padding: 15px 15px;
+    border: #4b4b4b 5px solid;
+  }
 }

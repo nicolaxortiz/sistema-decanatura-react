@@ -19,6 +19,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import * as APIformat from "../API/FormatCall.js";
 import * as APIactividades from "../API/ActivityCall.js";
 import * as APISchedule from "../API/ScheduleCall.js";
 import { useNavigate } from "react-router-dom";
@@ -31,22 +32,15 @@ import Alert from "@mui/material/Alert";
 function ScheduleTable() {
   const navigate = useNavigate();
   const {
-    actividades,
-    setActividades,
+    activities,
+    setActivities,
     user,
-    setIsFirstActivity,
-    isFirstActivity,
-    setTab,
-    tab,
-    page,
-    setPage,
     dataSchedule,
     setDataSchedule,
+    configuration,
   } = React.useContext(UseContext);
 
   const [loading, setLoading] = React.useState(false);
-  const [observacion, setObservacion] = React.useState("");
-  const [scheduleId, setScheduleId] = React.useState();
   const HORAS = [
     "6:00 a 6:45 a.m.",
     "6:45 a 7:30 a.m.",
@@ -78,6 +72,7 @@ function ScheduleTable() {
   const [openSnack, setOpenSnack] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
+  const [observation, setObservation] = React.useState("");
 
   const handleClick = () => {
     setOpenSnack(true);
@@ -101,113 +96,137 @@ function ScheduleTable() {
     setOpen(false);
   };
 
-  const handleSubmitButton = async (complete) => {
+  const handleSubmitButton = async () => {
     setLoading(true);
     try {
-      let response;
+      const searchResponse = await APIformat.getByTeacherIdAndSemester(
+        user?.id,
+        configuration?.semester
+      );
+      if (searchResponse.status === 200) {
+        const updateResponse = await APIformat.putSchedule(
+          searchResponse.data.format.id,
+          { is_finish: true, observation: observation }
+        );
 
-      if (!scheduleId) {
-        response = await APISchedule.postSchedule({
-          idActividades: isFirstActivity,
-          horas: dataSchedule,
-          observacion: observacion,
-        });
-      } else {
-        response = await APISchedule.putSchedule(scheduleId, {
-          horas: dataSchedule,
-          observacion: observacion,
-        });
-      }
-      if (response.status === 200) {
-        setTimeout(() => {
+        if (updateResponse.status === 200) {
           setLoading(false);
-          if (complete) {
-            navigate("/finish");
-          } else {
-            setLoading(false);
-            setMessage("Horario guardado con éxito");
-            setCode("success");
-            handleClick();
-          }
-        }, 3000);
-      } else if (response.status === 404) {
-        setTimeout(() => {
-          setLoading(false);
-          setMessage("Error al guardar el horario, intentelo nuevamente");
-          setCode("error");
-          handleClick();
-        }, 3000);
+          navigate("/finish");
+        }
       }
     } catch (error) {
-      setLoading(false);
-      setMessage("Error, intentelo nuevamente");
-      setCode("error");
-      handleClick();
+      if (error.response.status === 404) {
+        try {
+          const postResponse = await APIformat.postFormat({
+            semester: configuration?.semester,
+            is_finish: true,
+            teacher_id: user?.id,
+            observation: observation,
+          });
+
+          if (postResponse.status === 200) {
+            setLoading(false);
+            navigate("/finish");
+          }
+        } catch (error) {}
+      }
     }
   };
 
-  const countArray = (valor) => {
-    let contador = 0;
-    dataSchedule.forEach((elemento) => {
-      if (elemento.actividad === valor) {
-        contador++;
+  const handleCreateSchedule = async (activity) => {
+    try {
+      const response = await APISchedule.postSchedule({
+        semester: configuration?.semester,
+        name: `${activity.name}: ${activity.description} ${activity.group_name}`,
+        classification: activity.convention,
+        day: selectedColumn.dia,
+        moment: selectedColumn.momento,
+        teacher_id: user?.id,
+      });
+
+      if (response.status === 200) {
+        fetchDataSchedule();
+        setMessage("Actividad agregada al horario");
+        setCode("success");
+        handleClick();
       }
-    });
-    return contador;
+    } catch (error) {}
+  };
+
+  const handleDeleteSchedule = async () => {
+    try {
+      const deleteResponse = await APISchedule.deleteSchedule(
+        user?.id,
+        configuration?.semester,
+        selectedColumn.dia,
+        selectedColumn.momento
+      );
+      if (deleteResponse.status === 200) {
+        fetchDataSchedule();
+        setMessage("Actividad eliminada del horario");
+        setCode("warning");
+        handleClick();
+      }
+    } catch (error) {}
+  };
+
+  const fetchDataSchedule = async () => {
+    try {
+      const response = await APISchedule.getByTeacherIdAndSemester(
+        user?.id,
+        configuration?.semester
+      );
+      if (response.status === 200) {
+        localStorage.setItem(
+          "Schedule",
+          JSON.stringify({
+            schedule: response.data.schedule,
+          })
+        );
+
+        setDataSchedule(response.data.schedule);
+
+        const formatResponse = await APIformat.getByTeacherIdAndSemester(
+          user?.id,
+          configuration?.semester
+        );
+
+        if (formatResponse.status === 200) {
+          setObservation(formatResponse.data.format.observation);
+        }
+      }
+    } catch (error) {
+      setDataSchedule();
+    }
   };
 
   React.useEffect(() => {
-    if (user?._id != undefined) {
-      const fetchDataSchedule = async (id) => {
-        try {
-          const response = await APISchedule.getByIdActivity(id);
-          if (response.status === 200) {
-            localStorage.setItem(
-              "Schedule",
-              JSON.stringify({
-                idActividades: id,
-                horas: response.data.schedule[0].horas,
-              })
-            );
-
-            setDataSchedule(response.data.schedule[0].horas);
-            setScheduleId(response.data.schedule[0]._id);
-          }
-        } catch (error) {}
-      };
-
+    if (user?.id !== undefined) {
       const fetchData = async () => {
         try {
           const responseData = await APIactividades.getbyIdDocenteAndSemester(
-            user?._id
+            user?.id,
+            configuration?.semester
           );
 
           if (responseData.status === 200) {
-            setIsFirstActivity(responseData.data.activity[0]._id);
             localStorage.setItem(
               "Activity",
               JSON.stringify({
-                actividad: responseData.data.activity[0].actividad,
-                semestre: process.env.REACT_APP_CURRENT_SEMESTER,
-                idDocente: user?._id,
-                _id: responseData.data.activity[0]._id,
+                activities: responseData.data.activities,
               })
             );
 
-            setActividades((prevState) => ({
-              ...prevState,
-              actividad: responseData.data.activity[0].actividad,
-              _id: responseData.data.activity[0]._id,
-            }));
+            setActivities(responseData.data.activities);
 
-            await fetchDataSchedule(responseData.data.activity[0]._id);
+            await fetchDataSchedule();
           }
         } catch (error) {
-          if (!!actividades) {
+          if (!!activities) {
             const dataStr = localStorage.getItem("Activity");
             const data = JSON.parse(dataStr);
             if (data) {
-              setActividades(data);
+              setActivities(data);
             } else {
               navigate("/activity");
             }
@@ -228,38 +247,7 @@ function ScheduleTable() {
           </Grid>
         </Grid>
 
-        <ThemeProvider theme={theme}>
-          <Grid container rowSpacing={3} columnSpacing={1}>
-            <Grid xs={6}>
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={() => {
-                  setDataSchedule([]);
-                }}
-              >
-                Restablecer datos del horario
-              </Button>
-            </Grid>
-            <Grid xs={6}>
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={() => {
-                  handleSubmitButton(false);
-                }}
-              >
-                {loading ? (
-                  <CircularProgress color="inherit" size={24} />
-                ) : (
-                  "Guardar progreso del horario"
-                )}
-              </Button>
-            </Grid>
-          </Grid>
-        </ThemeProvider>
-
-        <TableContainer sx={{ marginBottom: 5, marginTop: 5 }}>
+        <TableContainer sx={{ marginBottom: 5, marginTop: 1 }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -293,7 +281,7 @@ function ScheduleTable() {
                   align="center"
                   style={{ width: "100px", backgroundColor: "#f0f0f0" }}
                 >
-                  Miercoles
+                  Miércoles
                 </TableCell>
                 <TableCell
                   sx={{ border: 1 }}
@@ -314,7 +302,7 @@ function ScheduleTable() {
                   align="center"
                   style={{ width: "100px", backgroundColor: "#f0f0f0" }}
                 >
-                  Sabado
+                  Sábado
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -331,23 +319,17 @@ function ScheduleTable() {
                       onClick={(event) => {
                         handleClickOpen(event, "Lunes", index);
                       }}
-                      className={dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Lunes"
-                        ) {
-                          return item?.clasificacion.split(" ").join("");
+                      className={dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Lunes") {
+                          return item?.classification.split(" ").join("");
                         } else {
                           return "color-vacio";
                         }
                       })}
                     >
-                      {dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Lunes"
-                        ) {
-                          return item?.actividad;
+                      {dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Lunes") {
+                          return item?.name;
                         }
                       })}
                     </TableCell>
@@ -357,23 +339,17 @@ function ScheduleTable() {
                       onClick={(event) => {
                         handleClickOpen(event, "Martes", index);
                       }}
-                      className={dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Martes"
-                        ) {
-                          return item?.clasificacion.split(" ").join("");
+                      className={dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Martes") {
+                          return item?.classification.split(" ").join("");
                         } else {
                           return "color-vacio";
                         }
                       })}
                     >
-                      {dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Martes"
-                        ) {
-                          return item?.actividad;
+                      {dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Martes") {
+                          return item?.name;
                         }
                       })}
                     </TableCell>
@@ -381,25 +357,25 @@ function ScheduleTable() {
                       sx={{ border: 1 }}
                       align="center"
                       onClick={(event) => {
-                        handleClickOpen(event, "Miercoles", index);
+                        handleClickOpen(event, "Miércoles", index);
                       }}
-                      className={dataSchedule.map((item) => {
+                      className={dataSchedule?.map((item) => {
                         if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Miercoles"
+                          item?.moment === index &&
+                          item?.day === "Miércoles"
                         ) {
-                          return item?.clasificacion.split(" ").join("");
+                          return item?.classification.split(" ").join("");
                         } else {
                           return "color-vacio";
                         }
                       })}
                     >
-                      {dataSchedule.map((item) => {
+                      {dataSchedule?.map((item) => {
                         if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Miercoles"
+                          item?.moment === index &&
+                          item?.day === "Miércoles"
                         ) {
-                          return item?.actividad;
+                          return item?.name;
                         }
                       })}
                     </TableCell>
@@ -409,23 +385,17 @@ function ScheduleTable() {
                       onClick={(event) => {
                         handleClickOpen(event, "Jueves", index);
                       }}
-                      className={dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Jueves"
-                        ) {
-                          return item?.clasificacion.split(" ").join("");
+                      className={dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Jueves") {
+                          return item?.classification.split(" ").join("");
                         } else {
                           return "color-vacio";
                         }
                       })}
                     >
-                      {dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Jueves"
-                        ) {
-                          return item?.actividad;
+                      {dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Jueves") {
+                          return item?.name;
                         }
                       })}
                     </TableCell>
@@ -435,23 +405,17 @@ function ScheduleTable() {
                       onClick={(event) => {
                         handleClickOpen(event, "Viernes", index);
                       }}
-                      className={dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Viernes"
-                        ) {
-                          return item?.clasificacion.split(" ").join("");
+                      className={dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Viernes") {
+                          return item?.classification.split(" ").join("");
                         } else {
                           return "color-vacio";
                         }
                       })}
                     >
-                      {dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Viernes"
-                        ) {
-                          return item?.actividad;
+                      {dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Viernes") {
+                          return item?.name;
                         }
                       })}
                     </TableCell>
@@ -459,25 +423,19 @@ function ScheduleTable() {
                       sx={{ border: 1 }}
                       align="center"
                       onClick={(event) => {
-                        handleClickOpen(event, "Sabado", index);
+                        handleClickOpen(event, "Sábado", index);
                       }}
-                      className={dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Sabado"
-                        ) {
-                          return item?.clasificacion.split(" ").join("");
+                      className={dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Sábado") {
+                          return item?.classification.split(" ").join("");
                         } else {
                           return "color-vacio";
                         }
                       })}
                     >
-                      {dataSchedule.map((item) => {
-                        if (
-                          item.registro[0].momento === index &&
-                          item.registro[0].dia === "Sabado"
-                        ) {
-                          return item?.actividad;
+                      {dataSchedule?.map((item) => {
+                        if (item?.moment === index && item?.day === "Sábado") {
+                          return item?.name;
                         }
                       })}
                     </TableCell>
@@ -508,10 +466,20 @@ function ScheduleTable() {
                     fontWeight: "bold",
                   }}
                 >
+                  {dataSchedule?.filter((item) => item?.day === "Lunes").length}
+                </TableCell>
+                <TableCell
+                  sx={{ border: 1 }}
+                  align="center"
+                  style={{
+                    width: "100px",
+                    backgroundColor: "#f0f0f0",
+                    fontWeight: "bold",
+                  }}
+                >
                   {
-                    dataSchedule.filter(
-                      (item) => item.registro[0].dia === "Lunes"
-                    ).length
+                    dataSchedule?.filter((item) => item?.day === "Martes")
+                      .length
                   }
                 </TableCell>
                 <TableCell
@@ -524,9 +492,8 @@ function ScheduleTable() {
                   }}
                 >
                   {
-                    dataSchedule.filter(
-                      (item) => item.registro[0].dia === "Martes"
-                    ).length
+                    dataSchedule?.filter((item) => item?.day === "Miércoles")
+                      .length
                   }
                 </TableCell>
                 <TableCell
@@ -539,9 +506,8 @@ function ScheduleTable() {
                   }}
                 >
                   {
-                    dataSchedule.filter(
-                      (item) => item.registro[0].dia === "Miercoles"
-                    ).length
+                    dataSchedule?.filter((item) => item?.day === "Jueves")
+                      .length
                   }
                 </TableCell>
                 <TableCell
@@ -554,9 +520,8 @@ function ScheduleTable() {
                   }}
                 >
                   {
-                    dataSchedule.filter(
-                      (item) => item.registro[0].dia === "Jueves"
-                    ).length
+                    dataSchedule?.filter((item) => item?.day === "Viernes")
+                      .length
                   }
                 </TableCell>
                 <TableCell
@@ -569,24 +534,8 @@ function ScheduleTable() {
                   }}
                 >
                   {
-                    dataSchedule.filter(
-                      (item) => item.registro[0].dia === "Viernes"
-                    ).length
-                  }
-                </TableCell>
-                <TableCell
-                  sx={{ border: 1 }}
-                  align="center"
-                  style={{
-                    width: "100px",
-                    backgroundColor: "#f0f0f0",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {
-                    dataSchedule.filter(
-                      (item) => item.registro[0].dia === "Sabado"
-                    ).length
+                    dataSchedule?.filter((item) => item?.day === "Sábado")
+                      .length
                   }
                 </TableCell>
               </TableRow>
@@ -615,8 +564,8 @@ function ScheduleTable() {
                 >
                   {user?.vinculacion === "Planta" ||
                   user?.vinculacion === "Tiempo completo"
-                    ? (dataSchedule.length + 0.33).toLocaleString()
-                    : (dataSchedule.length + 0.666).toLocaleString()}
+                    ? (dataSchedule?.length + 0.33).toLocaleString()
+                    : (dataSchedule?.length + 0.666).toLocaleString()}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -634,9 +583,9 @@ function ScheduleTable() {
                 rows={4}
                 maxRows={4}
                 name="observacion"
-                value={observacion}
+                value={observation}
                 onChange={(event) => {
-                  setObservacion(event.target.value);
+                  setObservation(event.target.value);
                 }}
               />
             </Grid>
@@ -655,15 +604,15 @@ function ScheduleTable() {
             <Grid xs={6}>
               <Button
                 disabled={
-                  user?.vinculacion === "Planta" ||
-                  user?.vinculacion === "Tiempo completo"
-                    ? dataSchedule.length + 0.33 !== 53.33
-                    : dataSchedule.length + 0.666 !== 26.666
+                  (user?.employment_type === "Planta" ||
+                  user?.employment_type === "Tiempo completo"
+                    ? dataSchedule?.length + 0.33 !== 53.33
+                    : dataSchedule?.length + 0.666 !== 26.666) || loading
                 }
                 variant="contained"
                 fullWidth
                 onClick={() => {
-                  handleSubmitButton(true);
+                  handleSubmitButton();
                 }}
               >
                 {loading ? (
@@ -676,6 +625,7 @@ function ScheduleTable() {
           </Grid>
         </ThemeProvider>
       </div>
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -688,76 +638,40 @@ function ScheduleTable() {
             <ListItem disableGutters>
               <ListItemButton
                 onClick={() => {
-                  const nuevoArray = [];
-
-                  dataSchedule.forEach((item) => {
-                    if (
-                      item.actividad === selectedTime.target.textContent &&
-                      item.registro[0]?.momento === selectedColumn.momento &&
-                      item.registro[0]?.dia === selectedColumn.dia
-                    ) {
-                    } else {
-                      nuevoArray.push(item);
-                    }
-                  });
-
-                  setDataSchedule(nuevoArray);
+                  handleDeleteSchedule();
                   handleClose();
                 }}
               >
-                <ListItemText primary={`Eliminar Actividad`} />
+                <ListItemText primary={`Eliminar actividad seleccionada`} />
               </ListItemButton>
             </ListItem>
-            {actividades?.actividad.map((item, index) => (
-              <ListItem disableGutters key={index}>
-                <ListItemButton
-                  onClick={() => {
-                    let firstCount = countArray(
-                      `${item.nombre}: ${item.descripcion} ${item.grupo}`
-                    );
-                    if (firstCount < Math.floor(item.horas)) {
-                      const nuevoArray = [];
+            {activities?.map((item, index) => {
+              const count = dataSchedule?.filter(
+                (element) =>
+                  element.name ===
+                  `${item.name}: ${item.description} ${item.group_name}`
+              ).length;
 
-                      dataSchedule.forEach((itemBefore) => {
-                        if (
-                          itemBefore.actividad ===
-                            selectedTime.target.textContent &&
-                          itemBefore.registro[0]?.momento ===
-                            selectedColumn.momento &&
-                          itemBefore.registro[0]?.dia === selectedColumn.dia
-                        ) {
-                        } else {
-                          nuevoArray.push(itemBefore);
-                        }
-                      });
+              if (count === parseInt(item.hours)) {
+                return null;
+              } else {
+                return (
+                  <ListItem disableGutters key={index}>
+                    <ListItemButton
+                      onClick={() => {
+                        handleCreateSchedule(item);
 
-                      nuevoArray.push({
-                        actividad: `${item.nombre}: ${item.descripcion} ${item.grupo}`,
-                        clasificacion: item.convencion,
-                        registro: [
-                          {
-                            dia: selectedColumn.dia,
-                            momento: selectedColumn.momento,
-                          },
-                        ],
-                      });
-
-                      setDataSchedule(nuevoArray);
-                    } else {
-                      setMessage("Ya completaste las horas de esa actividad");
-                      setCode("warning");
-                      handleClick();
-                    }
-
-                    handleClose();
-                  }}
-                >
-                  <ListItemText
-                    primary={`${item.nombre}: ${item.descripcion} ${item.grupo} - ${item.horas} horas`}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))}
+                        handleClose();
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${item.name}: ${item.description} ${item.group_name} - ${item.hours} horas`}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              }
+            })}
           </List>
         </DialogContent>
         <DialogActions>
@@ -768,6 +682,7 @@ function ScheduleTable() {
       <Snackbar
         open={openSnack}
         onClose={handleCloseSnack}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         autoHideDuration={6000}
       >
         <Alert

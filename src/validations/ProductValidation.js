@@ -3,13 +3,13 @@ export const ProductValidation = (form, fieldName, errors) => {
   let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
   let regexNumber = /^(0|[1-9]\d?)(?:\.\d{1,2})?$/;
 
-  if (fieldName === "fechaEstimada" || fieldName === "all") {
-    if (form.fechaEstimada === null) {
-      errors.messages.fechaEstimada = "El campo 'Fecha Estimada' es requerido";
-      errors.states.fechaEstimada = true;
+  if (fieldName === "estimated_date" || fieldName === "all") {
+    if (form.product.estimated_date === null) {
+      errors.messages.estimated_date = "El campo 'Fecha Estimada' es requerido";
+      errors.states.estimated_date = true;
     } else {
-      delete errors.messages.fechaEstimada;
-      delete errors.states.fechaEstimada;
+      delete errors.messages.estimated_date;
+      delete errors.states.estimated_date;
     }
   }
 

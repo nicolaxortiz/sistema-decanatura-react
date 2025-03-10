@@ -8,7 +8,7 @@ import Badge from "@mui/material/Badge";
 import { UseContext } from "../context/UseContext.js";
 
 export const Progress = () => {
-  const { tab, setTab, progItems, setProgItems } = React.useContext(UseContext);
+  const { tab, progItems } = React.useContext(UseContext);
 
   return (
     <>
@@ -30,6 +30,7 @@ export const Progress = () => {
                     </Badge>
                   )}
                 </div>
+                <p className="progress-title">{item.name}</p>
               </Grid>
             );
           })}

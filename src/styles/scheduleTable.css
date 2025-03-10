@@ -1,72 +1,76 @@
-.table-form{
-    background-color: #fff;
-    width: 70%;
-    margin: 0 auto;
-    border-radius: 10px;
-    box-shadow: 0px 0px 28px -5px rgba(0,0,0,0.41);
-    padding: 0 30px;
-    margin-bottom: 65px;
-    margin-top: 45px;
-    padding-bottom: 25px;
-    padding-top: 5px;
+.table-form {
+  background-color: #fff;
+  width: 70%;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0px 0px 28px -5px rgba(0, 0, 0, 0.41);
+  padding: 0 30px;
+  margin-bottom: 65px;
+  margin-top: 45px;
+  padding-bottom: 25px;
+  padding-top: 5px;
 }
 
-.color-vacio{
-    background-color: #fff;
-    border: 1px solid #000;
-    cursor: pointer;
+.title-form {
+  font-weight: 600;
 }
 
-.Docenciadirecta{
-    background-color: #97ce81;
-    border: 1px solid #000;
-    cursor: pointer;
+.color-vacio {
+  background-color: #fff;
+  border: 1px solid #000;
+  cursor: pointer;
 }
 
-.Investigación{
-    background-color: #bddab2;
-    border: 1px solid #000;
-    cursor: pointer;
+.Docenciadirecta {
+  background-color: #97ce81;
+  border: 1px solid #000;
+  cursor: pointer;
 }
 
-.Extensión{
-    background-color: #e9d4c1;
-    border: 1px solid #000;
-    cursor: pointer;
+.Investigación {
+  background-color: #bddab2;
+  border: 1px solid #000;
+  cursor: pointer;
 }
 
-.ProcesosOACA{
-    background-color: #d3e4f3;
-    border: 1px solid #000;
-    cursor: pointer;
+.Extensión {
+  background-color: #e9d4c1;
+  border: 1px solid #000;
+  cursor: pointer;
 }
 
-.ProcesosODA{
-    background-color: #87a4e4;
-    border: 1px solid #000;
-    cursor: pointer;
+.ProcesosOACA {
+  background-color: #d3e4f3;
+  border: 1px solid #000;
+  cursor: pointer;
 }
 
-.Comités{
-    background-color: #f6ff7b;
-    border: 1px solid #000;
-    cursor: pointer;
+.ProcesosODA {
+  background-color: #87a4e4;
+  border: 1px solid #000;
+  cursor: pointer;
 }
 
-.Otras{
-    background-color: #b4b4b4;
-    border: 1px solid #000;
-    cursor: pointer;
+.Comités {
+  background-color: #f6ff7b;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.Otras {
+  background-color: #b4b4b4;
+  border: 1px solid #000;
+  cursor: pointer;
 }
 
 @media screen and (min-width: 768px) {
-    .table-form{
-        width: 80%;
-    }
+  .table-form {
+    width: 80%;
   }
-  
-  @media screen and (min-width: 1024px) {
-    .table-form{
-        width: 80%;
-    }
+}
+
+@media screen and (min-width: 1024px) {
+  .table-form {
+    width: 80%;
   }
+}

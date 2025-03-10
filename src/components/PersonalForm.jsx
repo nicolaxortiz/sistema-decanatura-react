@@ -24,54 +24,72 @@ import {
 
 export default function PersonalForm() {
   const navigate = useNavigate();
-  const { setUser, user, tab, progItems, setProgItems } =
+  const { setUser, user, tab, progItems, setProgItems, configuration } =
     React.useContext(UseContext);
   const [loadingButton, setLoadingButton] = React.useState(false);
   const [initialForm, setInitialForm] = React.useState({
-    _id: "",
-    documento: "",
-    apellidos: "",
-    nombres: "",
-    tarjeta: "",
-    facultad: "",
-    unidadAcademica: "",
-    campus: "",
-    foto: "",
-    firma: "",
-    vinculacion: "",
-    escalafon: "",
-    direccion: "",
-    celular: 0,
-    correo: "",
-    pregrado: "",
-    especializacion: "",
-    magister: "",
-    doctorado: "",
+    id: "",
+    photo: "",
+    signature: "",
+    document: "",
+    last_name: "",
+    first_name: "",
+    address: "",
+    phone: "",
+    email: "",
+    card: "",
+    faculty: "",
+    employment_type: "",
+    rank: "",
+    undergraduate: "",
+    specialization: "",
+    master: "",
+    doctorate: "",
   });
+
+  const [previewPhoto, setPreviewPhoto] = React.useState();
+  const [previewSignature, setPreviewSignature] = React.useState();
+
+  const handleImageChange = (event) => {
+    console.log(event.target.name);
+
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+
+      if (event.target.name === "photo") {
+        setPreviewPhoto(imageUrl);
+      } else {
+        setPreviewSignature(imageUrl);
+      }
+    }
+    handleChange(event); // Mantiene el control de formulario
+  };
 
   React.useEffect(() => {
     const fetchData = async () => {
       setForm({
-        _id: user?._id,
-        documento: user?.documento,
-        apellidos: user?.apellidos,
-        nombres: user?.nombres,
-        tarjeta: user?.tarjeta,
-        facultad: user?.facultad,
-        unidadAcademica: user?.unidadAcademica,
-        foto: user?.foto,
-        firma: user?.firma,
-        campus: user?.campus,
-        vinculacion: user?.vinculacion,
-        escalafon: user?.escalafon,
-        direccion: user?.direccion,
-        celular: user?.celular,
-        correo: user?.correo,
-        pregrado: user?.pregrado,
-        especializacion: user?.especializacion,
-        magister: user?.magister,
-        doctorado: user?.doctorado,
+        id: user?.id,
+        photo: user?.photo,
+        signature: user?.signature,
+        document: user?.document,
+        last_name: user?.last_name,
+        first_name: user?.first_name,
+        address: user?.address,
+        phone: user?.phone,
+        email: user?.email,
+        card: user?.card,
+        faculty: user?.faculty,
+        employment_type: user?.employment_type,
+        rank: user?.rank,
+        undergraduate: user?.undergraduate,
+        specialization: user?.specialization,
+        master: user?.master,
+        doctorate: user?.doctorate,
       });
+
+      setPreviewPhoto(user?.photo || defaultProfile);
+      setPreviewSignature(user?.signature || defaultSignature);
     };
 
     fetchData();
@@ -93,7 +111,7 @@ export default function PersonalForm() {
 
   React.useEffect(() => {
     if (response?.status === 200) {
-      const actualTeacher = response.data.updateTeacher;
+      const actualTeacher = response.data.updatedTeacher;
       const StringTeacher = JSON.stringify(actualTeacher);
       localStorage.setItem("User", StringTeacher);
       setUser(actualTeacher);
@@ -121,7 +139,7 @@ export default function PersonalForm() {
                 <Grid container>
                   <Grid xs={12} className="center-grid">
                     <img
-                      src={user?.foto || defaultProfile}
+                      src={previewPhoto}
                       alt={"Foto personal"}
                       className="personalImg-form"
                     />
@@ -130,26 +148,27 @@ export default function PersonalForm() {
                     <Button
                       variant="contained"
                       component="label"
-                      color={errors?.states.foto ? "alert" : "primary"}
+                      color={errors?.states.photo ? "alert" : "primary"}
                       size="small"
                     >
                       <input
                         type="file"
-                        name="foto"
+                        accept="image/*"
+                        name="photo"
                         onBlur={handleBlur}
-                        onChange={handleChange}
+                        onChange={handleImageChange}
                       />
                     </Button>
                   </Grid>
                 </Grid>
-                <div className="form-errors">{errors?.messages.foto}</div>
+                <div className="form-errors">{errors?.messages.photo}</div>
               </Grid>
 
               <Grid xs={12} sm={6} md={6} lg={6}>
                 <Grid container>
                   <Grid xs={12} className="center-grid">
                     <img
-                      src={user?.firma || defaultSignature}
+                      src={previewSignature}
                       alt="Firma personal"
                       className="signatureImg-form"
                     />
@@ -158,19 +177,20 @@ export default function PersonalForm() {
                     <Button
                       variant="contained"
                       component="label"
-                      color={errors?.states.firma ? "alert" : "primary"}
+                      color={errors?.states.signature ? "alert" : "primary"}
                       size="small"
                     >
                       <input
                         type="file"
-                        name="firma"
+                        name="signature"
+                        accept="image/*"
                         onBlur={handleBlur}
-                        onChange={handleChange}
+                        onChange={handleImageChange}
                       />
                     </Button>
                   </Grid>
                 </Grid>
-                <div className="form-errors">{errors?.messages.firma}</div>
+                <div className="form-errors">{errors?.messages.signature}</div>
               </Grid>
 
               <Grid xs={12} sm={6} md={6} lg={6}>
@@ -179,12 +199,12 @@ export default function PersonalForm() {
                   size="small"
                   fullWidth
                   type="number"
-                  name="documento"
+                  name="document"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.documento || ""}
-                  error={errors?.states.documento}
-                  helperText={errors?.messages.documento}
+                  value={form?.document || ""}
+                  error={errors?.states.document}
+                  helperText={errors?.messages.document}
                 />
               </Grid>
 
@@ -193,12 +213,12 @@ export default function PersonalForm() {
                   label="Apellidos"
                   size="small"
                   fullWidth
-                  name="apellidos"
+                  name="last_name"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.apellidos || ""}
-                  error={errors?.states.apellidos}
-                  helperText={errors?.messages.apellidos}
+                  value={form?.last_name || ""}
+                  error={errors?.states.last_name}
+                  helperText={errors?.messages.last_name}
                 />
               </Grid>
 
@@ -207,26 +227,26 @@ export default function PersonalForm() {
                   label="Nombres"
                   size="small"
                   fullWidth
-                  name="nombres"
+                  name="first_name"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.nombres || ""}
-                  error={errors?.states.nombres}
-                  helperText={errors?.messages.nombres}
+                  value={form?.first_name || ""}
+                  error={errors?.states.first_name}
+                  helperText={errors?.messages.first_name}
                 />
               </Grid>
 
               <Grid xs={12} sm={6} md={6} lg={6}>
                 <TextField
-                  label="Direccion"
+                  label="Dirección"
                   size="small"
                   fullWidth
-                  name="direccion"
+                  name="address"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.direccion || ""}
-                  error={errors?.states.direccion}
-                  helperText={errors?.messages.direccion}
+                  value={form?.address || ""}
+                  error={errors?.states.address}
+                  helperText={errors?.messages.address}
                 />
               </Grid>
 
@@ -238,23 +258,23 @@ export default function PersonalForm() {
                   type="number"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.celular || ""}
-                  error={errors?.states.celular}
-                  helperText={errors?.messages.celular}
-                  name="celular"
+                  value={form?.phone || ""}
+                  error={errors?.states.phone}
+                  helperText={errors?.messages.phone}
+                  name="phone"
                 />
               </Grid>
               <Grid xs={12} sm={6} md={6} lg={6}>
                 <TextField
-                  label="Correo electronico"
+                  label="Correo electrónico"
                   size="small"
                   fullWidth
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.correo || ""}
-                  error={errors?.states.correo}
-                  helperText={errors?.messages.correo}
-                  name="correo"
+                  value={form?.email || ""}
+                  error={errors?.states.email}
+                  helperText={errors?.messages.email}
+                  name="email"
                 />
               </Grid>
 
@@ -265,10 +285,10 @@ export default function PersonalForm() {
                   fullWidth
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.tarjeta || ""}
-                  error={errors?.states.tarjeta}
-                  helperText={errors?.messages.tarjeta}
-                  name="tarjeta"
+                  value={form?.card || ""}
+                  error={errors?.states.card}
+                  helperText={errors?.messages.card}
+                  name="card"
                 />
               </Grid>
 
@@ -276,24 +296,13 @@ export default function PersonalForm() {
                 <div className="subtitle-form">Datos laborales</div>
               </Grid>
               <Grid xs={12} sm={6} md={6} lg={6}>
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={Sedes}
-                  value={form?.campus || ""}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Campus"
-                      name="campus"
-                      size="small"
-                      fullWidth
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      error={errors?.states.campus}
-                      helperText={errors?.messages.campus}
-                    />
-                  )}
+                <TextField
+                  label="Campus"
+                  size="small"
+                  fullWidth
+                  value={configuration?.campus_name || ""}
+                  name="campus"
+                  disabled
                 />
               </Grid>
 
@@ -302,7 +311,7 @@ export default function PersonalForm() {
                   disablePortal
                   id="combo-box-demo"
                   options={Facultades}
-                  value={form?.facultad || ""}
+                  value={form?.faculty || ""}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -311,32 +320,21 @@ export default function PersonalForm() {
                       fullWidth
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      error={errors?.states.facultad}
-                      helperText={errors?.messages.facultad}
-                      name="facultad"
+                      error={errors?.states.faculty}
+                      helperText={errors?.messages.faculty}
+                      name="faculty"
                     />
                   )}
                 />
               </Grid>
               <Grid xs={12} sm={6} md={6} lg={6}>
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={UnidadAcademica}
-                  value={form?.unidadAcademica || ""}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Unidad academica"
-                      size="small"
-                      fullWidth
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      error={errors?.states.unidadAcademica}
-                      helperText={errors?.messages.unidadAcademica}
-                      name="unidadAcademica"
-                    />
-                  )}
+                <TextField
+                  label="Unidad académica"
+                  size="small"
+                  fullWidth
+                  value={configuration?.program_name || ""}
+                  name="campus"
+                  disabled
                 />
               </Grid>
 
@@ -345,18 +343,18 @@ export default function PersonalForm() {
                   disablePortal
                   id="combo-box-demo"
                   options={TipoDeContrato}
-                  value={form?.vinculacion || ""}
+                  value={form?.employment_type || ""}
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Tipo de vinculacion"
+                      label="Tipo de vinculación"
                       size="small"
                       fullWidth
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      error={errors?.states.vinculacion}
-                      helperText={errors?.messages.vinculacion}
-                      name="vinculacion"
+                      error={errors?.states.employment_type}
+                      helperText={errors?.messages.employment_type}
+                      name="employment_type"
                     />
                   )}
                 />
@@ -366,25 +364,25 @@ export default function PersonalForm() {
                   disablePortal
                   id="combo-box-demo"
                   options={Escalafon}
-                  value={form?.escalafon || ""}
+                  value={form?.rank || ""}
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Escalafon"
+                      label="Escalafón"
                       size="small"
                       fullWidth
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      error={errors?.states.escalafon}
-                      helperText={errors?.messages.escalafon}
-                      name="escalafon"
+                      error={errors?.states.rank}
+                      helperText={errors?.messages.rank}
+                      name="rank"
                     />
                   )}
                 />
               </Grid>
 
               <Grid xs={12}>
-                <div className="subtitle-form">Datos Academicos</div>
+                <div className="subtitle-form">Datos Académicos</div>
               </Grid>
 
               <Grid xs={12} sm={6} md={6} lg={6}>
@@ -394,24 +392,24 @@ export default function PersonalForm() {
                   fullWidth
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.pregrado || ""}
-                  error={errors?.states.pregrado}
-                  helperText={errors?.messages.pregrado}
-                  name="pregrado"
+                  value={form?.undergraduate || ""}
+                  error={errors?.states.undergraduate}
+                  helperText={errors?.messages.undergraduate}
+                  name="undergraduate"
                 />
               </Grid>
 
               <Grid xs={12} sm={6} md={6} lg={6}>
                 <TextField
-                  label="Especializacion"
+                  label="Especialización"
                   size="small"
                   fullWidth
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.especializacion || ""}
-                  error={errors?.states.especializacion}
-                  helperText={errors?.messages.especializacion}
-                  name="especializacion"
+                  value={form?.specialization || ""}
+                  error={errors?.states.specialization}
+                  helperText={errors?.messages.specialization}
+                  name="specialization"
                 />
               </Grid>
 
@@ -422,10 +420,10 @@ export default function PersonalForm() {
                   fullWidth
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.magister || ""}
-                  error={errors?.states.magister}
-                  helperText={errors?.messages.magister}
-                  name="magister"
+                  value={form?.master || ""}
+                  error={errors?.states.master}
+                  helperText={errors?.messages.master}
+                  name="master"
                 />
               </Grid>
 
@@ -436,10 +434,10 @@ export default function PersonalForm() {
                   fullWidth
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={form?.doctorado || ""}
-                  error={errors?.states.doctorado}
-                  helperText={errors?.messages.doctorado}
-                  name="doctorado"
+                  value={form?.doctorate || ""}
+                  error={errors?.states.doctorate}
+                  helperText={errors?.messages.doctorate}
+                  name="doctorate"
                 />
               </Grid>
               <Grid xs={12}>

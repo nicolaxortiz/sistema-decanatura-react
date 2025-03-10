@@ -2,19 +2,32 @@ import React from "react";
 import { theme } from "../resources/theme.js";
 import { ThemeProvider } from "@mui/material/styles";
 import Grid from "@mui/material/Unstable_Grid2";
-import PersonIcon from "@mui/icons-material/Person";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import ArticleIcon from "@mui/icons-material/Article";
 import { UseContext } from "../context/UseContext.js";
 import "../styles/options.css";
 
-function Options() {
+function Options({ list }) {
   const { option, setOption } = React.useContext(UseContext);
   return (
     <>
       <Grid container className="option-box">
         <ThemeProvider theme={theme}>
-          <Grid xs={4}>
+          {list?.map((item) => {
+            return (
+              <Grid xs={4} key={item.id}>
+                <div
+                  className={option !== item.id ? "option" : "option-selected"}
+                  onClick={() => {
+                    setOption(item.id);
+                  }}
+                >
+                  <item.icon className="logo-progress" color="primary" />
+                </div>
+                <p className="option-title">{item.name}</p>
+              </Grid>
+            );
+          })}
+
+          {/* <Grid xs={4}>
             <div
               className={option !== 1 ? "option" : "option-selected"}
               onClick={() => {
@@ -23,6 +36,7 @@ function Options() {
             >
               <ArticleIcon className="logo-progress" color="primary" />
             </div>
+            <p className="option-title">Documentos</p>
           </Grid>
           <Grid xs={4}>
             <div
@@ -33,6 +47,7 @@ function Options() {
             >
               <PersonIcon className="logo-progress" color="primary" />
             </div>
+            <p className="option-title">Docentes</p>
           </Grid>
           <Grid xs={4}>
             <div
@@ -43,7 +58,8 @@ function Options() {
             >
               <LibraryBooksIcon className="logo-progress" color="primary" />
             </div>
-          </Grid>
+            <p className="option-title">Formatos</p>
+          </Grid> */}
         </ThemeProvider>
       </Grid>
     </>

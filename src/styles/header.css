@@ -1,16 +1,20 @@
 .logo-img {
-    width: 40%;
+  width: 150px;
 }
 
-.header-box{
-    padding: 15px 20px;
-    background-color: #ffffff;
+.header-box {
+  padding: 15px 20px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.info-box{
-    background-color: #4b4b4b;
-    color: #f5f5f5;
-    font-size: 16px;
-    text-align: right;
-    padding: 16px 15px;
+.info-box {
+  background-color: #4b4b4b;
+  color: #f5f5f5;
+  font-size: 16px;
+  text-align: right;
+  padding: 16px 15px;
 }

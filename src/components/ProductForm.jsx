@@ -23,21 +23,17 @@ export default function ProductForm() {
 
   const [products, setProducts] = React.useState([]);
   const navigate = useNavigate();
-  const {
-    actividades,
-    setActividades,
-    user,
-    setIsFirstActivity,
-    setTab,
-    tab,
-    page,
-    setPage,
-  } = React.useContext(UseContext);
+  const { activities, setActivities, user, page, setPage, configuration } =
+    React.useContext(UseContext);
 
   const [initialForm, setInitialForm] = React.useState({
-    comentario: "",
-    fechaEstimada: null,
-    fechaReal: null,
+    id: "",
+    product: {
+      description: "",
+      estimated_date: null,
+      real_date: null,
+      comment: "",
+    },
   });
 
   const [open, setOpen] = React.useState(false);
@@ -58,15 +54,20 @@ export default function ProductForm() {
 
   React.useEffect(() => {
     setForm({
-      comentario: actividades?.actividad[page]?.producto.comentario || "",
-      fechaEstimada:
-        actividades?.actividad[page]?.producto.fechaEstimada || null,
-      fechaReal: actividades?.actividad[page]?.producto.fechaReal || null,
+      id: (activities && activities[page]?.id) || "",
+      product: {
+        description:
+          (activities && activities[page]?.product.description) || "",
+        estimated_date:
+          (activities && activities[page]?.product.estimated_date) || null,
+        real_date: (activities && activities[page]?.product.real_date) || null,
+        comment: (activities && activities[page]?.product.comment) || "",
+      },
     });
-  }, [actividades, products]);
+  }, [activities, products]);
 
-  const call = APIactividades.saveActivitys;
-  const type = "saveLocal";
+  const call = APIactividades.updateActivity;
+  const type = "put";
 
   const {
     form,
@@ -88,75 +89,64 @@ export default function ProductForm() {
     }
 
     let productForm = {
-      nombre: actividades.actividad[backPage]?.nombre,
-      misional: actividades.actividad[backPage]?.misional,
-      convencion: actividades.actividad[backPage]?.convencion,
-      descripcion: actividades.actividad[backPage]?.descripcion,
-      grupo: actividades.actividad[backPage]?.grupo,
-      horas: actividades.actividad[backPage]?.horas,
-      responsable: actividades.actividad[backPage]?.responsable,
-      producto: {
-        descripcion: actividades?.actividad[backPage]?.producto.descripcion,
-        fechaEstimada: form?.fechaEstimada,
-        fechaReal: form?.fechaReal,
-        comentario: form?.comentario,
+      product: {
+        description: activities && activities[backPage]?.product.description,
+        estimated_date: form?.estimated_date,
+        real_date: form?.real_date,
+        comment: form?.comment,
       },
     };
 
-    if (productForm.producto.fechaEstimada !== null) {
+    if (productForm.product.estimated_date !== null) {
       setProducts((prevState) => [...prevState, productForm]);
     }
     setForm(initialForm);
   }, [page]);
 
   React.useEffect(() => {
-    if (response === 200) {
+    if (response?.status === 200) {
+      fetchData();
+
       setBackPage(page);
       setPage(page + 1);
       setMessage("Producto guardado correctamente");
       setCode("success");
       handleClick();
     }
-  }, [loading]);
+  }, [response]);
+
+  const fetchData = async () => {
+    try {
+      const responseData = await APIactividades.getbyIdDocenteAndSemester(
+        user?.id,
+        configuration?.semester
+      );
+
+      if (responseData.status === 200) {
+        localStorage.setItem(
+          "Activity",
+          JSON.stringify({
+            activities: responseData.data.activities,
+          })
+        );
+
+        setActivities(responseData.data.activities);
+      }
+    } catch (error) {
+      if (!!activities) {
+        const dataStr = localStorage.getItem("Activity");
+        const data = JSON.parse(dataStr);
+        if (data) {
+          setActivities(data);
+        } else {
+          navigate("/activity");
+        }
+      }
+    }
+  };
 
   React.useEffect(() => {
-    if (user?._id != undefined) {
-      const fetchData = async () => {
-        try {
-          const responseData = await APIactividades.getbyIdDocenteAndSemester(
-            user?._id
-          );
-
-          if (responseData.status === 200) {
-            localStorage.setItem(
-              "Activity",
-              JSON.stringify({
-                actividad: responseData.data.activity[0].actividad,
-                semestre: process.env.REACT_APP_CURRENT_SEMESTER,
-                idDocente: user?._id,
-                _id: responseData.data.activity[0]._id,
-              })
-            );
-
-            setActividades((prevState) => ({
-              ...prevState,
-              actividad: responseData.data.activity[0].actividad,
-              _id: responseData.data.activity[0]._id,
-            }));
-          }
-        } catch (error) {
-          if (!!actividades) {
-            const dataStr = localStorage.getItem("Activity");
-            const data = JSON.parse(dataStr);
-            if (data) {
-              setActividades(data);
-            } else {
-              navigate("/activity");
-            }
-          }
-        }
-      };
-
+    if (user?.id != undefined) {
       fetchData();
     } else {
     }
@@ -181,27 +171,30 @@ export default function ProductForm() {
               >
                 <Grid xs={12}>
                   <div className="pag-box product-row-g">
-                    {page + 1 > actividades?.actividad?.length
+                    {page + 1 > activities?.length
                       ? `Productos finalizados`
-                      : `Producto ${page + 1} de ${
-                          actividades?.actividad?.length || 1
-                        }`}
+                      : `Producto ${page + 1} de ${activities?.length || 1}`}
                   </div>
                 </Grid>
 
                 <Grid xs={12}>
-                  Actividad {page + 1}: {actividades?.actividad[page]?.nombre}
+                  Actividad {page + 1}:{" "}
+                  {activities &&
+                    `${activities[page]?.name || ""} ${
+                      activities[page]?.description || ""
+                    } ${activities[page]?.group_name || ""}`}
                 </Grid>
 
                 <Grid xs={12}>
                   <TextField
-                    label="Descripcion"
+                    label="Descripción"
                     size="small"
                     fullWidth
-                    name="descripcion"
-                    disabled={page + 1 > actividades?.actividad?.length}
+                    name="description"
+                    disabled={page + 1 > activities?.length}
                     value={
-                      actividades?.actividad[page]?.producto.descripcion || ""
+                      (activities && activities[page]?.product.description) ||
+                      ""
                     }
                     readOnly
                   />
@@ -210,25 +203,25 @@ export default function ProductForm() {
                 <Grid xs={12} sm={6} md={6} lg={6}>
                   <DatePicker
                     label="Fecha estimada de entrega"
-                    disabled={page + 1 > actividades?.actividad?.length}
+                    disabled={page + 1 > activities?.length}
                     value={
-                      form.fechaEstimada === null
+                      form.product.estimated_date === null
                         ? null
-                        : dayjs(form.fechaEstimada)
+                        : dayjs(form.product.estimated_date)
                     }
                     slotProps={{
                       textField: {
                         size: "small",
                         fullWidth: true,
-                        error: errors?.states.fechaEstimada,
-                        helperText: errors?.messages.fechaEstimada,
+                        error: errors?.states.estimated_date,
+                        helperText: errors?.messages.estimated_date,
                       },
                     }}
                     onBlur={handleBlur}
                     onChange={(date) =>
                       handleChange({
                         target: {
-                          name: "fechaEstimada",
+                          name: "estimated_date",
                           value: date,
                           type: "date",
                         },
@@ -240,23 +233,25 @@ export default function ProductForm() {
                 <Grid xs={12} sm={6} md={6} lg={6}>
                   <DatePicker
                     label="Fecha real de entrega"
-                    disabled={page + 1 > actividades?.actividad?.length}
+                    disabled={page + 1 > activities?.length}
                     value={
-                      form.fechaReal === null ? null : dayjs(form.fechaReal)
+                      form.product.real_date === null
+                        ? null
+                        : dayjs(form.product.real_date)
                     }
                     slotProps={{
                       textField: {
                         size: "small",
                         fullWidth: true,
-                        error: errors?.states.fechaReal,
-                        helperText: errors?.messages.fechaReal,
+                        error: errors?.states.real_date,
+                        helperText: errors?.messages.real_date,
                       },
                     }}
                     onBlur={handleBlur}
                     onChange={(date) =>
                       handleChange({
                         target: {
-                          name: "fechaReal",
+                          name: "real_date",
                           value: date,
                           type: "date",
                         },
@@ -269,27 +264,41 @@ export default function ProductForm() {
                   <TextField
                     label="Comentario"
                     id="outlined-multiline-static"
-                    disabled={page + 1 > actividades?.actividad?.length}
+                    disabled={page + 1 > activities?.length}
                     size="small"
                     fullWidth
                     multiline
                     rows={4}
                     maxRows={4}
-                    name="comentario"
-                    value={form.comentario}
+                    name="comment"
+                    value={form.product.comment}
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    error={errors?.states.comentario}
-                    helperText={errors?.messages.comentario}
+                    error={errors?.states.comment}
+                    helperText={errors?.messages.comment}
                   />
                 </Grid>
 
-                <Grid xs={12}>
+                <Grid xs={6}>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    disabled={page === 0}
+                    onClick={() => {
+                      setBackPage(page);
+                      setPage(page - 1);
+                    }}
+                  >
+                    Anterior producto
+                  </Button>
+                </Grid>
+
+                <Grid xs={6}>
                   <Button
                     variant="contained"
                     type="submit"
                     fullWidth
-                    disabled={page + 1 > actividades?.actividad?.length}
+                    disabled={page + 1 > activities?.length}
                   >
                     Siguiente producto
                   </Button>
@@ -299,13 +308,18 @@ export default function ProductForm() {
           </div>
 
           <ProductButton
-            state={page + 1 > actividades?.actividad?.length}
+            state={page + 1 > activities?.length}
             products={products}
           />
         </ThemeProvider>
       </div>
 
-      <Snackbar open={open} onClose={handleClose} autoHideDuration={3000}>
+      <Snackbar
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        autoHideDuration={3000}
+      >
         <Alert
           onClose={handleClose}
           severity={code}

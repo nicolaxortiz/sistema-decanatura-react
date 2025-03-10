@@ -12,26 +12,30 @@ import * as APIactividades from "../API/ActivityCall.js";
 import Autocomplete from "@mui/material/Autocomplete";
 import { Actividades, Asignaturas, Grupos } from "../resources/campos.js";
 import Snackbar from "@mui/material/Snackbar";
+import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 
 export default function ActivityForm() {
-  const { actividades, setActividades, user, setIsFirstActivity } =
+  const { activities, setActivities, user, configuration } =
     React.useContext(UseContext);
   const [initialForm, setInitialForm] = React.useState({
-    nombre: "",
-    misional: "",
-    convencion: "",
-    descripcion: "",
-    grupo: "",
-    horas: "",
-    responsable: "Ing Yezid Yair García",
-    producto: {
-      descripcion: "",
+    teacher_id: "",
+    semester: "",
+    name: "",
+    mission: "",
+    convention: "",
+    description: "",
+    group_name: "",
+    hours: "",
+    responsible: "",
+    product: {
+      description: "",
     },
+    consolidated: "",
   });
 
   const [misionalIndex, setMisionalIndex] = React.useState();
-  const [descripcion, setDescripcion] = React.useState("");
+  const [defaultDescription, setDefaultDescription] = React.useState("");
 
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -49,12 +53,15 @@ export default function ActivityForm() {
     setOpen(false);
   };
 
-  const arrayNombres = Actividades.map((actividad) => actividad.nombre);
-  const arrayMisionales = Actividades.map((actividad) => actividad.misional);
-  const arrayProducto = Actividades.map((actividad) => actividad.producto);
-  const arrayConvencion = Actividades.map((actividad) => actividad.convencion);
+  const arrayNombres = Actividades.map((actividad) => actividad.name);
 
   const handleChangeName = async (event) => {
+    setForm({
+      ...form,
+      semester: configuration?.semester,
+      teacher_id: user?.id,
+    });
+
     if (!event.target.textContent) {
       setMisionalIndex();
     } else {
@@ -64,30 +71,32 @@ export default function ActivityForm() {
   };
 
   React.useEffect(() => {
-    setDescripcion("");
-    if (Actividades[misionalIndex]?.descripcion) {
-      setDescripcion(Actividades[misionalIndex].descripcion);
+    setDefaultDescription("");
+    if (Actividades[misionalIndex]?.description) {
+      setDefaultDescription(Actividades[misionalIndex].description);
       setForm({
         ...form,
-        descripcion: Actividades[misionalIndex].descripcion,
-        misional: arrayMisionales[misionalIndex] || "",
-        convencion: arrayConvencion[misionalIndex] || "",
-        producto: { descripcion: arrayProducto[misionalIndex] || "" },
+        description: Actividades[misionalIndex]?.description,
+        mission: Actividades[misionalIndex]?.mission || "",
+        convention: Actividades[misionalIndex]?.convention || "",
+        product: { description: Actividades[misionalIndex]?.product || "" },
+        consolidated: Actividades[misionalIndex]?.consolidated || "",
       });
     } else {
-      setDescripcion("");
+      setDefaultDescription("");
       setForm({
         ...form,
-        descripcion: "",
-        misional: arrayMisionales[misionalIndex] || "",
-        convencion: arrayConvencion[misionalIndex] || "",
-        producto: { descripcion: arrayProducto[misionalIndex] || "" },
+        description: "",
+        mission: Actividades[misionalIndex]?.mission || "",
+        convention: Actividades[misionalIndex]?.convention || "",
+        product: { description: Actividades[misionalIndex]?.product || "" },
+        consolidated: Actividades[misionalIndex]?.consolidated || "",
       });
     }
   }, [misionalIndex]);
 
   const call = APIactividades.saveActivitys;
-  const type = "saveLocal";
+  const type = "post";
 
   const {
     form,
@@ -100,66 +109,49 @@ export default function ActivityForm() {
     handleSubmit,
   } = useForm(initialForm, ActivityValidation, call, type);
 
+  const fetchData = async () => {
+    try {
+      const responseData = await APIactividades.getbyIdDocenteAndSemester(
+        user?.id,
+        configuration?.semester
+      );
+
+      if (responseData.status === 200) {
+        localStorage.setItem(
+          "Activity",
+          JSON.stringify({
+            activities: responseData.data.activities,
+          })
+        );
+
+        setActivities(responseData.data.activities);
+      }
+    } catch (error) {
+      if (!!activities) {
+        const dataStr = localStorage.getItem("Activity");
+        const data = JSON.parse(dataStr);
+        if (data) {
+          setActivities(data);
+        }
+      }
+    }
+  };
+
   React.useEffect(() => {
-    if (response === 200) {
-      setActividades((prevState) => ({
-        ...prevState,
-        actividad: [...prevState.actividad, form],
-      }));
+    if (response?.status === 200) {
+      fetchData();
 
       setForm(initialForm);
-      setDescripcion("");
+      setDefaultDescription("");
       setMisionalIndex();
       setMessage("Actividad agregada correctamente");
       setCode("success");
       handleClick();
     }
-  }, [loading]);
+  }, [response]);
 
   React.useEffect(() => {
-    if (response === 200) {
-      localStorage.setItem("Activity", JSON.stringify(actividades));
-    }
-  }, [actividades, response]);
-
-  React.useEffect(() => {
-    if (user?._id != undefined) {
-      const fetchData = async () => {
-        try {
-          const responseData = await APIactividades.getbyIdDocenteAndSemester(
-            user?._id
-          );
-
-          if (responseData.status === 200) {
-            localStorage.setItem(
-              "Activity",
-              JSON.stringify({
-                actividad: responseData.data.activity[0].actividad,
-                semestre: process.env.REACT_APP_CURRENT_SEMESTER,
-                idDocente: user?._id,
-                _id: responseData.data.activity[0]._id,
-              })
-            );
-
-            setActividades((prevState) => ({
-              ...prevState,
-              actividad: responseData.data.activity[0].actividad,
-              _id: responseData.data.activity[0]._id,
-            }));
-          }
-        } catch (error) {
-          if (!!actividades) {
-            const dataStr = localStorage.getItem("Activity");
-            const data = JSON.parse(dataStr);
-            if (data) {
-              setActividades(data);
-            } else {
-              localStorage.setItem("Activity", JSON.stringify(actividades));
-            }
-          }
-        }
-      };
-
+    if (user?.id != undefined) {
       fetchData();
     }
   }, [user]);
@@ -181,18 +173,18 @@ export default function ActivityForm() {
                   disablePortal
                   id="combo-box-demo"
                   options={arrayNombres}
-                  value={form?.nombre || ""}
+                  value={form?.name || ""}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Nombre"
-                      name="nombre"
+                      name="name"
                       size="small"
                       fullWidth
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      error={errors?.states.nombre}
-                      helperText={errors?.messages.nombre}
+                      error={errors?.states.name}
+                      helperText={errors?.messages.name}
                     />
                   )}
                   onChange={(e) => {
@@ -206,27 +198,27 @@ export default function ActivityForm() {
                   label="Misional"
                   size="small"
                   fullWidth
-                  readOnly
-                  name="misional"
-                  value={arrayMisionales[misionalIndex] || ""}
+                  disabled
+                  name="mission"
+                  value={Actividades[misionalIndex]?.mission || ""}
                   onBlur={handleBlur}
-                  error={errors?.states.misional}
-                  helperText={errors?.messages.misional}
+                  error={errors?.states.mission}
+                  helperText={errors?.messages.mission}
                 />
               </Grid>
 
               <Grid xs={12} sm={6} md={6} lg={6}>
-                {!!descripcion ? (
+                {!!defaultDescription ? (
                   <TextField
                     label="Descripción"
                     size="small"
                     fullWidth
-                    name="descripcion"
+                    name="description"
                     onBlur={handleBlur}
-                    value={descripcion}
+                    value={defaultDescription}
                     onChange={handleChange}
-                    error={errors?.states.descripcion}
-                    helperText={errors?.messages.descripcion}
+                    error={errors?.states.description}
+                    helperText={errors?.messages.description}
                     readOnly
                   />
                 ) : (
@@ -234,18 +226,18 @@ export default function ActivityForm() {
                     disablePortal
                     id="combo-box-demo"
                     options={Asignaturas}
-                    value={form?.descripcion}
+                    value={form?.description}
                     renderInput={(params) => (
                       <TextField
                         {...params}
                         label="Descripción"
-                        name="descripcion"
+                        name="description"
                         size="small"
                         fullWidth
                         onBlur={handleBlur}
                         onChange={handleChange}
-                        error={errors?.states.descripcion}
-                        helperText={errors?.messages.descripcion}
+                        error={errors?.states.description}
+                        helperText={errors?.messages.description}
                       />
                     )}
                   />
@@ -253,23 +245,23 @@ export default function ActivityForm() {
               </Grid>
 
               <Grid xs={12} sm={6} md={6} lg={6}>
-                {!descripcion && (
+                {!defaultDescription && (
                   <Autocomplete
                     disablePortal
                     id="combo-box-demo"
-                    value={form?.grupo}
+                    value={form?.group_name}
                     options={Grupos}
                     renderInput={(params) => (
                       <TextField
                         {...params}
                         label="Grupo"
-                        name="grupo"
+                        name="group_name"
                         size="small"
                         fullWidth
                         onBlur={handleBlur}
                         onChange={handleChange}
-                        error={errors?.states.grupo}
-                        helperText={errors?.messages.grupo}
+                        error={errors?.states.group_name}
+                        helperText={errors?.messages.group_name}
                       />
                     )}
                   />
@@ -282,12 +274,12 @@ export default function ActivityForm() {
                   size="small"
                   fullWidth
                   type="number"
-                  name="horas"
+                  name="hours"
                   onBlur={handleBlur}
-                  value={form?.horas}
+                  value={form?.hours}
                   onChange={handleChange}
-                  error={errors?.states.horas}
-                  helperText={errors?.messages.horas}
+                  error={errors?.states.hours}
+                  helperText={errors?.messages.hours}
                 />
               </Grid>
 
@@ -296,18 +288,27 @@ export default function ActivityForm() {
                   label="Responsable"
                   size="small"
                   fullWidth
-                  defaultValue={"Ing Yezid Yair García"}
-                  name="responsable"
+                  value={form?.responsible}
+                  name="responsible"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  error={errors?.states.responsable}
-                  helperText={errors?.messages.responsable}
+                  error={errors?.states.responsible}
+                  helperText={errors?.messages.responsible}
                 />
               </Grid>
 
               <Grid xs={12}>
-                <Button variant="contained" type="submit" fullWidth>
-                  Guardar
+                <Button
+                  variant="contained"
+                  disabled={loading}
+                  type="submit"
+                  fullWidth
+                >
+                  {loading ? (
+                    <CircularProgress color="inherit" size={24} />
+                  ) : (
+                    "Guardar"
+                  )}
                 </Button>
               </Grid>
             </ThemeProvider>
@@ -318,7 +319,12 @@ export default function ActivityForm() {
         </form>
       </div>
 
-      <Snackbar open={open} onClose={handleClose} autoHideDuration={6000}>
+      <Snackbar
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        autoHideDuration={6000}
+      >
         <Alert
           onClose={handleClose}
           severity={code}

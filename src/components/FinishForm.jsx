@@ -13,8 +13,14 @@ import Alert from "@mui/material/Alert";
 
 function FinishForm() {
   const navigate = useNavigate();
-  const { user, actividades, setActividades, setUser, dataSchedule } =
-    React.useContext(UseContext);
+  const {
+    user,
+    setActivities,
+    setUser,
+    setDataSchedule,
+    setConfiguration,
+    configuration,
+  } = React.useContext(UseContext);
 
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -40,8 +46,11 @@ function FinishForm() {
       localStorage.removeItem("User");
       localStorage.removeItem("Activity");
       localStorage.removeItem("Schedule");
+      localStorage.removeItem("Configuration");
       setUser();
-      setActividades();
+      setActivities();
+      setDataSchedule();
+      setConfiguration();
     } else {
       localStorage.removeItem("UserEdit");
       localStorage.removeItem("Activity");
@@ -54,13 +63,16 @@ function FinishForm() {
 
   const handlePDF = async () => {
     try {
-      const response = await APIDocument.getDocument(user?._id);
+      const response = await APIDocument.getDocument(
+        configuration?.semester,
+        user?.id
+      );
 
       if (response.status === 200) {
         window.open(response.config.url, "_blank");
       }
     } catch (error) {
-      setMessage("Error al generar el PDF, intentelo nuevamente");
+      setMessage("Error al generar el PDF, inténtelo nuevamente");
       setCode("error");
       handleClick();
     }

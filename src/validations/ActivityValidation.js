@@ -3,51 +3,51 @@ export const ActivityValidation = (form, fieldName, errors) => {
   let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
   let regexNumber = /^(0*(?:[1-9]|1[0-5])(?:\.\d+)?)$/;
 
-  if (fieldName === "nombre" || fieldName === "all") {
-    if (!form.nombre.trim()) {
-      errors.messages.nombre = "El campo 'Nombre' es requerido";
-      errors.states.nombre = true;
+  if (fieldName === "name" || fieldName === "all") {
+    if (!form.name.trim()) {
+      errors.messages.name = "El campo 'Nombre' es requerido";
+      errors.states.name = true;
     } else {
-      delete errors.messages.nombre;
-      delete errors.states.nombre;
+      delete errors.messages.name;
+      delete errors.states.name;
     }
   }
 
-  if (fieldName === "descripcion" || fieldName === "all") {
-    if (!form.descripcion.trim()) {
-      errors.messages.descripcion = "El campo 'Descripcion' es requerido";
-      errors.states.descripcion = true;
+  if (fieldName === "description" || fieldName === "all") {
+    if (!form.description.trim()) {
+      errors.messages.description = "El campo 'Descripción' es requerido";
+      errors.states.description = true;
     } else {
-      delete errors.messages.descripcion;
-      delete errors.states.descripcion;
+      delete errors.messages.description;
+      delete errors.states.description;
     }
   }
 
-  if (fieldName === "horas" || fieldName === "all") {
-    if (!form.horas) {
-      errors.messages.horas = "El campo 'Horas' es requerido";
-      errors.states.horas = true;
-    } else if (!regexNumber.test(form.horas)) {
-      errors.messages.horas =
-        "El campo 'Horas' solo acepta numeros del 1 al 10 y numeros decimales de dos cifras";
-      errors.states.horas = true;
+  if (fieldName === "hours" || fieldName === "all") {
+    if (!form.hours) {
+      errors.messages.hours = "El campo 'Horas' es requerido";
+      errors.states.hours = true;
+    } else if (!regexNumber.test(form.hours)) {
+      errors.messages.hours =
+        "El campo 'Horas' solo acepta números del 1 al 10 y números decimales de dos cifras";
+      errors.states.hours = true;
     } else {
-      delete errors.messages.horas;
-      delete errors.states.horas;
+      delete errors.messages.hours;
+      delete errors.states.hours;
     }
   }
 
-  if (fieldName === "responsable" || fieldName === "all") {
-    if (!form.responsable.trim()) {
-      errors.messages.responsable = "El campo 'Responsable' es requerido";
-      errors.states.responsable = true;
-    } else if (!regexName.test(form.responsable)) {
-      errors.messages.responsable =
+  if (fieldName === "responsible" || fieldName === "all") {
+    if (!form.responsible.trim()) {
+      errors.messages.responsible = "El campo 'Responsable' es requerido";
+      errors.states.responsible = true;
+    } else if (!regexName.test(form.responsible)) {
+      errors.messages.responsible =
         "El campo 'Responsable' solo acepta letras y espacios";
-      errors.states.responsable = true;
+      errors.states.responsible = true;
     } else {
-      delete errors.messages.responsable;
-      delete errors.states.responsable;
+      delete errors.messages.responsible;
+      delete errors.states.responsible;
     }
   }
 

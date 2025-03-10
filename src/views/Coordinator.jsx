@@ -3,21 +3,23 @@ import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { Footer } from "../components/Footer";
-import Options from "../components/Options.jsx";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
-import BuildIcon from "@mui/icons-material/Build";
-import AllPrograms from "../components/AllPrograms.jsx";
+import Options from "../components/Options";
+import AllTeachers from "../components/AllTeachers.jsx";
+import AllActivity from "../components/AllActivity.jsx";
+import CoordinatorHome from "../components/CoordinatorHome.jsx";
+import PersonIcon from "@mui/icons-material/Person";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import ArticleIcon from "@mui/icons-material/Article";
 
-export default function Admin() {
+export default function Coordinator() {
   const navigate = useNavigate();
   const { setUser, user, option, setConfiguration } =
     React.useContext(UseContext);
 
   const optionList = [
-    { id: 1, name: "Programas", icon: AccountBalanceIcon },
-    { id: 2, name: "Coordinadores", icon: RecordVoiceOverIcon },
-    { id: 3, name: "Configuración", icon: BuildIcon },
+    { id: 1, name: "Documentos", icon: ArticleIcon },
+    { id: 2, name: "Docentes", icon: PersonIcon },
+    { id: 3, name: "Formatos", icon: LibraryBooksIcon },
   ];
 
   React.useEffect(() => {
@@ -33,11 +35,11 @@ export default function Admin() {
         setUser();
         setConfiguration();
       } else {
-        if (data.role !== "campus") {
+        if (data.role !== "coordinator") {
           setUser(data);
           setConfiguration(confData);
-          if (data.role === "coordinator") {
-            navigate("/coordinator");
+          if (data.role === "campus") {
+            navigate("/admin");
           } else {
             navigate("/home");
           }
@@ -53,7 +55,9 @@ export default function Admin() {
     <>
       <Header />
       <Options list={optionList} />
-      {option === 1 && <AllPrograms />}
+      {option === 1 && <CoordinatorHome />}
+      {option === 2 && <AllTeachers />}
+      {option === 3 && <AllActivity />}
       <Footer />
     </>
   );

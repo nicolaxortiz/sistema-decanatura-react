@@ -7,23 +7,23 @@ export const Information = () => {
     <div className="infor-box">
       <Grid container rowSpacing={2}>
         <Grid xs={12}>
-          <div className="title-info">Información importante</div>
+          <div className="title-info">F-DC-54</div>
         </Grid>
         <Grid xs={12}>
           <div style={{ fontWeight: 500 }}>
-            Este es un sistema encargado de la gestion del documento F-DC-54,
+            Este es un sistema encargado de la gestión del documento F-DC-54,
             por lo tanto recuerde que:
           </div>
         </Grid>
         <Grid xs={12}>
           <div>
             - Para el ingreso debe haber sido registrado en la base de datos de
-            docentes de la facultad.
+            docentes.
           </div>
         </Grid>
         <Grid xs={12}>
           <div>
-            - Sus datos personales seran usados unicamente con fines academicos.
+            - Sus datos personales serán usados unicamente con fines académicos.
           </div>
         </Grid>
         <Grid xs={12}>
@@ -34,8 +34,8 @@ export const Information = () => {
         </Grid>
         <Grid xs={12}>
           <div>
-            - Si es su primera vez usando el sistema puede revisar el manual de
-            usuario.
+            - Si es su primera vez usando el sistema puede revisar el manual del
+            docente.
           </div>
         </Grid>
       </Grid>

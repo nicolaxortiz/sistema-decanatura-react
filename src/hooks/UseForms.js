@@ -20,15 +20,30 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
       !isNaN(value?.$y)
     ) {
       let parseDate = `${value?.$d.toISOString()}`;
-      setForm({
-        ...form,
-        [name]: parseDate,
-      });
+
+      if (name === "estimated_date" || name === "real_date") {
+        setForm({
+          ...form,
+          product: { ...form.product, [name]: parseDate },
+        });
+      } else {
+        setForm({
+          ...form,
+          [name]: parseDate,
+        });
+      }
     } else if (type !== "file" && type !== "date") {
-      setForm({
-        ...form,
-        [name]: value,
-      });
+      if (name === "comment") {
+        setForm({
+          ...form,
+          product: { ...form.product, [name]: value },
+        });
+      } else {
+        setForm({
+          ...form,
+          [name]: value,
+        });
+      }
     }
   };
 
@@ -49,11 +64,13 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
         setLoading(true);
 
         if (type === "put") {
-          const responseRequest = await executeOnSubmit(form._id, form);
+          const responseRequest = await executeOnSubmit(form.id, form);
           setResponse(responseRequest);
+          setLoading(false);
         } else if (type === "post") {
           const responseRequest = await executeOnSubmit(form);
           setResponse(responseRequest);
+          setLoading(false);
         } else if (type === "saveLocal") {
           setLoading(!loading);
           setResponse(200);
@@ -62,7 +79,7 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
         setResponse({ status: "error" });
       }
     } else {
-      return;
+      console.log(errors);
     }
   };
 

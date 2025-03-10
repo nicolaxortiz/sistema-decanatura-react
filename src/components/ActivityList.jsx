@@ -22,10 +22,11 @@ export default function ActivityList() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = React.useState(false);
-  const { user, actividades, setActividades, setTab, tab, isFirstActivity } =
+  const { user, activities, setActivities, setTab, tab, configuration } =
     React.useContext(UseContext);
-  const totalHoras = actividades?.actividad?.reduce(
-    (total, actividad) => total + parseFloat(actividad.horas),
+
+  const totalHoras = activities?.reduce(
+    (total, actividad) => total + parseFloat(actividad.hours),
     0
   );
 
@@ -45,59 +46,42 @@ export default function ActivityList() {
     setOpen(false);
   };
 
-  const handleDeleteActivity = (activity) => {
-    const nuevoArray = actividades.actividad.filter(
-      (item, index) => index !== activity
-    );
+  const handleDeleteActivity = async (id) => {
+    try {
+      const deleteResponse = await APIactividades.deleteActivity(id);
 
-    setActividades((prevState) => ({
-      ...prevState,
-      actividad: nuevoArray,
-    }));
+      if (deleteResponse.status === 200) {
+        const responseData = await APIactividades.getbyIdDocenteAndSemester(
+          user?.id,
+          configuration?.semester
+        );
+
+        if (responseData.status === 200) {
+          localStorage.setItem(
+            "Activity",
+            JSON.stringify({
+              activities: responseData.data.activities,
+              teacher_id: user?._id,
+            })
+          );
+
+          setActivities(responseData.data.activities);
+          setMessage("Actividad eliminada correctamente");
+          setCode("warning");
+          handleClick();
+        } else {
+          setActivities();
+          setMessage("No se encontraron actividades");
+          setCode("error");
+          handleClick();
+        }
+      }
+    } catch (error) {}
   };
 
   const handleSubmitButton = async () => {
-    setLoading(true);
-    try {
-      let response;
-      if (actividades?._id) {
-        try {
-          response = await APIactividades.updateActivity(actividades?._id, {
-            actividad: actividades.actividad,
-          });
-        } catch (error) {
-          setMessage(
-            "Error al actualizar las actividades, intentelo nuevamente"
-          );
-          setCode("error");
-          handleClick();
-        }
-      } else {
-        try {
-          response = await APIactividades.saveActivitys({
-            idDocente: actividades.idDocente,
-            actividad: actividades.actividad,
-          });
-        } catch (error) {
-          setMessage("Error al guardar las actividades, intentelo nuevamente");
-          setCode("error");
-          handleClick();
-        }
-      }
-      if (response.status === 200) {
-        setTimeout(() => {
-          setLoading(false);
-          navigate("/product");
-        }, 3000);
-      } else if (response.status === 404) {
-        setTimeout(() => {
-          setLoading(false);
-        }, 3000);
-      }
-    } catch (error) {
-      setMessage("Error, intentelo nuevamente");
-      setCode("error");
-      handleClick();
+    if (user && activities) {
+      navigate("/product");
     }
   };
 
@@ -116,34 +100,34 @@ export default function ActivityList() {
               <TableRow>
                 <TableCell align="center">#</TableCell>
                 <TableCell align="center">Nombre</TableCell>
-                <TableCell align="center">Descripcion</TableCell>
+                <TableCell align="center">Descripción</TableCell>
                 <TableCell align="center">Grupo</TableCell>
                 <TableCell align="center">Horas</TableCell>
                 <TableCell align="center">Eliminar</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {actividades?.actividad?.map((row, index) => (
+              {activities?.map((row, index) => (
                 <TableRow
                   key={index}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell align="center">{index + 1}</TableCell>
                   <TableCell align="left" style={{ fontWeight: "bold" }}>
-                    {row.nombre}
+                    {row.name}
                   </TableCell>
-                  <TableCell align="center">{row.descripcion}</TableCell>
+                  <TableCell align="center">{row.description}</TableCell>
                   <TableCell align="center">
-                    {row.grupo || "No aplica"}
+                    {row.group_name || "No aplica"}
                   </TableCell>
                   <TableCell align="center">
-                    {parseFloat(row.horas).toLocaleString()}
+                    {parseFloat(row.hours).toLocaleString()}
                   </TableCell>
                   <TableCell align="center">
                     <DeleteOutlineIcon
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        handleDeleteActivity(index);
+                        handleDeleteActivity(row.id);
                       }}
                     />
                   </TableCell>
@@ -183,9 +167,9 @@ export default function ActivityList() {
 
             <Grid xs={12} mt={1}>
               Recuerde: El numero total de horas semanales para docentes con
-              vinculacion de {user?.vinculacion} debe ser igual a{" "}
-              {user?.vinculacion === "Planta" ||
-              user?.vinculacion === "Tiempo completo"
+              vinculación de {user?.employment_type} debe ser igual a{" "}
+              {user?.employment_type === "Planta" ||
+              user?.employment_type === "Tiempo completo"
                 ? "53,33"
                 : "26,66"}
               .
@@ -206,8 +190,8 @@ export default function ActivityList() {
             </Grid>
 
             <Grid xs={6} sm={6} md={6} lg={6}>
-              {user?.vinculacion === "Planta" ||
-              user?.vinculacion === "Tiempo completo" ? (
+              {user?.employment_type === "Planta" ||
+              user?.employment_type === "Tiempo completo" ? (
                 <Button
                   variant="contained"
                   fullWidth
@@ -224,7 +208,7 @@ export default function ActivityList() {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={totalHoras !== 26.66}
+                  disabled={totalHoras !== 26.66 || loading}
                   onClick={() => handleSubmitButton()}
                 >
                   {loading ? (
@@ -242,7 +226,12 @@ export default function ActivityList() {
         </Grid>
       </div>
 
-      <Snackbar open={open} onClose={handleClose} autoHideDuration={6000}>
+      <Snackbar
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        autoHideDuration={6000}
+      >
         <Alert
           onClose={handleClose}
           severity={code}

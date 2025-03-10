@@ -2,209 +2,188 @@ export const TeacherValidation = (form, fieldName, errors) => {
   let errorsData = errors;
   let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
   let regexNumber = /^\d{10}$/;
-  let regexEmail = /@correo\.uts\.edu\.co$/;
+  let regexEmail = /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/;
 
-  if (fieldName === "foto" || fieldName === "all") {
-    if (!form.foto) {
-      errors.messages.foto = "El campo 'Foto' es requerido";
-      errors.states.foto = true;
+  if (fieldName === "photo" || fieldName === "all") {
+    if (!form.photo) {
+      errors.messages.photo = "El campo 'Foto' es requerido";
+      errors.states.photo = true;
     } else {
-      delete errors.messages.foto;
-      delete errors.states.foto;
+      delete errors.messages.photo;
+      delete errors.states.photo;
     }
   }
 
-  if (fieldName === "firma" || fieldName === "all") {
-    if (!form.firma) {
-      errors.messages.firma = "El campo 'Firma' es requerido";
-      errors.states.firma = true;
+  if (fieldName === "signature" || fieldName === "all") {
+    if (!form.signature) {
+      errors.messages.signature = "El campo 'Firma' es requerido";
+      errors.states.signature = true;
     } else {
-      delete errors.messages.firma;
-      delete errors.states.firma;
+      delete errors.messages.signature;
+      delete errors.states.signature;
     }
   }
 
-  if (fieldName === "documento" || fieldName === "all") {
-    if (!form.documento) {
-      errors.messages.documento = "El campo 'Documento' es requerido";
-      errors.states.documento = true;
+  if (fieldName === "document" || fieldName === "all") {
+    if (!form.document) {
+      errors.messages.document = "El campo 'Documento' es requerido";
+      errors.states.document = true;
     } else {
-      delete errors.messages.documento;
-      delete errors.states.documento;
+      delete errors.messages.document;
+      delete errors.states.document;
     }
   }
 
-  if (fieldName === "apellidos" || fieldName === "all") {
-    if (!form.apellidos) {
-      errors.messages.apellidos = "El campo 'Apellidos' es requerido";
-      errors.states.apellidos = true;
-    } else if (!regexName.test(form.apellidos.trim())) {
-      errors.messages.apellidos =
+  if (fieldName === "last_name" || fieldName === "all") {
+    if (!form.last_name) {
+      errors.messages.last_name = "El campo 'Apellidos' es requerido";
+      errors.states.last_name = true;
+    } else if (!regexName.test(form.last_name.trim())) {
+      errors.messages.last_name =
         "El campo 'Apellidos' sólo acepta letras y espacios en blanco";
-      errors.states.apellidos = true;
+      errors.states.last_name = true;
     } else {
-      delete errors.messages.apellidos;
-      delete errors.states.apellidos;
+      delete errors.messages.last_name;
+      delete errors.states.last_name;
     }
   }
 
-  if (fieldName === "nombres" || fieldName === "all") {
-    if (!form.nombres) {
-      errors.messages.nombres = "El campo 'Nombres' es requerido";
-      errors.states.nombres = true;
-    } else if (!regexName.test(form.nombres.trim())) {
-      errors.messages.nombres =
+  if (fieldName === "first_name" || fieldName === "all") {
+    if (!form.first_name) {
+      errors.messages.first_name = "El campo 'Nombres' es requerido";
+      errors.states.first_name = true;
+    } else if (!regexName.test(form.first_name.trim())) {
+      errors.messages.first_name =
         "El campo 'Nombres' sólo acepta letras y espacios en blanco";
-      errors.states.nombres = true;
+      errors.states.first_name = true;
     } else {
-      delete errors.messages.nombres;
-      delete errors.states.nombres;
+      delete errors.messages.first_name;
+      delete errors.states.first_name;
     }
   }
 
-  if (fieldName === "tarjeta" || fieldName === "all") {
-    if (!form.tarjeta) {
-      errors.messages.tarjeta = "El campo 'Tarjeta' es requerido";
-      errors.states.tarjeta = true;
+  if (fieldName === "card" || fieldName === "all") {
+    if (!form.card) {
+      errors.messages.card = "El campo 'Tarjeta' es requerido";
+      errors.states.card = true;
     } else {
-      delete errors.messages.tarjeta;
-      delete errors.states.tarjeta;
+      delete errors.messages.card;
+      delete errors.states.card;
     }
   }
 
-  if (fieldName === "facultad" || fieldName === "all") {
-    if (!form.facultad) {
-      errors.messages.facultad = "El campo 'Facultad' es requerido";
-      errors.states.facultad = true;
+  if (fieldName === "faculty" || fieldName === "all") {
+    if (!form.faculty) {
+      errors.messages.faculty = "El campo 'Facultad' es requerido";
+      errors.states.faculty = true;
     } else {
-      delete errors.messages.facultad;
-      delete errors.states.facultad;
+      delete errors.messages.faculty;
+      delete errors.states.faculty;
     }
   }
 
-  if (fieldName === "unidadAcademica" || fieldName === "all") {
-    if (!form.unidadAcademica) {
-      errors.messages.unidadAcademica =
-        "El campo 'Unidad academica' es requerido";
-      errors.states.unidadAcademica = true;
+  if (fieldName === "employment_type" || fieldName === "all") {
+    if (!form.employment_type) {
+      errors.messages.employment_type =
+        "El campo 'Tipo de vinculación' es requerido";
+      errors.states.employment_type = true;
     } else {
-      delete errors.messages.unidadAcademica;
-      delete errors.states.unidadAcademica;
+      delete errors.messages.employment_type;
+      delete errors.states.employment_type;
     }
   }
 
-  if (fieldName === "campus" || fieldName === "all") {
-    if (!form.campus) {
-      errors.messages.campus = "El campo 'Campus' es requerido";
-      errors.states.campus = true;
+  if (fieldName === "rank" || fieldName === "all") {
+    if (!form.rank) {
+      errors.messages.rank = "El campo 'Escalafón' es requerido";
+      errors.states.rank = true;
     } else {
-      delete errors.messages.campus;
-      delete errors.states.campus;
+      delete errors.messages.rank;
+      delete errors.states.rank;
     }
   }
 
-  if (fieldName === "vinculacion" || fieldName === "all") {
-    if (!form.vinculacion) {
-      errors.messages.vinculacion =
-        "El campo 'Tipo de vinculacion' es requerido";
-      errors.states.vinculacion = true;
+  if (fieldName === "address" || fieldName === "all") {
+    if (!form.address) {
+      errors.messages.address = "El campo 'Dirección' es requerido";
+      errors.states.address = true;
     } else {
-      delete errors.messages.vinculacion;
-      delete errors.states.vinculacion;
+      delete errors.messages.address;
+      delete errors.states.address;
     }
   }
 
-  if (fieldName === "escalafon" || fieldName === "all") {
-    if (!form.escalafon) {
-      errors.messages.escalafon = "El campo 'Escalafon' es requerido";
-      errors.states.escalafon = true;
+  if (fieldName === "phone" || fieldName === "all") {
+    if (!form.phone) {
+      errors.messages.phone = "El campo 'Celular' es requerido";
+      errors.states.phone = true;
+    } else if (!regexNumber.test(form.phone)) {
+      errors.messages.phone = "El campo 'Celular' sólo acepta 10 dígitos";
+      errors.states.phone = true;
     } else {
-      delete errors.messages.escalafon;
-      delete errors.states.escalafon;
+      delete errors.messages.phone;
+      delete errors.states.phone;
     }
   }
 
-  if (fieldName === "direccion" || fieldName === "all") {
-    if (!form.direccion) {
-      errors.messages.direccion = "El campo 'Direccion' es requerido";
-      errors.states.direccion = true;
+  if (fieldName === "email" || fieldName === "all") {
+    if (!form.email) {
+      errors.messages.email = "El campo 'Correo' es requerido";
+      errors.states.email = true;
+    } else if (!regexEmail.test(form.email.trim())) {
+      errors.messages.email =
+        "El campo 'Correo' no ha sido digitado correctamente";
+      errors.states.email = true;
     } else {
-      delete errors.messages.direccion;
-      delete errors.states.direccion;
+      delete errors.messages.email;
+      delete errors.states.email;
     }
   }
 
-  if (fieldName === "celular" || fieldName === "all") {
-    if (!form.celular) {
-      errors.messages.celular = "El campo 'Celular' es requerido";
-      errors.states.celular = true;
-    } else if (!regexNumber.test(form.celular)) {
-      errors.messages.celular = "El campo 'Celular' sólo acepta 10 digitos";
-      errors.states.celular = true;
-    } else {
-      delete errors.messages.celular;
-      delete errors.states.celular;
-    }
-  }
-
-  if (fieldName === "correo" || fieldName === "all") {
-    if (!form.correo) {
-      errors.messages.correo = "El campo 'Correo' es requerido";
-      errors.states.correo = true;
-    } else if (!regexEmail.test(form.correo.trim())) {
-      errors.messages.correo =
-        "El campo 'Correo' debe pertenecer al dominio @correo.uts.edu.co";
-      errors.states.correo = true;
-    } else {
-      delete errors.messages.correo;
-      delete errors.states.correo;
-    }
-  }
-
-  if (fieldName === "pregrado" || fieldName === "all") {
-    if (!form.pregrado) {
-      errors.messages.pregrado = "El campo 'Pregrado' es requerido";
-      errors.states.pregrado = true;
-    } else if (!regexName.test(form.pregrado.trim())) {
-      errors.messages.pregrado =
+  if (fieldName === "undergraduate" || fieldName === "all") {
+    if (!form.undergraduate) {
+      errors.messages.undergraduate = "El campo 'Pregrado' es requerido";
+      errors.states.undergraduate = true;
+    } else if (!regexName.test(form.undergraduate.trim())) {
+      errors.messages.undergraduate =
         "El campo 'Pregrado' sólo acepta letras y espacios en blanco";
-      errors.states.pregrado = true;
+      errors.states.undergraduate = true;
     } else {
-      delete errors.messages.pregrado;
-      delete errors.states.pregrado;
+      delete errors.messages.undergraduate;
+      delete errors.states.undergraduate;
     }
   }
 
-  if (fieldName === "especializacion" || fieldName === "all") {
-    if (!!form.especializacion && !regexName.test(form.especializacion)) {
-      errors.messages.especializacion =
-        "El campo 'Especializacion' sólo acepta letras y espacios en blanco";
-      errors.states.especializacion = true;
+  if (fieldName === "specialization" || fieldName === "all") {
+    if (!!form.specialization && !regexName.test(form.specialization)) {
+      errors.messages.specialization =
+        "El campo 'Especialización' sólo acepta letras y espacios en blanco";
+      errors.states.specialization = true;
     } else {
-      delete errors.messages.especializacion;
-      delete errors.states.especializacion;
+      delete errors.messages.specialization;
+      delete errors.states.specialization;
     }
   }
 
-  if (fieldName === "magister" || fieldName === "all") {
-    if (!!form.magister && !regexName.test(form.magister.trim())) {
-      errors.messages.magister =
+  if (fieldName === "master" || fieldName === "all") {
+    if (!!form.master && !regexName.test(form.master.trim())) {
+      errors.messages.master =
         "El campo 'Magister' sólo acepta letras y espacios en blanco";
-      errors.states.magister = true;
+      errors.states.master = true;
     } else {
-      delete errors.messages.magister;
-      delete errors.states.magister;
+      delete errors.messages.master;
+      delete errors.states.master;
     }
   }
 
-  if (fieldName === "doctorado" || fieldName === "all") {
-    if (!!form.doctorado && !regexName.test(form.doctorado.trim())) {
-      errors.messages.doctorado =
+  if (fieldName === "doctorate" || fieldName === "all") {
+    if (!!form.doctorate && !regexName.test(form.doctorate.trim())) {
+      errors.messages.doctorate =
         "El campo 'Doctorado' sólo acepta letras y espacios en blanco";
-      errors.states.doctorado = true;
+      errors.states.doctorate = true;
     } else {
-      delete errors.messages.doctorado;
-      delete errors.states.doctorado;
+      delete errors.messages.doctorate;
+      delete errors.states.doctorate;
     }
   }
 

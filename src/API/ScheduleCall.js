@@ -2,8 +2,8 @@ import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-export async function getByIdActivity(id) {
-  const response = await axios.get(apiUrl + "/api/horario/" + id);
+export async function getByTeacherIdAndSemester(id, semester) {
+  const response = await axios.get(`${apiUrl}/api/horario/${id}/${semester}`);
 
   return response;
 }
@@ -16,6 +16,14 @@ export async function postSchedule(schedule) {
 
 export async function putSchedule(id, schedule) {
   const response = await axios.put(apiUrl + "/api/horario/" + id, schedule);
+
+  return response;
+}
+
+export async function deleteSchedule(teacher_id, semester, day, moment) {
+  const response = await axios.delete(
+    `${apiUrl}/api/horario/${teacher_id}/${semester}/${day}/${moment}`
+  );
 
   return response;
 }

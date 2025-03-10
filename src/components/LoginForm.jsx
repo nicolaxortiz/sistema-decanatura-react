@@ -16,79 +16,128 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Collapse from "@mui/material/Collapse";
 import * as APIdocentes from "../API/TeacherCall.js";
+import * as APIcoordinador from "../API/CoordinatorCall.js";
+import * as APIConfiguracion from "../API/ConfigurationCall.js";
+import * as APIcampus from "../API/CampusCall.js";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const { setUser, user } = React.useContext(UseContext);
+  const { setUser, user, setConfiguration } = React.useContext(UseContext);
   const [showPassword, setShowPassword] = React.useState(false);
   const [message, setMessage] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const documentInput = React.useRef(null);
+  const emailInput = React.useRef(null);
   const passwordInput = React.useRef(null);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleSubmitLogin = async () => {
-    const document = documentInput.current.value;
+    const email = emailInput.current.value;
     const password = passwordInput.current.value;
     setLoading(true);
 
-    if (!!document && !!password) {
-      if (
-        document === process.env.REACT_APP_ADMIN_DOCUMENT &&
-        password === process.env.REACT_APP_ADMIN_PASSWORD
-      ) {
-        setLoading(false);
-        setUser({ user: "admin", role: "admin" });
-        localStorage.setItem(
-          "User",
-          JSON.stringify({ user: "admin", role: "admin" })
+    if (!!email && !!password) {
+      try {
+        const response = await APIdocentes.getTeacherByCredentials(
+          email,
+          password
         );
-        navigate("/admin");
-      } else {
-        try {
-          const response = await APIdocentes.getTeacherByCredentials(
-            document,
-            password
-          );
 
-          if (response.status === 200) {
-            setTimeout(() => {
-              const actualTeacher = response.data.teacher;
-              const StringTeacher = JSON.stringify(actualTeacher);
-              localStorage.setItem("User", StringTeacher);
-              setUser(actualTeacher);
-              setLoading(false);
-              navigate("/home");
-            }, 3000);
+        if (response.status === 200) {
+          handleSetUser(response.data.teacher);
+        }
+      } catch (errorTeacher) {
+        if (errorTeacher.response.status === 404) {
+          try {
+            const responseCoordinator = await APIcoordinador.getByCredential(
+              email,
+              password
+            );
+
+            if (responseCoordinator.status === 200) {
+              handleSetUser(responseCoordinator.data.coordinator);
+            }
+          } catch (errorCoordinator) {
+            if (errorCoordinator.response.status === 404) {
+              try {
+                const responseCampus = await APIcampus.getByCredential(
+                  email,
+                  password
+                );
+
+                if (responseCampus.status === 200) {
+                  handleSetUser(responseCampus.data.campus);
+                }
+              } catch (errorCampus) {
+                if (errorCampus.response.status === 404) {
+                  setMessage("Los datos ingresados son incorrectos");
+                  setLoading(false);
+                  setOpen(true);
+                }
+              }
+            }
           }
-        } catch (error) {
-          if (error.response.status === 404) {
-            setMessage("Los datos ingresados son incorrectos");
-            setTimeout(() => {
-              setLoading(false);
-              setOpen(true);
-            }, 3000);
-          } else if (error.response.status === 401) {
-            setMessage("Docente inactivo, comuniquese con decanatura");
-            setTimeout(() => {
-              setLoading(false);
-              setOpen(true);
-            }, 3000);
-          } else if (error.response.status === 500) {
-            setMessage("Error: intentelo mas tarde");
-            setTimeout(() => {
-              setLoading(false);
-              setOpen(true);
-            }, 3000);
-          }
+        } else if (errorTeacher.response.status === 401) {
+          setMessage("Docente inactivo, comuníquese con su coordinación");
+
+          setLoading(false);
+          setOpen(true);
+        } else if (errorTeacher.response.status === 500) {
+          setMessage("Error: inténtelo mas tarde");
+
+          setLoading(false);
+          setOpen(true);
         }
       }
     } else {
       setOpen(true);
-      setMessage("No se admiten campos vacios");
+      setMessage("No se admiten campos vacíos");
       setLoading(false);
+    }
+  };
+
+  const handleSetUser = (user) => {
+    const stringUser = JSON.stringify(user);
+    localStorage.setItem("User", stringUser);
+    setUser(user);
+
+    if (user.role && user.role === "campus") {
+      handleConfigurationByCampusId(user.id);
+    } else if (user.role && user.role === "coordinator") {
+      handleConfigurationByProgramId(user.program_id, "coordinator");
+    } else {
+      handleConfigurationByProgramId(user.program_id, "teacher");
+    }
+  };
+
+  const handleConfigurationByCampusId = async (campus_id) => {
+    const response = await APIConfiguracion.getByIdCampus(campus_id);
+
+    if (response.status === 200) {
+      const actualConfiguration = response.data.configurations;
+      const StringConfiguration = JSON.stringify(actualConfiguration);
+      localStorage.setItem("Configuration", StringConfiguration);
+      setConfiguration(actualConfiguration);
+      setLoading(false);
+      navigate("/admin");
+    }
+  };
+
+  const handleConfigurationByProgramId = async (program_id, role) => {
+    const response = await APIConfiguracion.getByIdProgram(program_id);
+
+    if (response.status === 200) {
+      const actualConfiguration = response.data.configurations;
+      const StringConfiguration = JSON.stringify(actualConfiguration);
+      localStorage.setItem("Configuration", StringConfiguration);
+      setConfiguration(actualConfiguration);
+      setLoading(false);
+      if (role === "coordinator") {
+        navigate("/coordinator");
+      } else {
+        navigate("/home");
+      }
     }
   };
 
@@ -96,13 +145,18 @@ export const LoginForm = () => {
     const dataStr = localStorage.getItem("User");
     const data = JSON.parse(dataStr);
 
+    const confDataStr = localStorage.getItem("Configuration");
+    const confData = JSON.parse(confDataStr);
+
     if (!user) {
       if (!data) {
         navigate("/");
         setUser();
-      } else if (data?.role === "admin") {
+        setConfiguration();
+      } else if (data?.role === "coordinator") {
         setUser(data);
-        navigate("/admin");
+        setConfiguration(confData);
+        navigate("/coordinator");
       } else {
         navigate("/home");
       }
@@ -143,11 +197,10 @@ export const LoginForm = () => {
 
             <Grid xs={12}>
               <TextField
-                label="Documento"
+                label="Email"
                 size="small"
                 fullWidth
-                type="number"
-                inputRef={documentInput}
+                inputRef={emailInput}
               />
             </Grid>
             <Grid xs={12}>
@@ -198,6 +251,7 @@ export const LoginForm = () => {
             <Grid xs={12}>
               <Button
                 variant="contained"
+                disabled={loading}
                 fullWidth
                 onClick={() => {
                   setOpen(false);
