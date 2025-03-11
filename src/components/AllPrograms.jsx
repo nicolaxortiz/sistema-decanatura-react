@@ -30,6 +30,7 @@ import { UseContext } from "../context/UseContext.js";
 export default function AllPrograms() {
   const { user, configuration } = React.useContext(UseContext);
   const [programData, setProgramData] = React.useState();
+  const [coordinatorData, setCoordinatorData] = React.useState()
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [openSnack, setOpenSnack] = React.useState(false);
@@ -86,6 +87,7 @@ export default function AllPrograms() {
       const response = await APIprogram.getByCampusId(configuration?.campus_id);
       if (response.status === 200) {
         setProgramData(response.data.programs);
+        setCoordinatorData(response.data.coordinators)
       }
     } catch (error) {
       setProgramData();
@@ -124,7 +126,11 @@ export default function AllPrograms() {
                 >
                   <TableCell>{row.name}</TableCell>
                   <TableCell component="th" scope="row">
-                    {row.coordinator_name} {row.coordinator_lastname}
+                    {coordinatorData?.map((coord) => {
+                      if(coord.program_id === row.id){
+                        return `${coord.first_name} ${coord.last_name}`
+                      }
+                    })}
                   </TableCell>
                   <TableCell>{user?.name}</TableCell>
                   <TableCell align="center">
