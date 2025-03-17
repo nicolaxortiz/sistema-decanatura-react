@@ -21,13 +21,11 @@ import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import * as APIprogram from "../API/ProgramCall";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import * as APIcoordinator from "../API/CoordinatorCall.js";
 import EditIcon from "@mui/icons-material/Edit";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
 import { UseContext } from "../context/UseContext.js";
 
-export default function AllPrograms() {
+export default function AllCoordinators() {
   const { user, configuration } = React.useContext(UseContext);
   const [programData, setProgramData] = React.useState();
   const [loading, setLoading] = React.useState(false);
@@ -111,12 +109,11 @@ export default function AllPrograms() {
 
   const fetchData = async () => {
     try {
-      const response = await APIprogram.getByCampusId(
-        configuration?.campus_id,
-        actualPage
+      const response = await APIcoordinator.getByCampusId(
+        configuration?.campus_id
       );
       if (response.status === 200) {
-        setProgramData(response.data.programs);
+        setProgramData(response.data.coordinators);
         setTotalPages(Math.ceil(response.data.count / 8));
         setTotalPrograms(response.data.count);
       }
@@ -132,7 +129,7 @@ export default function AllPrograms() {
     <>
       <div className="table-form">
         <Grid xs={12}>
-          <div className="title-finish">Listado de Programas</div>
+          <div className="title-finish">Listado de Coordinadores</div>
         </Grid>
 
         <Grid xs={12} sx={{ marginLeft: 2 }}>
@@ -145,9 +142,10 @@ export default function AllPrograms() {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Nombre del programa</TableCell>
                 <TableCell>Nombre del coordinador</TableCell>
-                <TableCell>Campus</TableCell>
+                <TableCell>Documento</TableCell>
+                <TableCell>Correo electrónico</TableCell>
+                <TableCell>Programa</TableCell>
                 <TableCell align="center">Opciones</TableCell>
               </TableRow>
             </TableHead>
@@ -157,13 +155,12 @@ export default function AllPrograms() {
                   key={item.program_id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell>{item.program_name}</TableCell>
-                  <TableCell component="th" scope="row">
-                    {item.coordinator_first_name != null
-                      ? `${item.coordinator_first_name} ${item.coordinator_last_name}`
-                      : "Sin asignar"}
+                  <TableCell>
+                    {`${item.first_name} ${item.last_name}`}
                   </TableCell>
-                  <TableCell>{user?.name}</TableCell>
+                  <TableCell>{item?.document}</TableCell>
+                  <TableCell>{item?.email}</TableCell>
+                  <TableCell>{item?.program_name}</TableCell>
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
                       <IconButton

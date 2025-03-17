@@ -2,9 +2,9 @@ import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-export async function getByCampusId(campus_id) {
+export async function getByCampusId(campus_id, actualPage) {
   const response = await axios.get(
-    `${apiUrl}/api/programa/getByCampusId/${campus_id}`
+    `${apiUrl}/api/programa/getByCampusId/${campus_id}/${actualPage}`
   );
 
   return response;

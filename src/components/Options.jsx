@@ -26,40 +26,6 @@ function Options({ list }) {
               </Grid>
             );
           })}
-
-          {/* <Grid xs={4}>
-            <div
-              className={option !== 1 ? "option" : "option-selected"}
-              onClick={() => {
-                setOption(1);
-              }}
-            >
-              <ArticleIcon className="logo-progress" color="primary" />
-            </div>
-            <p className="option-title">Documentos</p>
-          </Grid>
-          <Grid xs={4}>
-            <div
-              className={option !== 2 ? "option" : "option-selected"}
-              onClick={() => {
-                setOption(2);
-              }}
-            >
-              <PersonIcon className="logo-progress" color="primary" />
-            </div>
-            <p className="option-title">Docentes</p>
-          </Grid>
-          <Grid xs={4}>
-            <div
-              className={option !== 3 ? "option" : "option-selected"}
-              onClick={() => {
-                setOption(3);
-              }}
-            >
-              <LibraryBooksIcon className="logo-progress" color="primary" />
-            </div>
-            <p className="option-title">Formatos</p>
-          </Grid> */}
         </ThemeProvider>
       </Grid>
     </>

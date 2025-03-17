@@ -10,3 +10,9 @@ export async function getByCredential(email, password) {
 
   return response;
 }
+
+export async function getByCampusId(campus_id) {
+  const response = await axios.get(`${apiUrl}/api/coordinador/${campus_id}`);
+
+  return response;
+}
