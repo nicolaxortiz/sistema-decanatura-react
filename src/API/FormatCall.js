@@ -8,10 +8,18 @@ export async function getByTeacherIdAndSemester(id, semester) {
   return response;
 }
 
-export async function getByProgramIdAndSemester(id, semester, actualPage) {
-  const response = await axios.get(
-    `${apiUrl}/api/formato/getAll/${id}/${semester}/${actualPage}`
-  );
+export async function getByProgramIdAndSemester(
+  id,
+  semester,
+  searchName,
+  actualPage
+) {
+  const response = await axios.post(`${apiUrl}/api/formato/getAll`, {
+    id,
+    semester,
+    searchName,
+    actualPage,
+  });
 
   return response;
 }

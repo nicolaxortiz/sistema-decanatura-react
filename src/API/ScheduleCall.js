@@ -27,3 +27,11 @@ export async function deleteSchedule(teacher_id, semester, day, moment) {
 
   return response;
 }
+
+export async function deleteAllSchedule(teacher_id, semester) {
+  const response = await axios.delete(
+    `${apiUrl}/api/horario/${teacher_id}/${semester}`
+  );
+
+  return response;
+}

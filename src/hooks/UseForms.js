@@ -57,29 +57,38 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
     e.preventDefault();
 
     handleChange(e);
+
     setErrors(validateForm(form, "all", errors));
 
     if (Object.keys(errors.messages).length === 0) {
       try {
         setLoading(true);
 
+        let formToSend = { ...form };
+
+        if (!(formToSend.photo instanceof File)) {
+          delete formToSend.photo;
+        }
+        if (!(formToSend.signature instanceof File)) {
+          delete formToSend.signature;
+        }
+
         if (type === "put") {
-          const responseRequest = await executeOnSubmit(form.id, form);
+          const responseRequest = await executeOnSubmit(form.id, formToSend);
           setResponse(responseRequest);
           setLoading(false);
         } else if (type === "post") {
-          const responseRequest = await executeOnSubmit(form);
+          const responseRequest = await executeOnSubmit(formToSend);
           setResponse(responseRequest);
           setLoading(false);
         } else if (type === "saveLocal") {
-          setLoading(!loading);
           setResponse(200);
         }
       } catch (error) {
-        setResponse({ status: "error" });
+        setResponse({ status: 500 });
       }
     } else {
-      console.log(errors);
+      setResponse({ status: "error" });
     }
   };
 

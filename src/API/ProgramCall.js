@@ -10,6 +10,14 @@ export async function getByCampusId(campus_id, actualPage) {
   return response;
 }
 
+export async function getAllByCampusId(campus_id) {
+  const response = await axios.get(
+    `${apiUrl}/api/programa/getAllByCampusId/${campus_id}`
+  );
+
+  return response;
+}
+
 export async function postProgram(program) {
   const response = await axios.post(`${apiUrl}/api/programa/`, program);
 

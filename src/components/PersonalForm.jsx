@@ -5,6 +5,8 @@ import defaultSignature from "../resources/defaultSignature.png";
 import { UseContext } from "../context/UseContext.js";
 import Grid from "@mui/material/Unstable_Grid2";
 import TextField from "@mui/material/TextField";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../resources/theme.js";
 import Button from "@mui/material/Button";
@@ -14,23 +16,15 @@ import { useNavigate } from "react-router-dom";
 import { TeacherValidation } from "../validations/TeacherValidation.js";
 import * as APIdocentes from "../API/TeacherCall.js";
 import Autocomplete from "@mui/material/Autocomplete";
-import {
-  Facultades,
-  UnidadAcademica,
-  Sedes,
-  TipoDeContrato,
-  Escalafon,
-} from "../resources/campos.js";
+import { Facultades, TipoDeContrato, Escalafon } from "../resources/campos.js";
 
 export default function PersonalForm() {
+  const APIURL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
-  const { setUser, user, tab, progItems, setProgItems, configuration } =
-    React.useContext(UseContext);
-  const [loadingButton, setLoadingButton] = React.useState(false);
+  const { setUser, user, configuration } = React.useContext(UseContext);
+
   const [initialForm, setInitialForm] = React.useState({
     id: "",
-    photo: "",
-    signature: "",
     document: "",
     last_name: "",
     first_name: "",
@@ -45,14 +39,31 @@ export default function PersonalForm() {
     specialization: "",
     master: "",
     doctorate: "",
+    photo: null,
+    signature: null,
   });
 
-  const [previewPhoto, setPreviewPhoto] = React.useState();
-  const [previewSignature, setPreviewSignature] = React.useState();
+  const [previewPhoto, setPreviewPhoto] = React.useState(defaultProfile);
+  const [previewSignature, setPreviewSignature] =
+    React.useState(defaultSignature);
+
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [message, setMessage] = React.useState("");
+  const [code, setCode] = React.useState("");
+
+  const handleClick = () => {
+    setOpenSnack(true);
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
 
   const handleImageChange = (event) => {
-    console.log(event.target.name);
-
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
@@ -63,36 +74,83 @@ export default function PersonalForm() {
         setPreviewSignature(imageUrl);
       }
     }
-    handleChange(event); // Mantiene el control de formulario
+    handleChange(event);
+  };
+
+  const isValidImageUrl = async (url) => {
+    try {
+      const response = await fetch(url, { method: "HEAD" });
+
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const getImages = async () => {
+    const getPhoto = await isValidImageUrl(
+      `${APIURL}/api/images/${user?.document}foto.jpg?v=${new Date().getTime()}`
+    ).then((isValid) => {
+      return isValid;
+    });
+
+    if (getPhoto) {
+      setPreviewPhoto(
+        `${APIURL}/api/images/${
+          user?.document
+        }foto.jpg?v=${new Date().getTime()}`
+      );
+    }
+
+    const getSignature = await isValidImageUrl(
+      `${APIURL}/api/images/${
+        user?.document
+      }firma.jpg?v=${new Date().getTime()}`
+    ).then((isValid) => {
+      return isValid;
+    });
+
+    if (getSignature) {
+      setPreviewSignature(
+        `${APIURL}/api/images/${
+          user?.document
+        }firma.jpg?v=${new Date().getTime()}`
+      );
+    }
+
+    return { getPhoto, getSignature };
+  };
+
+  const fetchData = async () => {
+    const { getPhoto, getSignature } = await getImages();
+
+    setForm({
+      id: user?.id,
+      document: user?.document,
+      photo: getPhoto,
+      signature: getSignature,
+      last_name: user?.last_name,
+      first_name: user?.first_name,
+      address: user?.address,
+      phone: user?.phone,
+      email: user?.email,
+      card: user?.card,
+      faculty: user?.faculty,
+      employment_type: user?.employment_type,
+      rank: user?.rank,
+      undergraduate: user?.undergraduate,
+      specialization: user?.specialization,
+      master: user?.master,
+      doctorate: user?.doctorate,
+    });
   };
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      setForm({
-        id: user?.id,
-        photo: user?.photo,
-        signature: user?.signature,
-        document: user?.document,
-        last_name: user?.last_name,
-        first_name: user?.first_name,
-        address: user?.address,
-        phone: user?.phone,
-        email: user?.email,
-        card: user?.card,
-        faculty: user?.faculty,
-        employment_type: user?.employment_type,
-        rank: user?.rank,
-        undergraduate: user?.undergraduate,
-        specialization: user?.specialization,
-        master: user?.master,
-        doctorate: user?.doctorate,
-      });
-
-      setPreviewPhoto(user?.photo || defaultProfile);
-      setPreviewSignature(user?.signature || defaultSignature);
+    const updateForm = async () => {
+      await fetchData();
     };
 
-    fetchData();
+    if (user) updateForm();
   }, [user]);
 
   const call = APIdocentes.updateTeacher;
@@ -116,6 +174,12 @@ export default function PersonalForm() {
       localStorage.setItem("User", StringTeacher);
       setUser(actualTeacher);
       navigate("/activity");
+    }
+
+    if (response?.status === "error") {
+      setMessage("Revise los campos obligatorios");
+      setCode("warning");
+      handleClick();
     }
   }, [response]);
 
@@ -455,6 +519,22 @@ export default function PersonalForm() {
           </Grid>
         </form>
       </div>
+
+      <Snackbar
+        open={openSnack}
+        onClose={handleCloseSnack}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        autoHideDuration={6000}
+      >
+        <Alert
+          onClose={handleCloseSnack}
+          severity={code}
+          variant="outlined"
+          sx={{ width: "100%", backgroundColor: "white" }}
+        >
+          {message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

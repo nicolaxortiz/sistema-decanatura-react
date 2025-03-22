@@ -135,6 +135,13 @@ function ScheduleTable() {
 
   const handleCreateSchedule = async (activity) => {
     try {
+      const deleteResponse = await APISchedule.deleteSchedule(
+        user?.id,
+        configuration?.semester,
+        selectedColumn.dia,
+        selectedColumn.momento
+      );
+
       const response = await APISchedule.postSchedule({
         semester: configuration?.semester,
         name: `${activity.name}: ${activity.description} ${activity.group_name}`,
@@ -150,7 +157,32 @@ function ScheduleTable() {
         setCode("success");
         handleClick();
       }
-    } catch (error) {}
+    } catch (error) {
+      if (error.response.status === 404) {
+        try {
+          const response = await APISchedule.postSchedule({
+            semester: configuration?.semester,
+            name: `${activity.name}: ${activity.description} ${activity.group_name}`,
+            classification: activity.convention,
+            day: selectedColumn.dia,
+            moment: selectedColumn.momento,
+            teacher_id: user?.id,
+          });
+
+          if (response.status === 200) {
+            fetchDataSchedule();
+            setMessage("Actividad agregada al horario");
+            setCode("success");
+            handleClick();
+          }
+        } catch (error) {
+          fetchDataSchedule();
+          setMessage("Error al agregar actividad, inténtelo nuevamente");
+          setCode("error");
+          handleClick();
+        }
+      }
+    }
   };
 
   const handleDeleteSchedule = async () => {
@@ -167,7 +199,32 @@ function ScheduleTable() {
         setCode("warning");
         handleClick();
       }
-    } catch (error) {}
+    } catch (error) {
+      fetchDataSchedule();
+      setMessage("Error al eliminar, inténtelo nuevamente");
+      setCode("error");
+      handleClick();
+    }
+  };
+
+  const handleDeleteAllSchedule = async () => {
+    try {
+      const deleteResponse = await APISchedule.deleteAllSchedule(
+        user?.id,
+        configuration?.semester
+      );
+      if (deleteResponse.status === 200) {
+        fetchDataSchedule();
+        setMessage("Horario eliminado correctamente");
+        setCode("warning");
+        handleClick();
+      }
+    } catch (error) {
+      fetchDataSchedule();
+      setMessage("Error al eliminar, inténtelo nuevamente");
+      setCode("error");
+      handleClick();
+    }
   };
 
   const fetchDataSchedule = async () => {
@@ -233,7 +290,6 @@ function ScheduleTable() {
           }
         }
       };
-
       fetchData();
     } else {
     }
@@ -246,6 +302,22 @@ function ScheduleTable() {
             <div className="title-form">Horario semanal</div>
           </Grid>
         </Grid>
+
+        <ThemeProvider theme={theme}>
+          <Grid container rowSpacing={1} columnSpacing={1} marginBottom={4}>
+            <Grid xs={12}>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={() => {
+                  handleDeleteAllSchedule();
+                }}
+              >
+                Reiniciar horario
+              </Button>
+            </Grid>
+          </Grid>
+        </ThemeProvider>
 
         <TableContainer sx={{ marginBottom: 5, marginTop: 1 }}>
           <Table>
@@ -562,8 +634,10 @@ function ScheduleTable() {
                     fontWeight: "bold",
                   }}
                 >
-                  {user?.vinculacion === "Planta" ||
-                  user?.vinculacion === "Tiempo completo"
+                  {dataSchedule === undefined
+                    ? "0"
+                    : user?.vinculacion === "Planta" ||
+                      user?.vinculacion === "Tiempo completo"
                     ? (dataSchedule?.length + 0.33).toLocaleString()
                     : (dataSchedule?.length + 0.666).toLocaleString()}
                 </TableCell>
@@ -601,6 +675,7 @@ function ScheduleTable() {
                 Regresar
               </Button>
             </Grid>
+
             <Grid xs={6}>
               <Button
                 disabled={
@@ -645,33 +720,62 @@ function ScheduleTable() {
                 <ListItemText primary={`Eliminar actividad seleccionada`} />
               </ListItemButton>
             </ListItem>
-            {activities?.map((item, index) => {
-              const count = dataSchedule?.filter(
-                (element) =>
-                  element.name ===
-                  `${item.name}: ${item.description} ${item.group_name}`
-              ).length;
+            {selectedColumn.dia === "Sábado"
+              ? activities
+                  ?.filter((item) => item.consolidated === "Docencia") // Filtrar solo las actividades con "Docencia"
+                  .map((item, index) => {
+                    const count = dataSchedule?.filter(
+                      (element) =>
+                        element.name ===
+                        `${item.name}: ${item.description} ${item.group_name}`
+                    ).length;
 
-              if (count === parseInt(item.hours)) {
-                return null;
-              } else {
-                return (
-                  <ListItem disableGutters key={index}>
-                    <ListItemButton
-                      onClick={() => {
-                        handleCreateSchedule(item);
+                    if (count === parseInt(item.hours)) {
+                      return null;
+                    } else {
+                      return (
+                        <ListItem disableGutters key={index}>
+                          <ListItemButton
+                            onClick={() => {
+                              handleCreateSchedule(item);
+                              handleClose();
+                            }}
+                          >
+                            <ListItemText
+                              primary={`${item.name}: ${item.description} ${item.group_name} - ${item.hours} horas`}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    }
+                  })
+              : activities?.map((item, index) => {
+                  const count = dataSchedule?.filter(
+                    (element) =>
+                      element.name ===
+                      `${item.name}: ${item.description} ${item.group_name}`
+                  ).length;
 
-                        handleClose();
-                      }}
-                    >
-                      <ListItemText
-                        primary={`${item.name}: ${item.description} ${item.group_name} - ${item.hours} horas`}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                );
-              }
-            })}
+                  if (count === parseInt(item.hours)) {
+                    return null;
+                  } else {
+                    return (
+                      <ListItem disableGutters key={index}>
+                        <ListItemButton
+                          onClick={() => {
+                            handleCreateSchedule(item);
+
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText
+                            primary={`${item.name}: ${item.description} ${item.group_name} - ${item.hours} horas`}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  }
+                })}
           </List>
         </DialogContent>
         <DialogActions>

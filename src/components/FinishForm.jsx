@@ -25,6 +25,7 @@ function FinishForm() {
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
+  const [role, setRole] = React.useState("");
 
   const handleClick = () => {
     setOpen(true);
@@ -57,7 +58,7 @@ function FinishForm() {
       localStorage.removeItem("Schedule");
       localStorage.setItem("User", dataStr);
       setUser(data);
-      navigate("/admin");
+      navigate("/coordinator");
     }
   };
 
@@ -77,6 +78,17 @@ function FinishForm() {
       handleClick();
     }
   };
+
+  React.useEffect(() => {
+    const dataStr = localStorage.getItem("UserEdit");
+    const data = JSON.parse(dataStr);
+
+    if (data) {
+      setRole("coordinator");
+    } else {
+      setRole("teacher");
+    }
+  }, []);
   return (
     <>
       <div className="finish-box">
@@ -119,7 +131,9 @@ function FinishForm() {
                   handleLogout();
                 }}
               >
-                Cerrar sesión
+                {role === "coordinator"
+                  ? "Volver a portal coordinador"
+                  : "Cerrar sesión"}
               </Button>
             </Grid>
 

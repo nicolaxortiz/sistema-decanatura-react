@@ -13,6 +13,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import CircularProgress from "@mui/material/CircularProgress";
+import Autocomplete from "@mui/material/Autocomplete";
 import DialogTitle from "@mui/material/DialogTitle";
 import { ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
@@ -26,18 +27,23 @@ import EditIcon from "@mui/icons-material/Edit";
 import { UseContext } from "../context/UseContext.js";
 
 export default function AllCoordinators() {
+  const APIURL = process.env.REACT_APP_API_URL;
   const { user, configuration } = React.useContext(UseContext);
-  const [programData, setProgramData] = React.useState();
+  const [coordinatorData, setCoordinatorData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [openSnack, setOpenSnack] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
-  const [selectedProgram, setSelectedProgram] = React.useState();
+  const [selectedCoordinator, setSelectedCoordinator] = React.useState();
   const [formOption, setFormOption] = React.useState();
   const [totalPages, setTotalPages] = React.useState(0);
   const [actualPage, setActualPage] = React.useState(1);
-  const [totalPrograms, setTotalPrograms] = React.useState(0);
+  const [totalCoordinator, setTotalCoordinator] = React.useState(0);
+  const [programList, setProgramList] = React.useState();
+  const [selectedProgram, setSelectedProgram] = React.useState(null);
+  const [previewSignature, setPreviewSignature] = React.useState();
+  const [signature, setSignature] = React.useState();
 
   const handleClick = () => {
     setOpenSnack(true);
@@ -57,20 +63,23 @@ export default function AllCoordinators() {
 
   const handleClose = () => {
     setOpen(false);
-    setSelectedProgram();
+    setSelectedCoordinator();
+    setSelectedProgram(null);
+    setPreviewSignature();
+    setSignature();
   };
 
-  const handleProgram = async (form) => {
+  const handleCoordinator = async (form) => {
     setLoading(true);
 
     if (formOption === "post") {
       try {
-        const response = await APIprogram.postProgram(form);
+        const response = await APIcoordinator.postCoordinator(form);
 
         if (response.status === 200) {
           setLoading(false);
           handleClose();
-          setMessage("Programa creado correctamente");
+          setMessage("Coordinador creado correctamente");
           setCode("success");
           handleClick();
         }
@@ -82,15 +91,15 @@ export default function AllCoordinators() {
       }
     } else {
       try {
-        const response = await APIprogram.updateProgram(
-          selectedProgram?.program_id,
+        const response = await APIcoordinator.updateCoordinator(
+          selectedCoordinator?.coordinator_id,
           form
         );
 
         if (response.status === 200) {
           setLoading(false);
           handleClose();
-          setMessage("Programa actualizado correctamente");
+          setMessage("Coordinador actualizado correctamente");
           setCode("success");
           handleClick();
         }
@@ -100,6 +109,15 @@ export default function AllCoordinators() {
         setCode("error");
         handleClick();
       }
+    }
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+
+      setPreviewSignature(imageUrl);
     }
   };
 
@@ -113,17 +131,36 @@ export default function AllCoordinators() {
         configuration?.campus_id
       );
       if (response.status === 200) {
-        setProgramData(response.data.coordinators);
+        setCoordinatorData(response.data.coordinators);
         setTotalPages(Math.ceil(response.data.count / 8));
-        setTotalPrograms(response.data.count);
+        setTotalCoordinator(response.data.count);
       }
     } catch (error) {
-      setProgramData();
+      setCoordinatorData();
+    }
+  };
+
+  const fetchProgramsData = async () => {
+    try {
+      const response = await APIprogram.getAllByCampusId(
+        configuration?.campus_id
+      );
+      if (response.status === 200) {
+        const options = response.data.programs.map((program) => ({
+          label: program.program_name,
+          id: program.program_id,
+        }));
+
+        setProgramList(options);
+      }
+    } catch (error) {
+      setProgramList();
     }
   };
 
   React.useEffect(() => {
     fetchData();
+    fetchProgramsData();
   }, [user, loading, actualPage]);
   return (
     <>
@@ -134,7 +171,8 @@ export default function AllCoordinators() {
 
         <Grid xs={12} sx={{ marginLeft: 2 }}>
           <p>
-            Mostrando {programData?.length} programas de {totalPrograms}
+            Mostrando {coordinatorData?.length} coordinadores de{" "}
+            {totalCoordinator}
           </p>
         </Grid>
 
@@ -150,9 +188,9 @@ export default function AllCoordinators() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {programData?.map((item) => (
+              {coordinatorData?.map((item) => (
                 <TableRow
-                  key={item.program_id}
+                  key={item.coordinator_id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>
@@ -168,7 +206,13 @@ export default function AllCoordinators() {
                         size="small"
                         onClick={() => {
                           setFormOption("put");
-                          setSelectedProgram(item);
+                          setSelectedCoordinator(item);
+                          setSignature(
+                            `${APIURL}/api/images/${
+                              item.document
+                            }firma.jpg?v=${new Date().getTime()}`
+                          );
+
                           handleClickOpen();
                         }}
                       >
@@ -204,7 +248,7 @@ export default function AllCoordinators() {
                   handleClickOpen();
                 }}
               >
-                Agregar programa
+                Agregar coordinador
               </Button>
             </Grid>
           </Grid>
@@ -219,57 +263,153 @@ export default function AllCoordinators() {
           onSubmit: (event) => {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
+
             const formJson = Object.fromEntries(formData.entries());
-            handleProgram({
-              name: formJson.name,
-              campus_id: configuration?.campus_id,
+            // console.log({
+            //   document: formJson.document,
+            //   first_name: formJson.name,
+            //   last_name: formJson.last_name,
+            //   email: formJson.email,
+            //   program_id: formJson.program,
+            //   signature: formJson.signature,
+            // });
+
+            handleCoordinator({
+              document: formJson.document,
+              first_name: formJson.name,
+              last_name: formJson.last_name,
+              email: formJson.email,
+              program_id: formJson.program,
+              signature: formJson.signature,
             });
           },
         }}
       >
         <DialogTitle>
           {formOption === "post"
-            ? "Registro de programa nuevo"
-            : "Actualización de programa"}
+            ? "Registro de nuevo coordinador"
+            : "Actualización de coordinador"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Ingrese el nombre del programa (Recuerde que debe registrar un
-            coordinador posteriormente)
+            Ingrese los datos del coordinador (Recuerde asignar un programa)
           </DialogContentText>
           <ThemeProvider theme={theme}>
+            <br />
+            <br />
+            <img
+              src={previewSignature || signature}
+              alt={"Firma coordinador"}
+              className="signatureImg-form"
+            />
+            <br />
+            <br />
+            <br />
+
+            <Button
+              variant="contained"
+              component="label"
+              color="primary"
+              size="small"
+            >
+              <input
+                type="file"
+                accept="image/*"
+                name="signature"
+                onChange={handleImageChange}
+              />
+            </Button>
+
+            <br />
+            <br />
+
+            <TextField
+              required
+              margin="dense"
+              id="document"
+              name="document"
+              label="Documento"
+              type="number"
+              defaultValue={selectedCoordinator?.document}
+              fullWidth
+              variant="standard"
+            />
+            <br />
+
             <TextField
               required
               margin="dense"
               id="name"
               name="name"
-              label="Nombre del programa"
+              label="Nombre"
               type="text"
-              defaultValue={selectedProgram?.program_name}
+              defaultValue={selectedCoordinator?.first_name}
               fullWidth
               variant="standard"
             />
             <br />
+
+            <TextField
+              required
+              margin="dense"
+              id="last_name"
+              name="last_name"
+              label="Apellido"
+              type="text"
+              defaultValue={selectedCoordinator?.last_name}
+              fullWidth
+              variant="standard"
+            />
             <br />
 
-            {formOption === "put" && (
-              <TextField
-                required
-                margin="dense"
-                id="name"
-                name="name"
-                label="Coordinador asignado"
-                type="text"
-                value={
-                  selectedProgram?.coordinator_first_name != null
-                    ? `${selectedProgram?.coordinator_first_name} ${selectedProgram?.coordinator_last_name}`
-                    : "Sin asignar"
-                }
-                fullWidth
-                variant="standard"
-                disabled
-              />
-            )}
+            <TextField
+              required
+              margin="dense"
+              id="email"
+              name="email"
+              label="Correo electrónico"
+              type="email"
+              defaultValue={selectedCoordinator?.email}
+              fullWidth
+              variant="standard"
+            />
+            <br />
+
+            <input
+              name="program"
+              type="hidden"
+              value={
+                selectedProgram?.id || selectedCoordinator?.program_id || ""
+              }
+            />
+
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={programList}
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              value={
+                programList?.find(
+                  (program) => program.id === selectedCoordinator?.program_id
+                ) || selectedProgram
+              }
+              onChange={(event, newValue) => setSelectedProgram(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  required
+                  margin="dense"
+                  id="program_display"
+                  name="program_display"
+                  label="Programa"
+                  fullWidth
+                  variant="standard"
+                />
+              )}
+            />
+
+            <br />
           </ThemeProvider>
         </DialogContent>
         <DialogActions>

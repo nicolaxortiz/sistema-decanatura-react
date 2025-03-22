@@ -16,3 +16,27 @@ export async function getByCampusId(campus_id) {
 
   return response;
 }
+
+export async function postCoordinator(coordinator) {
+  const response = await axios.post(apiUrl + "/api/coordinador", coordinator, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response;
+}
+
+export async function updateCoordinator(id, coordinator) {
+  const response = await axios.put(
+    apiUrl + "/api/coordinador/" + id,
+    coordinator,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response;
+}

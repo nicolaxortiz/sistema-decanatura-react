@@ -321,7 +321,7 @@ export const Actividades = [
     convention: "Extensión",
     product: "Informe final del seguimiento e impacto a graduados",
     description: "Participar en el seguimiento en impacto de graduados",
-    consolidated: "Extension1",
+    consolidated: "Extensión1",
   },
   {
     name: "Extensión: Práctica Social",
@@ -329,7 +329,7 @@ export const Actividades = [
     convention: "Extensión",
     product: "Informe parcial o final de practicas sociales",
     description: "Acompañar y asesorar las practicas sociales",
-    consolidated: "Extension2",
+    consolidated: "Extensión2",
   },
   {
     name: "Extensión: Educación Continua",
@@ -337,7 +337,7 @@ export const Actividades = [
     convention: "Extensión",
     product: "Informe final de propuestas y desarrollo de educación continua",
     description: "Apoyar procesos de formación en educación continua",
-    consolidated: "Extension3",
+    consolidated: "Extensión3",
   },
   {
     name: "Extensión: Emprendimiento",
@@ -345,7 +345,7 @@ export const Actividades = [
     convention: "Extensión",
     product: "Informe final de proyectos de emprendimiento",
     description: "Realizar actividades o proyectos de apoyo al emprendimiento",
-    consolidated: "Extension4",
+    consolidated: "Extensión4",
   },
   {
     name: "Investigación: Trabajos de Grado",
@@ -1681,4 +1681,14 @@ export const Grupos = [
   "TGE-V044",
   "TMG-V061",
   "TMG-V065",
+];
+
+export const Misionales = [
+  "Docencia",
+  "Investigación",
+  "Extensión",
+  "OACA",
+  "ODA",
+  "Comités",
+  "Otras",
 ];

@@ -17,3 +17,11 @@ export async function getReporte(program_id, semester) {
 
   return response;
 }
+
+export async function getReporteByMission(program_id, semester, mission) {
+  const response = await axios.get(
+    `${apiUrl}/api/documento/pdfMission/${program_id}/${semester}/${mission}`
+  );
+
+  return response;
+}

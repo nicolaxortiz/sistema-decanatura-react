@@ -6,12 +6,15 @@ import Button from "@mui/material/Button";
 import logoUTS from "../resources/UTSescudo.jpg";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 import * as APIDocument from "../API/DocumentCall.js";
 import { UseContext } from "../context/UseContext.js";
+import { Misionales } from "../resources/campos.js";
 
 export default function CoordinatorHome() {
   const { user, configuration } = React.useContext(UseContext);
-  const [documento, setDocumento] = React.useState("");
+  const [mission, setMission] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
@@ -28,27 +31,60 @@ export default function CoordinatorHome() {
     setOpen(false);
   };
 
-  const handlePDF = async () => {
+  const handleFinalPDF = async () => {
     try {
-      const response = await APIDocument.getReporte(
+      let response = await APIDocument.getReporte(
         user?.program_id,
         configuration?.semester
       );
+
+      console.log(response);
 
       if (response.status === 200) {
         window.open(response.config.url, "_blank");
       }
     } catch (error) {
+      console.log(error);
+
+      if (error.response.status === 404) {
+        setMessage("No hay actividades para generar el PDF");
+        setCode("warning");
+        handleClick();
+      }
       setMessage("Error al generar el PDF, inténtelo nuevamente");
       setCode("error");
       handleClick();
     }
   };
 
+  const handleMissionPDF = async () => {
+    try {
+      const response = await APIDocument.getReporteByMission(
+        user?.program_id,
+        configuration?.semester,
+        mission
+      );
+
+      if (response?.status === 200) {
+        window.open(response.config.url, "_blank");
+      }
+    } catch (error) {
+      if (error?.response.status === 404) {
+        setMessage("No hay actividades para generar el PDF");
+        setCode("warning");
+        handleClick();
+      } else {
+        setMessage("Error al generar el PDF, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
+    }
+  };
+
   return (
     <>
       <div className="finish-box">
-        <Grid container rowSpacing={2} columnSpacing={1}>
+        <Grid container rowSpacing={2} columnSpacing={2}>
           <Grid xs={12}>
             <div className="title-finish">
               Distribución de la actividad docente
@@ -81,16 +117,45 @@ export default function CoordinatorHome() {
           </Grid>
 
           <ThemeProvider theme={theme}>
+            <Grid xs={6} style={{ marginBottom: 5 }}>
+              <Autocomplete
+                disablePortal
+                options={Misionales}
+                value={mission}
+                onChange={(event, newValue) => {
+                  setMission(newValue);
+                }}
+                size="small"
+                fullWidth
+                renderInput={(params) => (
+                  <TextField {...params} label="Misional" />
+                )}
+              />
+            </Grid>
+
+            <Grid xs={6} style={{ marginBottom: 5 }}>
+              <Button
+                variant="contained"
+                color="search"
+                fullWidth
+                onClick={() => {
+                  handleMissionPDF();
+                }}
+              >
+                Generar acumulado PDF por misional
+              </Button>
+            </Grid>
+
             <Grid xs={12} style={{ marginBottom: 10 }}>
               <Button
                 variant="contained"
                 color="pdf"
                 fullWidth
                 onClick={() => {
-                  handlePDF();
+                  handleFinalPDF();
                 }}
               >
-                Generar formato PDF acumulado
+                Generar formato PDF acumulado para decanatura
               </Button>
             </Grid>
           </ThemeProvider>

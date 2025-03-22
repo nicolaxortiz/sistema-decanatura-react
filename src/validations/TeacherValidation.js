@@ -5,7 +5,7 @@ export const TeacherValidation = (form, fieldName, errors) => {
   let regexEmail = /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/;
 
   if (fieldName === "photo" || fieldName === "all") {
-    if (!form.photo) {
+    if (form.photo === false) {
       errors.messages.photo = "El campo 'Foto' es requerido";
       errors.states.photo = true;
     } else {
@@ -15,7 +15,7 @@ export const TeacherValidation = (form, fieldName, errors) => {
   }
 
   if (fieldName === "signature" || fieldName === "all") {
-    if (!form.signature) {
+    if (form.signature === false) {
       errors.messages.signature = "El campo 'Firma' es requerido";
       errors.states.signature = true;
     } else {

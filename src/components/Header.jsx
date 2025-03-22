@@ -12,10 +12,13 @@ export default function Header() {
   const navigate = useNavigate();
   const { setUser, user, setActivities, setDataSchedule, setConfiguration } =
     React.useContext(UseContext);
+  const [role, setRole] = React.useState(null);
 
   React.useEffect(() => {
     const dataStr = localStorage.getItem("User");
     const data = JSON.parse(dataStr);
+
+    handleEditUser();
 
     if (!user) {
       if (!data) {
@@ -24,6 +27,15 @@ export default function Header() {
       }
     }
   }, [user]);
+
+  const handleEditUser = () => {
+    const dataStr = localStorage.getItem("UserEdit");
+    const data = JSON.parse(dataStr);
+
+    if (data) {
+      setRole("userEdit");
+    }
+  };
 
   const handleLogout = () => {
     const dataStr = localStorage.getItem("UserEdit");
@@ -38,12 +50,14 @@ export default function Header() {
       setActivities();
       setDataSchedule();
       setConfiguration();
+      setRole(null);
     } else {
       localStorage.removeItem("UserEdit");
       localStorage.removeItem("Activity");
       localStorage.removeItem("Schedule");
       localStorage.setItem("User", dataStr);
       setUser(data);
+      setRole(null);
       navigate("/coordinator");
     }
   };
@@ -103,10 +117,16 @@ export default function Header() {
                       handleLogout();
                     }}
                   >
-                    {user?.role === "changePassword" ||
-                    user?.role === "recovery"
-                      ? "Iniciar sesión"
-                      : "Cerrar sesión"}
+                    {(user?.role === "changePassword" ||
+                      user?.role === "recovery") &&
+                      "Iniciar sesión"}
+
+                    {user?.role === "campus" && "Cerrar sesión"}
+                    {user?.role === "coordinator" && "Cerrar sesión"}
+                    {user?.role === "teacher" &&
+                      role === null &&
+                      "Cerrar sesión"}
+                    {role === "userEdit" && "Volver a portal coordinador"}
                   </Button>
                 </ThemeProvider>
               ) : (

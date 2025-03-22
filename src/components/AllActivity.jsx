@@ -11,6 +11,8 @@ import Pagination from "@mui/material/Pagination";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../resources/theme.js";
 import Alert from "@mui/material/Alert";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
 import * as APIFormat from "../API/FormatCall.js";
 import * as APIDocument from "../API/DocumentCall.js";
@@ -32,6 +34,7 @@ function AllActivity() {
   const [totalPages, setTotalPages] = React.useState(0);
   const [actualPage, setActualPage] = React.useState(1);
   const [totalFormat, setTotalFormat] = React.useState();
+  const [searchName, setSearchName] = React.useState("");
   const { setUser, user, configuration } = React.useContext(UseContext);
 
   const handleClick = () => {
@@ -108,6 +111,7 @@ function AllActivity() {
       const response = await APIFormat.getByProgramIdAndSemester(
         user?.program_id,
         configuration?.semester,
+        searchName,
         actualPage
       );
 
@@ -134,13 +138,28 @@ function AllActivity() {
 
   React.useEffect(() => {
     fetchData();
-  }, [user]);
+  }, [user, searchName]);
 
   return (
     <>
       <div className="table-form">
         <Grid xs={12}>
           <div className="title-finish">Listado de actividades</div>
+        </Grid>
+
+        <Grid xs={12}>
+          <FormControl sx={{ m: 1, width: "50%" }} size="small">
+            <TextField
+              label="Nombre del docente"
+              size="small"
+              fullWidth
+              name="name"
+              value={searchName}
+              onChange={(event) => {
+                setSearchName(event.target.value);
+              }}
+            />
+          </FormControl>
         </Grid>
 
         <Grid xs={12} sx={{ marginLeft: 2 }}>
@@ -235,7 +254,7 @@ function AllActivity() {
                 count={totalPages}
                 color="pagination"
                 onChange={handleChangePage}
-                disabled={loading}
+                disabled={loading || !!searchName}
               />
             </Grid>
           </Grid>
