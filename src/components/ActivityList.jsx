@@ -170,8 +170,8 @@ export default function ActivityList() {
               vinculación de {user?.employment_type} debe ser igual a{" "}
               {user?.employment_type === "Planta" ||
               user?.employment_type === "Tiempo completo"
-                ? "53,33"
-                : "26,66"}
+                ? configuration?.tc_hours?.replace(".", ",")
+                : configuration?.mt_hours?.replace(".", ",")}
               .
             </Grid>
 
@@ -195,7 +195,7 @@ export default function ActivityList() {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={totalHoras !== 53.33}
+                  disabled={totalHoras !== configuration?.tc_hours}
                   onClick={() => handleSubmitButton()}
                 >
                   {loading ? (
@@ -208,7 +208,10 @@ export default function ActivityList() {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={totalHoras !== 26.66 || loading}
+                  disabled={
+                    totalHoras !== parseFloat(configuration?.mt_hours) ||
+                    loading
+                  }
                   onClick={() => handleSubmitButton()}
                 >
                   {loading ? (

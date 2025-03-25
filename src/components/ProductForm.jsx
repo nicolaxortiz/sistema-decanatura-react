@@ -6,7 +6,6 @@ import TextField from "@mui/material/TextField";
 import { ThemeProvider } from "@mui/material/styles";
 import { UseContext } from "../context/UseContext.js";
 import { theme } from "../resources/theme.js";
-import CircularProgress from "@mui/material/CircularProgress";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Button from "@mui/material/Button";
 import { ProductValidation } from "../validations/ProductValidation.js";

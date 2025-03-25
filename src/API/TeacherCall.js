@@ -30,10 +30,9 @@ export async function getTeacherByCredentials(email, password) {
   return response;
 }
 
-export async function getTeacherByEmailandDocument(email, document) {
+export async function getTeacherByEmail(email) {
   const response = await axios.post(apiUrl + "/api/docentes/recovery", {
     email,
-    document,
   });
 
   return response;

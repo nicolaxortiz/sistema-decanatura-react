@@ -10,3 +10,17 @@ export async function getByCredential(email, password) {
 
   return response;
 }
+
+export async function getCampusByEmail(email) {
+  const response = await axios.post(apiUrl + "/api/campus/recovery", {
+    email,
+  });
+
+  return response;
+}
+
+export async function updateCampus(id, campus) {
+  const response = await axios.put(apiUrl + "/api/campus/" + id, campus);
+
+  return response;
+}

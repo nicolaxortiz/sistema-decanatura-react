@@ -16,6 +16,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import CloseIcon from "@mui/icons-material/Close";
 import Collapse from "@mui/material/Collapse";
 import * as APIdocentes from "../API/TeacherCall.js";
+import * as APIcoordinador from "../API/CoordinatorCall.js";
+import * as APIcampus from "../API/CampusCall.js";
 
 function ChangeForm() {
   const navigate = useNavigate();
@@ -28,70 +30,122 @@ function ChangeForm() {
   const passwordInput = React.useRef(null);
   const confirmInput = React.useRef(null);
   const firstPasswordInput = React.useRef(null);
-  const documentInput = React.useRef(null);
+  const emailInput = React.useRef(null);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleSubmitLogin = async () => {
-    const document = documentInput.current.value;
+    const email = emailInput.current.value;
     const firstPassword = firstPasswordInput.current.value;
     const password = passwordInput.current.value;
     const confirm = confirmInput.current.value;
 
-    if (!!password && !!confirm && !!document && !!firstPassword) {
+    if (!!password && !!confirm && !!email && !!firstPassword) {
       if (password === confirm) {
         try {
-          const response = await APIdocentes.getTeacherByCredentials(
-            document,
+          const responseTeacher = await APIdocentes.getTeacherByCredentials(
+            email,
             firstPassword
           );
 
-          if (response.status === 200) {
+          if (responseTeacher.status === 200) {
             try {
               const changeResponse = await APIdocentes.updateTeacher(
-                response.data.teacher._id,
-                { contrasena: password }
+                responseTeacher.data.teacher.id,
+                { password: password }
               );
 
               if (changeResponse.status === 200) {
                 setSeverity("success");
                 setMessage("Contraseña actualizada correctamente");
-                setTimeout(() => {
-                  setLoading(false);
-
-                  setOpenCollapse(true);
-                }, 3000);
+                setLoading(false);
+                setOpenCollapse(true);
               }
             } catch (error) {
               setLoading(false);
               setSeverity("error");
-              setMessage("Error: intentelo mas tarde");
+              setMessage("Error: inténtelo mas tarde");
               setOpenCollapse(true);
             }
-          } else if (response.status === 404) {
-            setSeverity("error");
-            setMessage("Los datos ingresados son incorrectos");
-            setTimeout(() => {
-              setLoading(false);
-              setOpenCollapse(true);
-            }, 3000);
           }
-        } catch (error) {
-          setLoading(false);
-          setSeverity("error");
-          setMessage("Error: intentelo mas tarde");
-          setOpenCollapse(true);
+        } catch (errorTeacher) {
+          if (errorTeacher.response.status === 404) {
+            try {
+              const responseCoordinator = await APIcoordinador.getByCredential(
+                email,
+                firstPassword
+              );
+
+              if (responseCoordinator.status === 200) {
+                try {
+                  const changeResponse = await APIcoordinador.updateCoordinator(
+                    responseCoordinator.data.coordinator.id,
+                    { password: password }
+                  );
+
+                  if (changeResponse.status === 200) {
+                    setSeverity("success");
+                    setMessage("Contraseña actualizada correctamente");
+                    setLoading(false);
+                    setOpenCollapse(true);
+                  }
+                } catch (error) {
+                  setLoading(false);
+                  setSeverity("error");
+                  setMessage("Error: inténtelo mas tarde");
+                  setOpenCollapse(true);
+                }
+              }
+            } catch (errorCoordinator) {
+              if (errorCoordinator.response.status === 404) {
+                try {
+                  const responseCampus = await APIcampus.getByCredential(
+                    email,
+                    firstPassword
+                  );
+
+                  if (responseCampus.status === 200) {
+                    try {
+                      const changeResponse = await APIcampus.updateCampus(
+                        responseCampus.data.campus.id,
+                        { password: password }
+                      );
+
+                      if (changeResponse.status === 200) {
+                        setSeverity("success");
+                        setMessage("Contraseña actualizada correctamente");
+                        setLoading(false);
+                        setOpenCollapse(true);
+                      }
+                    } catch (error) {
+                      setLoading(false);
+                      setSeverity("error");
+                      setMessage("Error: inténtelo mas tarde");
+                      setOpenCollapse(true);
+                    }
+                  }
+                } catch (errorCoordinator) {
+                  if (errorCoordinator.response.status === 404) {
+                    setLoading(false);
+                    setSeverity("error");
+                    setMessage("Los datos ingresados son incorrectos");
+                    setOpenCollapse(true);
+                  }
+                }
+              }
+            }
+          }
         }
       } else {
         setLoading(false);
         setSeverity("error");
-        setMessage("La confirmacion de la nueva contraseña no coincide");
+        setMessage("La confirmación de la nueva contraseña no coincide");
         setOpenCollapse(true);
       }
     } else {
       setLoading(false);
       setSeverity("error");
-      setMessage("No se admiten campos vacios");
+      setMessage("No se admiten campos vacíos");
       setOpenCollapse(true);
     }
   };
@@ -106,15 +160,16 @@ function ChangeForm() {
           <Grid xs={12}>
             <div style={{ fontWeight: 500 }}>
               Estimado usuario, si continua presentando problemas con su
-              contraseña acerquese a su corresponsiente facultad para realizar
-              la solicitud de revision de su cuenta, ademas tenga en cuenta las
-              siguientes observaciones para un correcto uso de sus datos:
+              contraseña acérquese a su correspondiente coordinación para
+              realizar la solicitud de revision de su cuenta, ademas tenga en
+              cuenta las siguientes observaciones para un correcto uso de sus
+              datos:
             </div>
           </Grid>
           <Grid xs={12}>
             <div>
               - Para el ingreso debe haber sido registrado en la base de datos
-              de docentes de la facultad.
+              de docentes.
             </div>
           </Grid>
 
@@ -122,7 +177,7 @@ function ChangeForm() {
             <div>
               - Recuerde que su contraseña debe cumplir con los siguientes
               requisitos: debe contener un numero, al menos una letra en
-              mayuscula y debe tener al menos 8 caracteres.
+              mayúscula y debe tener al menos 8 caracteres.
             </div>
           </Grid>
           <Grid xs={12}>
@@ -136,7 +191,7 @@ function ChangeForm() {
       <div className="login-box">
         <Grid container>
           <Grid xs={12}>
-            <div className="title-login">Crear nueva contraseña</div>
+            <div className="title-login">Nueva contraseña</div>
           </Grid>
         </Grid>
         <Grid container rowSpacing={3}>
@@ -165,11 +220,11 @@ function ChangeForm() {
 
             <Grid xs={12}>
               <TextField
-                label="Documento"
+                label="Correo electrónico"
                 size="small"
                 fullWidth
-                type="number"
-                inputRef={documentInput}
+                type="email"
+                inputRef={emailInput}
               />
             </Grid>
 

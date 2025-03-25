@@ -8,6 +8,7 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
 
   const handleChange = async (e) => {
     const { name, value, type } = e.target;
+
     if (type === "file") {
       setForm({
         ...form,
@@ -49,12 +50,17 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
 
   const handleBlur = (e) => {
     const { name } = e.target;
+
     handleChange(e);
     setErrors(validateForm(form, name, errors));
   };
 
   const handleSubmit = async (e) => {
+    console.log(type);
+
     e.preventDefault();
+
+    console.log(form);
 
     handleChange(e);
 
@@ -78,6 +84,9 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
           setResponse(responseRequest);
           setLoading(false);
         } else if (type === "post") {
+          console.log(executeOnSubmit);
+          console.log(formToSend);
+
           const responseRequest = await executeOnSubmit(formToSend);
           setResponse(responseRequest);
           setLoading(false);

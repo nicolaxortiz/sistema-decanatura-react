@@ -108,10 +108,7 @@ export default function AllPrograms() {
 
   const fetchData = async () => {
     try {
-      const response = await APIprogram.getByCampusId(
-        configuration?.campus_id,
-        actualPage
-      );
+      const response = await APIprogram.getByCampusId(user?.id, actualPage);
       if (response.status === 200) {
         setProgramData(response.data.programs);
         setTotalPages(Math.ceil(response.data.count / 8));

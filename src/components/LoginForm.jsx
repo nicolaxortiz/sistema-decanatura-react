@@ -48,7 +48,7 @@ export const LoginForm = () => {
           handleSetUser(response.data.teacher);
         }
       } catch (errorTeacher) {
-        if (errorTeacher.response.status === 404) {
+        if (errorTeacher?.response?.status === 404) {
           try {
             const responseCoordinator = await APIcoordinador.getByCredential(
               email,
@@ -59,7 +59,7 @@ export const LoginForm = () => {
               handleSetUser(responseCoordinator.data.coordinator);
             }
           } catch (errorCoordinator) {
-            if (errorCoordinator.response.status === 404) {
+            if (errorCoordinator?.response?.status === 404) {
               try {
                 const responseCampus = await APIcampus.getByCredential(
                   email,
@@ -70,7 +70,7 @@ export const LoginForm = () => {
                   handleSetUser(responseCampus.data.campus);
                 }
               } catch (errorCampus) {
-                if (errorCampus.response.status === 404) {
+                if (errorCampus?.response?.status === 404) {
                   setMessage("Los datos ingresados son incorrectos");
                   setLoading(false);
                   setOpen(true);
@@ -78,14 +78,16 @@ export const LoginForm = () => {
               }
             }
           }
-        } else if (errorTeacher.response.status === 401) {
+        } else if (errorTeacher?.response?.status === 401) {
           setMessage("Docente inactivo, comuníquese con su coordinación");
-
           setLoading(false);
           setOpen(true);
-        } else if (errorTeacher.response.status === 500) {
+        } else if (errorTeacher?.response?.status === 500) {
           setMessage("Error: inténtelo mas tarde");
-
+          setLoading(false);
+          setOpen(true);
+        } else {
+          setMessage("Error de servidor: inténtelo mas tarde");
           setLoading(false);
           setOpen(true);
         }
@@ -97,46 +99,82 @@ export const LoginForm = () => {
     }
   };
 
-  const handleSetUser = (user) => {
-    const stringUser = JSON.stringify(user);
-    localStorage.setItem("User", stringUser);
-    setUser(user);
+  const handleSetUser = (userData) => {
+    setUser(userData);
 
-    if (user.role && user.role === "campus") {
-      handleConfigurationByCampusId(user.id);
-    } else if (user.role && user.role === "coordinator") {
-      handleConfigurationByProgramId(user.program_id, "coordinator");
+    if (userData.role && userData.role === "campus") {
+      handleConfigurationByCampusId(userData);
+    } else if (userData.role && userData.role === "coordinator") {
+      handleConfigurationByProgramId(userData, "coordinator");
     } else {
-      handleConfigurationByProgramId(user.program_id, "teacher");
+      handleConfigurationByProgramId(userData, "teacher");
     }
   };
 
-  const handleConfigurationByCampusId = async (campus_id) => {
-    const response = await APIConfiguracion.getByIdCampus(campus_id);
+  const handleConfigurationByCampusId = async (campus) => {
+    try {
+      const response = await APIConfiguracion.getByIdCampus(campus.id);
 
-    if (response.status === 200) {
-      const actualConfiguration = response.data.configurations;
-      const StringConfiguration = JSON.stringify(actualConfiguration);
-      localStorage.setItem("Configuration", StringConfiguration);
-      setConfiguration(actualConfiguration);
-      setLoading(false);
-      navigate("/admin");
+      if (response.status === 200) {
+        const stringUser = JSON.stringify(campus);
+        localStorage.setItem("User", stringUser);
+
+        const actualConfiguration = response.data.configurations;
+        const StringConfiguration = JSON.stringify(actualConfiguration);
+        localStorage.setItem("Configuration", StringConfiguration);
+        setConfiguration(actualConfiguration);
+
+        setLoading(false);
+        navigate("/admin");
+      }
+    } catch (error) {
+      if (error.response.status === 404) {
+        const stringUser = JSON.stringify(campus);
+        localStorage.setItem("User", stringUser);
+
+        setLoading(false);
+        navigate("/admin");
+      }
     }
   };
 
-  const handleConfigurationByProgramId = async (program_id, role) => {
-    const response = await APIConfiguracion.getByIdProgram(program_id);
+  const handleConfigurationByProgramId = async (data, role) => {
+    try {
+      const response = await APIConfiguracion.getByIdProgram(data.program_id);
 
-    if (response.status === 200) {
-      const actualConfiguration = response.data.configurations;
-      const StringConfiguration = JSON.stringify(actualConfiguration);
-      localStorage.setItem("Configuration", StringConfiguration);
-      setConfiguration(actualConfiguration);
-      setLoading(false);
-      if (role === "coordinator") {
-        navigate("/coordinator");
-      } else {
-        navigate("/home");
+      if (response.status === 200) {
+        const actualConfiguration = response.data.configurations;
+        const StringConfiguration = JSON.stringify(actualConfiguration);
+        localStorage.setItem("Configuration", StringConfiguration);
+        setConfiguration(actualConfiguration);
+
+        setLoading(false);
+        if (role === "coordinator") {
+          const stringUser = JSON.stringify(data);
+          localStorage.setItem("User", stringUser);
+
+          navigate("/coordinator");
+        } else {
+          const now = new Date();
+          const startDate = new Date(actualConfiguration.start_date);
+          const endDate = new Date(actualConfiguration.end_date);
+
+          if (now >= startDate && now <= endDate) {
+            const stringUser = JSON.stringify(data);
+            localStorage.setItem("User", stringUser);
+            navigate("/home");
+          } else {
+            setMessage("No se encuentra en fecha de registro");
+            setLoading(false);
+            setOpen(true);
+          }
+        }
+      }
+    } catch (error) {
+      if (error.response.status === 404) {
+        setMessage("No se encuentran activas fechas de semestre");
+        setLoading(false);
+        setOpen(true);
       }
     }
   };

@@ -13,6 +13,8 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Collapse from "@mui/material/Collapse";
 import * as APIdocentes from "../API/TeacherCall.js";
+import * as APIcoordinador from "../API/CoordinatorCall.js";
+import * as APIcampus from "../API/CampusCall.js";
 
 function RecoveryForm() {
   const navigate = useNavigate();
@@ -25,81 +27,104 @@ function RecoveryForm() {
   const emailInput = React.useRef(null);
 
   const handleSubmitLogin = async () => {
-    const document = documentInput.current.value;
     const email = emailInput.current.value;
     setLoading(true);
 
-    if (!!document && !!email) {
+    if (!!email) {
       try {
-        const response = await APIdocentes.getTeacherByEmailandDocument(
-          email,
-          document
-        );
+        const responseTeacher = await APIdocentes.getTeacherByEmail(email);
 
-        if (response.status === 200) {
+        if (responseTeacher.status === 200) {
           setMessage(
-            "Tu contraseña nueva ha sido enviada a tu correo electronico"
+            "La nueva contraseña ha sido enviada al correo electrónico"
           );
           setSeverity("success");
-          setTimeout(() => {
-            setOpen(true);
-            setLoading(false);
-          }, 3000);
+          setLoading(false);
+          setOpen(true);
         }
-      } catch (error) {
-        if (error.response.status === 404) {
-          setMessage("Los datos ingresados son incorrectos");
-          setSeverity("error");
-          setTimeout(() => {
-            setLoading(false);
-            setOpen(true);
-          }, 3000);
+      } catch (errorTeacher) {
+        if (errorTeacher.response.status === 404) {
+          try {
+            const responseCoordinator =
+              await APIcoordinador.getCoordinatorByEmail(email);
+            if (responseCoordinator.status === 200) {
+              setMessage(
+                "La nueva contraseña ha sido enviada al correo electrónico"
+              );
+              setSeverity("success");
+              setLoading(false);
+              setOpen(true);
+            }
+          } catch (errorCoordinator) {
+            if (errorCoordinator.response.status === 404) {
+              try {
+                const responseCampus = await APIcampus.getCampusByEmail(email);
+
+                if (responseCampus.status === 200) {
+                  setMessage(
+                    "La nueva contraseña ha sido enviada al correo electrónico"
+                  );
+                  setSeverity("success");
+                  setLoading(false);
+                  setOpen(true);
+                }
+              } catch (error) {
+                setMessage("El correo ingresado es incorrecto");
+                setSeverity("error");
+                setLoading(false);
+                setOpen(true);
+              }
+            }
+          }
         } else {
-          setMessage("Error: intentelo mas tarde");
+          setMessage("Error: inténtelo mas tarde");
           setSeverity("error");
           setLoading(false);
           setOpen(true);
         }
       }
     } else {
-      setMessage("No se admiten campos vacios");
+      setMessage("No se admiten campos vacíos");
       setSeverity("error");
       setLoading(false);
       setOpen(true);
-      console.log("holaaa");
     }
   };
 
   return (
     <>
       <div className="infor-box">
-        <Grid container rowSpacing={2}>
+        <Grid container rowSpacing={3}>
           <Grid xs={12}>
             <div className="title-info">Información importante</div>
           </Grid>
           <Grid xs={12}>
             <div style={{ fontWeight: 500 }}>
               Estimado usuario, si continua presentando problemas con su
-              contraseña acerquese a su corresponsiente facultad para realizar
-              la solicitud de revision de su cuenta, ademas tenga en cuenta las
-              siguientes observaciones para un correcto uso de sus datos:
+              contraseña acérquese a su correspondiente coordinación para
+              realizar la solicitud de revision de su cuenta, ademas tenga en
+              cuenta las siguientes observaciones para un correcto uso de sus
+              datos:
             </div>
           </Grid>
           <Grid xs={12}>
             <div>
               - Para el ingreso debe haber sido registrado en la base de datos
-              de docentes de la facultad.
+              de docentes.
             </div>
           </Grid>
 
           <Grid xs={12}>
             <div>
-              - Para el cambio de contraseña debe revisar su correo electronico,
-              en donde se le sera generada una contraseña temporal.
+              - Para el cambio de contraseña debe revisar su correo electrónico,
+              en donde hallara su contraseña temporal.
             </div>
           </Grid>
           <Grid xs={12}>
-            <div>- Se recomienda no dejar activa la contraseña temporal.</div>
+            <div>
+              - Se recomienda no dejar activa la contraseña temporal, cámbiela
+              lo mas pronto posible
+            </div>
           </Grid>
         </Grid>
       </div>
@@ -107,7 +132,7 @@ function RecoveryForm() {
       <div className="login-box">
         <Grid container>
           <Grid xs={12}>
-            <div className="title-login">Verifique su identidad</div>
+            <div className="title-login">Recuperación de contraseña</div>
           </Grid>
         </Grid>
         <Grid container rowSpacing={3}>
@@ -136,17 +161,7 @@ function RecoveryForm() {
 
             <Grid xs={12}>
               <TextField
-                label="Documento"
-                size="small"
-                fullWidth
-                type="number"
-                inputRef={documentInput}
-              />
-            </Grid>
-
-            <Grid xs={12}>
-              <TextField
-                label="Correo electronico"
+                label="Correo electrónico"
                 size="small"
                 fullWidth
                 type="email"

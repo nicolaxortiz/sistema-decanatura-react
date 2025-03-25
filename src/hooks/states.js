@@ -6,7 +6,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 function States() {
   const [user, setUser] = React.useState();
-  const [configuration, setConfiguration] = React.useState();
+  const [configuration, setConfiguration] = React.useState({});
   const [tab, setTab] = React.useState(1);
   const [progItems, setProgItems] = React.useState([
     {

@@ -9,6 +9,7 @@ import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import BuildIcon from "@mui/icons-material/Build";
 import AllPrograms from "../components/AllPrograms.jsx";
 import AllCoordinators from "../components/AllCoordinators.jsx";
+import CampusConfiguration from "../components/CampusConfiguration.jsx";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ export default function Admin() {
       <Options list={optionList} />
       {option === 1 && <AllPrograms />}
       {option === 2 && <AllCoordinators />}
+      {option === 3 && <CampusConfiguration />}
       <Footer />
     </>
   );

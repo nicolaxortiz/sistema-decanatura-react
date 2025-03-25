@@ -84,10 +84,19 @@ export default function AllCoordinators() {
           handleClick();
         }
       } catch (error) {
-        setLoading(false);
-        setMessage("Error al guardar, inténtelo nuevamente");
-        setCode("error");
-        handleClick();
+        if (error.response.status === 409) {
+          setLoading(false);
+          setMessage(
+            "Ya existe un coordinador con ese documento, email o programa"
+          );
+          setCode("error");
+          handleClick();
+        } else {
+          setLoading(false);
+          setMessage("Error al guardar, inténtelo nuevamente");
+          setCode("error");
+          handleClick();
+        }
       }
     } else {
       try {
@@ -104,10 +113,19 @@ export default function AllCoordinators() {
           handleClick();
         }
       } catch (error) {
-        setLoading(false);
-        setMessage("Error al actualizar, inténtelo nuevamente");
-        setCode("error");
-        handleClick();
+        if (error.response.status === 409) {
+          setLoading(false);
+          setMessage(
+            "Ya existe un coordinador con ese documento, email o programa"
+          );
+          setCode("error");
+          handleClick();
+        } else {
+          setLoading(false);
+          setMessage("Error al actualizar, inténtelo nuevamente");
+          setCode("error");
+          handleClick();
+        }
       }
     }
   };
@@ -127,9 +145,7 @@ export default function AllCoordinators() {
 
   const fetchData = async () => {
     try {
-      const response = await APIcoordinator.getByCampusId(
-        configuration?.campus_id
-      );
+      const response = await APIcoordinator.getByCampusId(user?.id);
       if (response.status === 200) {
         setCoordinatorData(response.data.coordinators);
         setTotalPages(Math.ceil(response.data.count / 8));
@@ -207,7 +223,7 @@ export default function AllCoordinators() {
                         onClick={() => {
                           setFormOption("put");
                           setSelectedCoordinator(item);
-                          setSignature(
+                          setPreviewSignature(
                             `${APIURL}/api/images/${
                               item.document
                             }firma.jpg?v=${new Date().getTime()}`
@@ -265,14 +281,6 @@ export default function AllCoordinators() {
             const formData = new FormData(event.currentTarget);
 
             const formJson = Object.fromEntries(formData.entries());
-            // console.log({
-            //   document: formJson.document,
-            //   first_name: formJson.name,
-            //   last_name: formJson.last_name,
-            //   email: formJson.email,
-            //   program_id: formJson.program,
-            //   signature: formJson.signature,
-            // });
 
             handleCoordinator({
               document: formJson.document,
@@ -295,33 +303,35 @@ export default function AllCoordinators() {
             Ingrese los datos del coordinador (Recuerde asignar un programa)
           </DialogContentText>
           <ThemeProvider theme={theme}>
-            <br />
-            <br />
-            <img
-              src={previewSignature || signature}
-              alt={"Firma coordinador"}
-              className="signatureImg-form"
-            />
-            <br />
-            <br />
-            <br />
+            <Grid container rowSpacing={1} columnSpacing={1}>
+              <Grid xs={12}>
+                <p>Firma del coordinador</p>
+              </Grid>
 
-            <Button
-              variant="contained"
-              component="label"
-              color="primary"
-              size="small"
-            >
-              <input
-                type="file"
-                accept="image/*"
-                name="signature"
-                onChange={handleImageChange}
-              />
-            </Button>
+              <Grid xs={12} marginBottom={2}>
+                <img
+                  src={previewSignature}
+                  alt={"Firma coordinador"}
+                  className="signatureImg-form"
+                />
+              </Grid>
 
-            <br />
-            <br />
+              <Grid xs={12}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  color="primary"
+                  size="small"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    name="signature"
+                    onChange={handleImageChange}
+                  />
+                </Button>
+              </Grid>
+            </Grid>
 
             <TextField
               required

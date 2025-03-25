@@ -11,6 +11,14 @@ export async function getByCredential(email, password) {
   return response;
 }
 
+export async function getCoordinatorByEmail(email) {
+  const response = await axios.post(apiUrl + "/api/coordinador/recovery", {
+    email,
+  });
+
+  return response;
+}
+
 export async function getByCampusId(campus_id) {
   const response = await axios.get(`${apiUrl}/api/coordinador/${campus_id}`);
 

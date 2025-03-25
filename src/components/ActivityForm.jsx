@@ -41,6 +41,8 @@ export default function ActivityForm() {
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
 
+  const [responsibles, setResponsibles] = React.useState({});
+
   const handleClick = () => {
     setOpen(true);
   };
@@ -81,6 +83,10 @@ export default function ActivityForm() {
         convention: Actividades[misionalIndex]?.convention || "",
         product: { description: Actividades[misionalIndex]?.product || "" },
         consolidated: Actividades[misionalIndex]?.consolidated || "",
+        responsible:
+          responsibles[
+            Actividades[misionalIndex]?.convention.replace(/\s+/g, "")
+          ] || "",
       });
     } else {
       setDefaultDescription("");
@@ -91,6 +97,10 @@ export default function ActivityForm() {
         convention: Actividades[misionalIndex]?.convention || "",
         product: { description: Actividades[misionalIndex]?.product || "" },
         consolidated: Actividades[misionalIndex]?.consolidated || "",
+        responsible:
+          responsibles[
+            Actividades[misionalIndex]?.convention.replace(/\s+/g, "")
+          ] || "",
       });
     }
   }, [misionalIndex]);
@@ -155,6 +165,18 @@ export default function ActivityForm() {
       fetchData();
     }
   }, [user]);
+
+  React.useEffect(() => {
+    setResponsibles({
+      Docencia: configuration?.docencia,
+      Investigación: configuration?.investigacion,
+      Extensión: configuration?.extension,
+      ProcesosOACA: configuration?.oaca,
+      ProcesosODA: configuration?.oda,
+      Comités: configuration?.comites,
+      Otras: configuration?.otras,
+    });
+  }, [configuration]);
 
   return (
     <>

@@ -35,7 +35,8 @@ export default function CoordinatorHome() {
     try {
       let response = await APIDocument.getReporte(
         user?.program_id,
-        configuration?.semester
+        configuration?.semester,
+        configuration?.title
       );
 
       console.log(response);
@@ -62,7 +63,8 @@ export default function CoordinatorHome() {
       const response = await APIDocument.getReporteByMission(
         user?.program_id,
         configuration?.semester,
-        mission
+        mission,
+        configuration?.title
       );
 
       if (response?.status === 200) {

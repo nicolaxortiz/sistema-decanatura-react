@@ -16,7 +16,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import DialogTitle from "@mui/material/DialogTitle";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import * as APIformat from "../API/FormatCall.js";
@@ -639,7 +638,7 @@ function ScheduleTable() {
                     : user?.vinculacion === "Planta" ||
                       user?.vinculacion === "Tiempo completo"
                     ? (dataSchedule?.length + 0.33).toLocaleString()
-                    : (dataSchedule?.length + 0.666).toLocaleString()}
+                    : (dataSchedule?.length + 0.66).toLocaleString()}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -681,8 +680,10 @@ function ScheduleTable() {
                 disabled={
                   (user?.employment_type === "Planta" ||
                   user?.employment_type === "Tiempo completo"
-                    ? dataSchedule?.length + 0.33 !== 53.33
-                    : dataSchedule?.length + 0.666 !== 26.666) || loading
+                    ? dataSchedule?.length + 0.33 !==
+                      parseFloat(configuration?.tc_hours)
+                    : dataSchedule?.length + 0.66 !==
+                      parseFloat(configuration?.mt_hours)) || loading
                 }
                 variant="contained"
                 fullWidth
