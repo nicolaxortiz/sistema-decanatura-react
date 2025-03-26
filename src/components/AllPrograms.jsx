@@ -116,6 +116,17 @@ export default function AllPrograms() {
       }
     } catch (error) {
       setProgramData();
+      if (error.response?.status === 404) {
+        handleClose();
+        setMessage("No se encontraron programas");
+        setCode("error");
+        handleClick();
+      } else {
+        handleClose();
+        setMessage("Error al traer los datos, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
@@ -131,7 +142,7 @@ export default function AllPrograms() {
 
         <Grid xs={12} sx={{ marginLeft: 2 }}>
           <p>
-            Mostrando {programData?.length} programas de {totalPrograms}
+            Mostrando {programData?.length || 0} programas de {totalPrograms}
           </p>
         </Grid>
 
@@ -219,7 +230,7 @@ export default function AllPrograms() {
             const formJson = Object.fromEntries(formData.entries());
             handleProgram({
               name: formJson.name,
-              campus_id: configuration?.campus_id,
+              campus_id: user?.id,
             });
           },
         }}

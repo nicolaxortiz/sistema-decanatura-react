@@ -6,53 +6,6 @@ export const Facultades = [
   "DPTO. DE IDIOMAS ",
 ];
 
-export const UnidadAcademica = [
-  "Administración de Empresas",
-  "Administración de Empresas - Virtual",
-  "Administración Financiera",
-  "Contaduría Pública",
-  "Contaduría Pública - Virtual",
-  "Ingeniería Ambiental",
-  "Ingeniería de Sistemas",
-  "Ingeniería de Telecomunicaciones",
-  "Ingeniería Eléctrica",
-  "Ingeniería Electromecánica",
-  "Ingeniería Electrónica",
-  "Ingeniería en Sistemas de Transporte",
-  "Ingeniería en Topografía",
-  "Ingeniería Industrial",
-  "Profesional en Cultura Física y Deporte",
-  "Profesional en Diseño de Modas",
-  "Profesional en Mercadeo",
-  "Profesional en Mercadeo - Virtual",
-  "Tecnología en Contabilidad Financiera - Virtual",
-  "Tecnología en Desarrollo de Sistemas informáticos",
-  "Tecnología en Entrenamiento Deportivo",
-  "Tecnología en Gestión Agroindustrial",
-  "Tecnología en Gestión Bancaria y Financiera",
-  "Tecnología en Gestión Comercial - Virtual",
-  "Tecnología en Gestión de la Moda",
-  "Tecnología en Gestión de Sistemas de Telecomunicaciones",
-  "Tecnología en Gestión Empresarial",
-  "Tecnología en Gestión Empresarial - Virtual",
-  "Tecnología en Implementación de Sistemas Electrónicos Industriales",
-  "Tecnología en Levantamientos Topográficos",
-  "Tecnología en Logística del Transporte",
-  "Tecnología en Manejo de la Información Contable",
-  "Tecnología en Manejo de Recursos Ambientales",
-  "Tecnología en Mercadeo y Gestión Comercial",
-  "Tecnología en Operación y Mantenimiento Electromecánico",
-  "Tecnología en Producción Industrial",
-];
-
-export const Sedes = [
-  "Barrancabermeja",
-  "Bucaramanga",
-  "Piedecuesta",
-  "Vélez",
-  "Virtual",
-];
-
 export const TipoDeContrato = [
   "Planta",
   "Tiempo completo",

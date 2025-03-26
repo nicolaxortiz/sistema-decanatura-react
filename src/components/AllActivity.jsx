@@ -122,6 +122,7 @@ function AllActivity() {
         setTotalFormat(response.data.count);
       }
     } catch (error) {
+      setFormatData();
       if (error.response?.status === 404) {
         handleClose();
         setMessage("No se encontraron actividades del semestre");
@@ -144,7 +145,7 @@ function AllActivity() {
     <>
       <div className="table-form">
         <Grid xs={12}>
-          <div className="title-finish">Listado de actividades</div>
+          <div className="title-finish">Listado de formatos</div>
         </Grid>
 
         <Grid xs={12}>
@@ -164,7 +165,7 @@ function AllActivity() {
 
         <Grid xs={12} sx={{ marginLeft: 2 }}>
           <p>
-            Mostrando {formatData?.length} actividades de {totalFormat}.
+            Mostrando {formatData?.length || 0} formatos de {totalFormat || 0}.
           </p>
         </Grid>
 

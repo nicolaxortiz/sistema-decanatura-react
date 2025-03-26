@@ -242,13 +242,19 @@ function ScheduleTable() {
 
         setDataSchedule(response.data.schedule);
 
-        const formatResponse = await APIformat.getByTeacherIdAndSemester(
-          user?.id,
-          configuration?.semester
-        );
+        try {
+          const formatResponse = await APIformat.getByTeacherIdAndSemester(
+            user?.id,
+            configuration?.semester
+          );
 
-        if (formatResponse.status === 200) {
-          setObservation(formatResponse.data.format.observation);
+          if (formatResponse.status === 200) {
+            setObservation(formatResponse.data.format.observation);
+          }
+        } catch (errorFormat) {
+          if (errorFormat.response.status === 404) {
+            setObservation();
+          }
         }
       }
     } catch (error) {

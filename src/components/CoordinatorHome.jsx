@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import * as APIDocument from "../API/DocumentCall.js";
 import { UseContext } from "../context/UseContext.js";
-import { Misionales } from "../resources/campos.js";
+import { Misionales } from "../resources/bucaramanga.js";
 
 export default function CoordinatorHome() {
   const { user, configuration } = React.useContext(UseContext);
@@ -39,22 +39,19 @@ export default function CoordinatorHome() {
         configuration?.title
       );
 
-      console.log(response);
-
       if (response.status === 200) {
         window.open(response.config.url, "_blank");
       }
     } catch (error) {
-      console.log(error);
-
-      if (error.response.status === 404) {
+      if (error?.response?.status === 404) {
         setMessage("No hay actividades para generar el PDF");
         setCode("warning");
         handleClick();
+      } else {
+        setMessage("Error al generar el PDF, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
       }
-      setMessage("Error al generar el PDF, inténtelo nuevamente");
-      setCode("error");
-      handleClick();
     }
   };
 

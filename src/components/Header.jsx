@@ -77,7 +77,22 @@ export default function Header() {
           >
             <Grid xs={6} sm={6} md={6} lg={6}>
               <ThemeProvider theme={theme}>
-                {user?.role === "coordinator" ? (
+                {user?.role === "campus" && (
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={() => {
+                      window.open(
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/carturotoloza_uts_edu_co/EcvgrZvgEx9IiSp3Wx21P-0BVdQhuVXe5hzbaEIB9OLkWQ?e=I4L1P3",
+                        "_blank"
+                      );
+                    }}
+                  >
+                    Manual campus
+                  </Button>
+                )}
+
+                {user?.role === "coordinator" && (
                   <Button
                     variant="outlined"
                     fullWidth
@@ -90,20 +105,23 @@ export default function Header() {
                   >
                     Manual administrador
                   </Button>
-                ) : (
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    onClick={() => {
-                      window.open(
-                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/carturotoloza_uts_edu_co/EQx5AiYntqtKjtGdWVzp_OYBpPIp1vrdDm_fwiLyv7ypCw?e=snqIFl",
-                        "_blank"
-                      );
-                    }}
-                  >
-                    Manual docente
-                  </Button>
                 )}
+
+                {user?.role === "teacher" ||
+                  (!user?.role && (
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => {
+                        window.open(
+                          "https://unidadestecno-my.sharepoint.com/:b:/g/personal/carturotoloza_uts_edu_co/EQx5AiYntqtKjtGdWVzp_OYBpPIp1vrdDm_fwiLyv7ypCw?e=snqIFl",
+                          "_blank"
+                        );
+                      }}
+                    >
+                      Manual docente
+                    </Button>
+                  ))}
               </ThemeProvider>
             </Grid>
 

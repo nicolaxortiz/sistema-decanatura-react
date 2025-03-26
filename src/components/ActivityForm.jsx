@@ -10,12 +10,17 @@ import { useForm } from "../hooks/UseForms.js";
 import { ActivityValidation } from "../validations/ActivityValidation.js";
 import * as APIactividades from "../API/ActivityCall.js";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Actividades, Asignaturas, Grupos } from "../resources/campos.js";
+import * as camposBucaramanga from "../resources/bucaramanga.js";
+import * as camposVelez from "../resources/velez.js";
+import * as camposBarranca from "../resources/velez.js";
+import * as camposPiedecuesta from "../resources/velez.js";
 import Snackbar from "@mui/material/Snackbar";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 
 export default function ActivityForm() {
+  const [campos, setCampos] = React.useState(null);
+  const [arrayNombres, setArrayNombres] = React.useState([]);
   const { activities, setActivities, user, configuration } =
     React.useContext(UseContext);
   const [initialForm, setInitialForm] = React.useState({
@@ -55,8 +60,6 @@ export default function ActivityForm() {
     setOpen(false);
   };
 
-  const arrayNombres = Actividades.map((actividad) => actividad.name);
-
   const handleChangeName = async (event) => {
     setForm({
       ...form,
@@ -74,18 +77,20 @@ export default function ActivityForm() {
 
   React.useEffect(() => {
     setDefaultDescription("");
-    if (Actividades[misionalIndex]?.description) {
-      setDefaultDescription(Actividades[misionalIndex].description);
+    if (campos?.Actividades[misionalIndex]?.description) {
+      setDefaultDescription(campos?.Actividades[misionalIndex].description);
       setForm({
         ...form,
-        description: Actividades[misionalIndex]?.description,
-        mission: Actividades[misionalIndex]?.mission || "",
-        convention: Actividades[misionalIndex]?.convention || "",
-        product: { description: Actividades[misionalIndex]?.product || "" },
-        consolidated: Actividades[misionalIndex]?.consolidated || "",
+        description: campos?.Actividades[misionalIndex]?.description,
+        mission: campos?.Actividades[misionalIndex]?.mission || "",
+        convention: campos?.Actividades[misionalIndex]?.convention || "",
+        product: {
+          description: campos?.Actividades[misionalIndex]?.product || "",
+        },
+        consolidated: campos?.Actividades[misionalIndex]?.consolidated || "",
         responsible:
           responsibles[
-            Actividades[misionalIndex]?.convention.replace(/\s+/g, "")
+            campos?.Actividades[misionalIndex]?.convention.replace(/\s+/g, "")
           ] || "",
       });
     } else {
@@ -93,13 +98,15 @@ export default function ActivityForm() {
       setForm({
         ...form,
         description: "",
-        mission: Actividades[misionalIndex]?.mission || "",
-        convention: Actividades[misionalIndex]?.convention || "",
-        product: { description: Actividades[misionalIndex]?.product || "" },
-        consolidated: Actividades[misionalIndex]?.consolidated || "",
+        mission: campos?.Actividades[misionalIndex]?.mission || "",
+        convention: campos?.Actividades[misionalIndex]?.convention || "",
+        product: {
+          description: campos?.Actividades[misionalIndex]?.product || "",
+        },
+        consolidated: campos?.Actividades[misionalIndex]?.consolidated || "",
         responsible:
           responsibles[
-            Actividades[misionalIndex]?.convention.replace(/\s+/g, "")
+            campos?.Actividades[misionalIndex]?.convention.replace(/\s+/g, "")
           ] || "",
       });
     }
@@ -168,7 +175,7 @@ export default function ActivityForm() {
 
   React.useEffect(() => {
     setResponsibles({
-      Docencia: configuration?.docencia,
+      Docenciadirecta: configuration?.docencia,
       Investigación: configuration?.investigacion,
       Extensión: configuration?.extension,
       ProcesosOACA: configuration?.oaca,
@@ -176,6 +183,28 @@ export default function ActivityForm() {
       Comités: configuration?.comites,
       Otras: configuration?.otras,
     });
+
+    if (configuration?.information === "bucaramanga.js") {
+      setCampos(camposBucaramanga);
+      setArrayNombres(
+        camposBucaramanga.Actividades.map((actividad) => actividad.name)
+      );
+    } else if (configuration?.information === "velez.js") {
+      setCampos(camposVelez);
+      setArrayNombres(
+        camposVelez.Actividades.map((actividad) => actividad.name)
+      );
+    } else if (configuration?.information === "piedecuesta.js") {
+      setCampos(camposPiedecuesta);
+      setArrayNombres(
+        camposPiedecuesta.Actividades.map((actividad) => actividad.name)
+      );
+    } else if (configuration?.information === "barranca.js") {
+      setCampos(camposBarranca);
+      setArrayNombres(
+        camposBarranca.Actividades.map((actividad) => actividad.name)
+      );
+    }
   }, [configuration]);
 
   return (
@@ -222,7 +251,7 @@ export default function ActivityForm() {
                   fullWidth
                   disabled
                   name="mission"
-                  value={Actividades[misionalIndex]?.mission || ""}
+                  value={campos?.Actividades[misionalIndex]?.mission || ""}
                   onBlur={handleBlur}
                   error={errors?.states.mission}
                   helperText={errors?.messages.mission}
@@ -247,7 +276,7 @@ export default function ActivityForm() {
                   <Autocomplete
                     disablePortal
                     id="combo-box-demo"
-                    options={Asignaturas}
+                    options={campos?.Asignaturas || []}
                     value={form?.description}
                     renderInput={(params) => (
                       <TextField
@@ -272,7 +301,7 @@ export default function ActivityForm() {
                     disablePortal
                     id="combo-box-demo"
                     value={form?.group_name}
-                    options={Grupos}
+                    options={campos?.Grupos || []}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -308,14 +337,13 @@ export default function ActivityForm() {
               <Grid xs={12} sm={6} md={6} lg={6}>
                 <TextField
                   label="Responsable"
+                  disabled
                   size="small"
                   fullWidth
                   value={form?.responsible}
                   name="responsible"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  error={errors?.states.responsible}
-                  helperText={errors?.messages.responsible}
                 />
               </Grid>
 

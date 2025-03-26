@@ -153,14 +153,23 @@ export default function AllCoordinators() {
       }
     } catch (error) {
       setCoordinatorData();
+      if (error.response?.status === 404) {
+        handleClose();
+        setMessage("No se encontraron coordinadores");
+        setCode("error");
+        handleClick();
+      } else {
+        handleClose();
+        setMessage("Error al traer los datos, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
   const fetchProgramsData = async () => {
     try {
-      const response = await APIprogram.getAllByCampusId(
-        configuration?.campus_id
-      );
+      const response = await APIprogram.getAllByCampusId(user?.id);
       if (response.status === 200) {
         const options = response.data.programs.map((program) => ({
           label: program.program_name,
@@ -187,7 +196,7 @@ export default function AllCoordinators() {
 
         <Grid xs={12} sx={{ marginLeft: 2 }}>
           <p>
-            Mostrando {coordinatorData?.length} coordinadores de{" "}
+            Mostrando {coordinatorData?.length || 0} coordinadores de{" "}
             {totalCoordinator}
           </p>
         </Grid>
@@ -396,6 +405,7 @@ export default function AllCoordinators() {
             <Autocomplete
               disablePortal
               id="combo-box-demo"
+              disabled={!programList}
               options={programList}
               getOptionLabel={(option) => option.label}
               isOptionEqualToValue={(option, value) => option.id === value.id}

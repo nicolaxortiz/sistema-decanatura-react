@@ -110,7 +110,7 @@ function AllTeachers() {
   const fetchData = async () => {
     try {
       const response = await APIDocentes.getAll(
-        user?.id,
+        user?.program_id,
         filterState,
         searchName,
         actualPage
@@ -191,7 +191,8 @@ function AllTeachers() {
 
           <Grid xs={12} sx={{ marginLeft: 2 }}>
             <p>
-              Mostrando {teacherData?.length} docentes de {totalTeachers}.
+              Mostrando {teacherData?.length || 0} docentes de{" "}
+              {totalTeachers || 0}.
             </p>
           </Grid>
         </Grid>

@@ -56,11 +56,7 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
   };
 
   const handleSubmit = async (e) => {
-    console.log(type);
-
     e.preventDefault();
-
-    console.log(form);
 
     handleChange(e);
 
@@ -84,9 +80,6 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
           setResponse(responseRequest);
           setLoading(false);
         } else if (type === "post") {
-          console.log(executeOnSubmit);
-          console.log(formToSend);
-
           const responseRequest = await executeOnSubmit(formToSend);
           setResponse(responseRequest);
           setLoading(false);

@@ -16,12 +16,21 @@ import { useNavigate } from "react-router-dom";
 import { TeacherValidation } from "../validations/TeacherValidation.js";
 import * as APIdocentes from "../API/TeacherCall.js";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Facultades, TipoDeContrato, Escalafon } from "../resources/campos.js";
+import * as camposBucaramanga from "../resources/bucaramanga.js";
+import * as camposVelez from "../resources/velez.js";
+import * as camposBarranca from "../resources/velez.js";
+import * as camposPiedecuesta from "../resources/velez.js";
+// import {
+//   Facultades,
+//   TipoDeContrato,
+//   Escalafon,
+// } from "../resources/bucaramanga.js";
 
 export default function PersonalForm() {
   const APIURL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const { setUser, user, configuration } = React.useContext(UseContext);
+  const [campos, setCampos] = React.useState(null);
 
   const [initialForm, setInitialForm] = React.useState({
     id: "",
@@ -152,6 +161,18 @@ export default function PersonalForm() {
 
     if (user) updateForm();
   }, [user]);
+
+  React.useEffect(() => {
+    if (configuration?.information === "bucaramanga.js") {
+      setCampos(camposBucaramanga);
+    } else if (configuration?.information === "velez.js") {
+      setCampos(camposVelez);
+    } else if (configuration?.information === "piedecuesta.js") {
+      setCampos(camposPiedecuesta);
+    } else if (configuration?.information === "barranca.js") {
+      setCampos(camposBarranca);
+    }
+  }, [configuration]);
 
   const call = APIdocentes.updateTeacher;
   const type = "put";
@@ -374,7 +395,7 @@ export default function PersonalForm() {
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
-                  options={Facultades}
+                  options={campos?.Facultades || []}
                   value={form?.faculty || ""}
                   renderInput={(params) => (
                     <TextField
@@ -406,7 +427,7 @@ export default function PersonalForm() {
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
-                  options={TipoDeContrato}
+                  options={campos?.TipoDeContrato || []}
                   value={form?.employment_type || ""}
                   renderInput={(params) => (
                     <TextField
@@ -427,7 +448,7 @@ export default function PersonalForm() {
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
-                  options={Escalafon}
+                  options={campos?.Escalafon || []}
                   value={form?.rank || ""}
                   renderInput={(params) => (
                     <TextField
