@@ -73,6 +73,8 @@ function ScheduleTable() {
   const [code, setCode] = React.useState("");
   const [observation, setObservation] = React.useState("");
 
+  const [decimal, setDecimal] = React.useState();
+
   const handleClick = () => {
     setOpenSnack(true);
   };
@@ -299,6 +301,25 @@ function ScheduleTable() {
     } else {
     }
   }, [user]);
+
+  React.useEffect(() => {
+    if (user?.id !== undefined) {
+      if (
+        user?.employment_type === "Planta" ||
+        user?.employment_type === "Tiempo completo"
+      ) {
+        setDecimal(
+          parseFloat(configuration?.tc_hours) -
+            Math.floor(parseFloat(configuration?.tc_hours))
+        );
+      } else {
+        setDecimal(
+          parseFloat(configuration?.mt_hours) -
+            Math.floor(parseFloat(configuration?.mt_hours))
+        );
+      }
+    }
+  }, [configuration]);
   return (
     <>
       <div className="table-form">
@@ -641,10 +662,10 @@ function ScheduleTable() {
                 >
                   {dataSchedule === undefined
                     ? "0"
-                    : user?.vinculacion === "Planta" ||
-                      user?.vinculacion === "Tiempo completo"
-                    ? (dataSchedule?.length + 0.33).toLocaleString()
-                    : (dataSchedule?.length + 0.66).toLocaleString()}
+                    : user?.employment_type === "Planta" ||
+                      user?.employment_type === "Tiempo completo"
+                    ? (dataSchedule?.length + decimal).toLocaleString()
+                    : (dataSchedule?.length + decimal).toLocaleString()}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -686,9 +707,9 @@ function ScheduleTable() {
                 disabled={
                   (user?.employment_type === "Planta" ||
                   user?.employment_type === "Tiempo completo"
-                    ? dataSchedule?.length + 0.33 !==
+                    ? dataSchedule?.length + decimal !==
                       parseFloat(configuration?.tc_hours)
-                    : dataSchedule?.length + 0.66 !==
+                    : dataSchedule?.length + decimal !==
                       parseFloat(configuration?.mt_hours)) || loading
                 }
                 variant="contained"
