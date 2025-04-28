@@ -28,8 +28,8 @@ import * as camposPiedecuesta from "../resources/velez.js";
 
 export default function PersonalForm() {
   const APIURL = process.env.REACT_APP_API_URL;
-  const navigate = useNavigate();
-  const { setUser, user, configuration } = React.useContext(UseContext);
+  const { setUser, user, configuration, setSesionInvalid, setTab } =
+    React.useContext(UseContext);
   const [campos, setCampos] = React.useState(null);
 
   const [initialForm, setInitialForm] = React.useState({
@@ -194,7 +194,10 @@ export default function PersonalForm() {
       const StringTeacher = JSON.stringify(actualTeacher);
       localStorage.setItem("User", StringTeacher);
       setUser(actualTeacher);
-      navigate("/activity");
+      setTab(2);
+    }
+    if (response?.status === 401) {
+      setSesionInvalid(true);
     }
 
     if (response?.status === "error") {

@@ -15,7 +15,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
 export default function CampusConfiguration() {
-  const { user, setConfiguration, configuration } =
+  const { user, setConfiguration, configuration, setSesionInvalid } =
     React.useContext(UseContext);
 
   const [openSnack, setOpenSnack] = React.useState(false);
@@ -74,6 +74,10 @@ export default function CampusConfiguration() {
       setMessage("Configuración guardada correctamente");
       setCode("success");
       handleClick();
+    }
+
+    if (response?.status === 401) {
+      setSesionInvalid(true);
     }
 
     if (response?.status === "error") {

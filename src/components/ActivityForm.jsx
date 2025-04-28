@@ -21,7 +21,7 @@ import Alert from "@mui/material/Alert";
 export default function ActivityForm() {
   const [campos, setCampos] = React.useState(null);
   const [arrayNombres, setArrayNombres] = React.useState([]);
-  const { activities, setActivities, user, configuration } =
+  const { activities, setActivities, user, configuration, setSesionInvalid } =
     React.useContext(UseContext);
   const [initialForm, setInitialForm] = React.useState({
     teacher_id: "",
@@ -144,7 +144,9 @@ export default function ActivityForm() {
         setActivities(responseData.data.activities);
       }
     } catch (error) {
-      if (!!activities) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (!!activities) {
         const dataStr = localStorage.getItem("Activity");
         const data = JSON.parse(dataStr);
         if (data) {
@@ -164,6 +166,10 @@ export default function ActivityForm() {
       setMessage("Actividad agregada correctamente");
       setCode("success");
       handleClick();
+    }
+
+    if (response?.status === 401) {
+      setSesionInvalid(true);
     }
   }, [response]);
 

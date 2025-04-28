@@ -85,9 +85,11 @@ export const useForm = (initialForm, validateForm, executeOnSubmit, type) => {
           setLoading(false);
         } else if (type === "saveLocal") {
           setResponse(200);
+          setLoading(false);
         }
       } catch (error) {
-        setResponse({ status: 500 });
+        setResponse({ status: error.response.status });
+        setLoading(false);
       }
     } else {
       setResponse({ status: "error" });

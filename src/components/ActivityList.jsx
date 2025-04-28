@@ -13,17 +13,21 @@ import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useNavigate } from "react-router-dom";
 import * as APIactividades from "../API/ActivityCall.js";
+import * as APIformat from "../API/FormatCall.js";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
 export default function ActivityList() {
-  const navigate = useNavigate();
-
   const [loading, setLoading] = React.useState(false);
-  const { user, activities, setActivities, setTab, tab, configuration } =
-    React.useContext(UseContext);
+  const {
+    user,
+    activities,
+    setActivities,
+    setTab,
+    configuration,
+    setSesionInvalid,
+  } = React.useContext(UseContext);
 
   const totalHoras = activities?.reduce(
     (total, actividad) => total + parseFloat(actividad.hours),
@@ -69,19 +73,35 @@ export default function ActivityList() {
           setMessage("Actividad eliminada correctamente");
           setCode("warning");
           handleClick();
-        } else {
-          setActivities();
-          setMessage("No se encontraron actividades");
-          setCode("error");
-          handleClick();
+
+          const searchResponse = await APIformat.getByTeacherIdAndSemester(
+            user?.id,
+            configuration?.semester
+          );
+
+          if (searchResponse.status === 200) {
+            const updateResponse = await APIformat.putSchedule(
+              searchResponse.data.format.id,
+              { is_finish: false }
+            );
+          }
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response.status === 404) {
+        setActivities();
+        setMessage("No se encontraron actividades");
+        setCode("error");
+        handleClick();
+      }
+    }
   };
 
   const handleSubmitButton = async () => {
     if (user && activities) {
-      navigate("/product");
+      setTab(3);
     }
   };
 
@@ -181,8 +201,7 @@ export default function ActivityList() {
                 type="submit"
                 fullWidth
                 onClick={() => {
-                  setTab(tab - 1);
-                  navigate("/home");
+                  setTab(1);
                 }}
               >
                 Regresar

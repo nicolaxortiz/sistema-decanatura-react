@@ -13,7 +13,8 @@ import { UseContext } from "../context/UseContext.js";
 import { Misionales } from "../resources/bucaramanga.js";
 
 export default function CoordinatorHome() {
-  const { user, configuration } = React.useContext(UseContext);
+  const { user, configuration, setSesionInvalid } =
+    React.useContext(UseContext);
   const [mission, setMission] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -40,10 +41,20 @@ export default function CoordinatorHome() {
       );
 
       if (response.status === 200) {
-        window.open(response.config.url, "_blank");
+        const blob = response.data;
+        const url = window.URL.createObjectURL(blob);
+
+        const pdfFileName = `${configuration.title}.pdf`;
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = pdfFileName;
+        a.click();
       }
     } catch (error) {
-      if (error?.response?.status === 404) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error?.response?.status === 404) {
         setMessage("No hay actividades para generar el PDF");
         setCode("warning");
         handleClick();
@@ -65,10 +76,20 @@ export default function CoordinatorHome() {
       );
 
       if (response?.status === 200) {
-        window.open(response.config.url, "_blank");
+        const blob = response.data;
+        const url = window.URL.createObjectURL(blob);
+
+        const pdfFileName = `${configuration.title}-${mission}.pdf`;
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = pdfFileName;
+        a.click();
       }
     } catch (error) {
-      if (error?.response.status === 404) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error?.response.status === 404) {
         setMessage("No hay actividades para generar el PDF");
         setCode("warning");
         handleClick();
@@ -99,13 +120,6 @@ export default function CoordinatorHome() {
               A continuación se puede realizar la descarga del formato de
               distribución de las actividades de los docentes que han realizado
               el adecuado registro.
-            </div>
-          </Grid>
-
-          <Grid xs={12}>
-            <div className="subtitle-finish">
-              En el caso de la falta de datos e información comuníquese con la
-              facultad pertinente y con el docente que se requiera.
             </div>
           </Grid>
 

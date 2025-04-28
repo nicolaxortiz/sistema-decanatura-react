@@ -28,7 +28,7 @@ import { UseContext } from "../context/UseContext.js";
 
 export default function AllCoordinators() {
   const APIURL = process.env.REACT_APP_API_URL;
-  const { user, configuration } = React.useContext(UseContext);
+  const { user, setSesionInvalid } = React.useContext(UseContext);
   const [coordinatorData, setCoordinatorData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -84,7 +84,9 @@ export default function AllCoordinators() {
           handleClick();
         }
       } catch (error) {
-        if (error.response.status === 409) {
+        if (error.response.status === 401) {
+          setSesionInvalid(true);
+        } else if (error.response.status === 409) {
           setLoading(false);
           setMessage(
             "Ya existe un coordinador con ese documento, email o programa"
@@ -113,7 +115,9 @@ export default function AllCoordinators() {
           handleClick();
         }
       } catch (error) {
-        if (error.response.status === 409) {
+        if (error.response.status === 401) {
+          setSesionInvalid(true);
+        } else if (error.response.status === 409) {
           setLoading(false);
           setMessage(
             "Ya existe un coordinador con ese documento, email o programa"
@@ -153,7 +157,9 @@ export default function AllCoordinators() {
       }
     } catch (error) {
       setCoordinatorData();
-      if (error.response?.status === 404) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response?.status === 404) {
         handleClose();
         setMessage("No se encontraron coordinadores");
         setCode("error");
@@ -179,7 +185,11 @@ export default function AllCoordinators() {
         setProgramList(options);
       }
     } catch (error) {
-      setProgramList();
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        setProgramList();
+      }
     }
   };
 

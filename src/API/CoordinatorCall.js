@@ -20,7 +20,11 @@ export async function getCoordinatorByEmail(email) {
 }
 
 export async function getByCampusId(campus_id) {
-  const response = await axios.get(`${apiUrl}/api/coordinador/${campus_id}`);
+  const response = await axios.get(`${apiUrl}/api/coordinador/${campus_id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+  });
 
   return response;
 }
@@ -29,6 +33,7 @@ export async function postCoordinator(coordinator) {
   const response = await axios.post(apiUrl + "/api/coordinador", coordinator, {
     headers: {
       "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
     },
   });
 
@@ -42,6 +47,7 @@ export async function updateCoordinator(id, coordinator) {
     {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("Token")}`,
       },
     }
   );

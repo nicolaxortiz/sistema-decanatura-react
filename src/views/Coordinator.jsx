@@ -10,6 +10,7 @@ import CoordinatorHome from "../components/CoordinatorHome.jsx";
 import PersonIcon from "@mui/icons-material/Person";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import ArticleIcon from "@mui/icons-material/Article";
+import FinishSesionModal from "../components/FinishSesionModal.jsx";
 
 export default function Coordinator() {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ export default function Coordinator() {
       {option === 2 && <AllTeachers />}
       {option === 3 && <AllActivity />}
       <Footer />
+      <FinishSesionModal />
     </>
   );
 }

@@ -22,8 +22,15 @@ export default function ProductForm() {
 
   const [products, setProducts] = React.useState([]);
   const navigate = useNavigate();
-  const { activities, setActivities, user, page, setPage, configuration } =
-    React.useContext(UseContext);
+  const {
+    activities,
+    setActivities,
+    user,
+    page,
+    setPage,
+    configuration,
+    setSesionInvalid,
+  } = React.useContext(UseContext);
 
   const [initialForm, setInitialForm] = React.useState({
     id: "",
@@ -112,6 +119,10 @@ export default function ProductForm() {
       setCode("success");
       handleClick();
     }
+
+    if (response?.status === 401) {
+      setSesionInvalid(true);
+    }
   }, [response]);
 
   const fetchData = async () => {
@@ -132,7 +143,9 @@ export default function ProductForm() {
         setActivities(responseData.data.activities);
       }
     } catch (error) {
-      if (!!activities) {
+      if (error.response?.status === 401) {
+        setSesionInvalid(true);
+      } else if (!!activities) {
         const dataStr = localStorage.getItem("Activity");
         const data = JSON.parse(dataStr);
         if (data) {

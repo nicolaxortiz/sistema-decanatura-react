@@ -3,18 +3,18 @@ import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
 import "../styles/loginForm.css";
 import Grid from "@mui/material/Unstable_Grid2";
-import TextField from "@mui/material/TextField";
+import {
+  TextField,
+  Button,
+  InputAdornment,
+  CircularProgress,
+  Alert,
+  IconButton,
+  Collapse,
+} from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../resources/theme.js";
-import Button from "@mui/material/Button";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import InputAdornment from "@mui/material/InputAdornment";
-import CircularProgress from "@mui/material/CircularProgress";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import Collapse from "@mui/material/Collapse";
+import { Visibility, VisibilityOff, Close } from "@mui/icons-material";
 import * as APIdocentes from "../API/TeacherCall.js";
 import * as APIcoordinador from "../API/CoordinatorCall.js";
 import * as APIConfiguracion from "../API/ConfigurationCall.js";
@@ -45,7 +45,7 @@ export const LoginForm = () => {
         );
 
         if (response.status === 200) {
-          handleSetUser(response.data.teacher);
+          handleSetUser(response.data.teacher, response.data.token);
         }
       } catch (errorTeacher) {
         if (errorTeacher?.response?.status === 404) {
@@ -56,7 +56,10 @@ export const LoginForm = () => {
             );
 
             if (responseCoordinator.status === 200) {
-              handleSetUser(responseCoordinator.data.coordinator);
+              handleSetUser(
+                responseCoordinator.data.coordinator,
+                responseCoordinator.data.token
+              );
             }
           } catch (errorCoordinator) {
             if (errorCoordinator?.response?.status === 404) {
@@ -67,7 +70,10 @@ export const LoginForm = () => {
                 );
 
                 if (responseCampus.status === 200) {
-                  handleSetUser(responseCampus.data.campus);
+                  handleSetUser(
+                    responseCampus.data.campus,
+                    responseCampus.data.token
+                  );
                 }
               } catch (errorCampus) {
                 if (errorCampus?.response?.status === 404) {
@@ -99,7 +105,8 @@ export const LoginForm = () => {
     }
   };
 
-  const handleSetUser = (userData) => {
+  const handleSetUser = (userData, userToken) => {
+    localStorage.setItem("Token", userToken);
     setUser(userData);
 
     if (userData.role && userData.role === "campus") {
@@ -128,7 +135,11 @@ export const LoginForm = () => {
         navigate("/admin");
       }
     } catch (error) {
-      if (error.response.status === 404) {
+      if (error.response.status === 401) {
+        setMessage("Error: no tiene permisos para acceder a esta sección");
+        setLoading(false);
+        setOpen(true);
+      } else if (error.response.status === 404) {
         const stringUser = JSON.stringify(campus);
         localStorage.setItem("User", stringUser);
 
@@ -171,8 +182,12 @@ export const LoginForm = () => {
         }
       }
     } catch (error) {
-      if (error.response.status === 404) {
-        setMessage("No se encuentran activas fechas de semestre");
+      if (error.response.status === 401) {
+        setMessage("Error: no tiene permisos para acceder a esta sección");
+        setLoading(false);
+        setOpen(true);
+      } else if (error.response.status === 404) {
+        setMessage("No se encuentran fechas activas de semestre");
         setLoading(false);
         setOpen(true);
       }
@@ -224,7 +239,7 @@ export const LoginForm = () => {
                         setOpen(false);
                       }}
                     >
-                      <CloseIcon fontSize="inherit" />
+                      <Close fontSize="inherit" />
                     </IconButton>
                   }
                 >
@@ -252,7 +267,7 @@ export const LoginForm = () => {
                   endAdornment: (
                     <InputAdornment position="start">
                       {!showPassword && (
-                        <VisibilityIcon
+                        <Visibility
                           style={{ cursor: "pointer" }}
                           onClick={() => {
                             handleClickShowPassword();
@@ -260,7 +275,7 @@ export const LoginForm = () => {
                         />
                       )}
                       {showPassword && (
-                        <VisibilityOffIcon
+                        <VisibilityOff
                           style={{ cursor: "pointer" }}
                           onClick={() => {
                             handleClickShowPassword();
@@ -282,7 +297,7 @@ export const LoginForm = () => {
                   setUser({ role: "recovery" });
                 }}
               >
-                Olvide mi contraseña
+                Recuperar contraseña
               </div>
             </Grid>
 

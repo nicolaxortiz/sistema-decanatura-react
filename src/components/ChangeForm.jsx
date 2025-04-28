@@ -159,30 +159,30 @@ function ChangeForm() {
           </Grid>
           <Grid xs={12}>
             <div style={{ fontWeight: 500 }}>
-              Estimado usuario, si continua presentando problemas con su
-              contraseña acérquese a su correspondiente coordinación para
-              realizar la solicitud de revision de su cuenta, ademas tenga en
-              cuenta las siguientes observaciones para un correcto uso de sus
-              datos:
+              Estimado usuario, en caso de persistir problemas con la
+              contraseña, se solicita acudir a la coordinación correspondiente
+              para gestionar la revisión de la cuenta. Asimismo, se recomienda
+              considerar las siguientes indicaciones para el correcto uso de las
+              credenciales:
             </div>
           </Grid>
           <Grid xs={12}>
             <div>
-              - Para el ingreso debe haber sido registrado en la base de datos
-              de docentes.
-            </div>
-          </Grid>
-
-          <Grid xs={12}>
-            <div>
-              - Recuerde que su contraseña debe cumplir con los siguientes
-              requisitos: debe contener un numero, al menos una letra en
-              mayúscula y debe tener al menos 8 caracteres.
+              - Es requisito indispensable estar registrado en la base de datos
+              de docentes para poder acceder al sistema.
             </div>
           </Grid>
           <Grid xs={12}>
             <div>
-              - Se recomienda no usar sus datos personales como una contraseña.
+              - La contraseña debe cumplir con los siguientes requisitos:
+              contener al menos un número, una letra mayúscula y un mínimo de 8
+              caracteres.
+            </div>
+          </Grid>
+          <Grid xs={12}>
+            <div>
+              - Se aconseja evitar el uso de información personal como
+              contraseña.
             </div>
           </Grid>
         </Grid>

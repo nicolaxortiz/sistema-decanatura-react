@@ -20,7 +20,11 @@ export async function getCampusByEmail(email) {
 }
 
 export async function updateCampus(id, campus) {
-  const response = await axios.put(apiUrl + "/api/campus/" + id, campus);
+  const response = await axios.put(apiUrl + "/api/campus/" + id, campus, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+  });
 
   return response;
 }

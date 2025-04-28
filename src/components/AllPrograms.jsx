@@ -25,7 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { UseContext } from "../context/UseContext.js";
 
 export default function AllPrograms() {
-  const { user, configuration } = React.useContext(UseContext);
+  const { user, setSesionInvalid } = React.useContext(UseContext);
   const [programData, setProgramData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -74,10 +74,14 @@ export default function AllPrograms() {
           handleClick();
         }
       } catch (error) {
-        setLoading(false);
-        setMessage("Error al guardar, inténtelo nuevamente");
-        setCode("error");
-        handleClick();
+        if (error.response.status === 401) {
+          setSesionInvalid(true);
+        } else {
+          setLoading(false);
+          setMessage("Error al guardar, inténtelo nuevamente");
+          setCode("error");
+          handleClick();
+        }
       }
     } else {
       try {
@@ -94,10 +98,14 @@ export default function AllPrograms() {
           handleClick();
         }
       } catch (error) {
-        setLoading(false);
-        setMessage("Error al actualizar, inténtelo nuevamente");
-        setCode("error");
-        handleClick();
+        if (error.response.status === 401) {
+          setSesionInvalid(true);
+        } else {
+          setLoading(false);
+          setMessage("Error al actualizar, inténtelo nuevamente");
+          setCode("error");
+          handleClick();
+        }
       }
     }
   };
@@ -116,7 +124,9 @@ export default function AllPrograms() {
       }
     } catch (error) {
       setProgramData();
-      if (error.response?.status === 404) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response?.status === 404) {
         handleClose();
         setMessage("No se encontraron programas");
         setCode("error");
@@ -131,7 +141,9 @@ export default function AllPrograms() {
   };
 
   React.useEffect(() => {
-    fetchData();
+    if (user) {
+      fetchData();
+    }
   }, [user, loading, actualPage]);
   return (
     <>

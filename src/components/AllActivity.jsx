@@ -17,6 +17,9 @@ import IconButton from "@mui/material/IconButton";
 import * as APIFormat from "../API/FormatCall.js";
 import * as APIDocument from "../API/DocumentCall.js";
 import * as APITeacher from "../API/TeacherCall.js";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -32,10 +35,12 @@ function AllActivity() {
   const [code, setCode] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [totalPages, setTotalPages] = React.useState(0);
+  const [filterState, setFilterState] = React.useState(true);
   const [actualPage, setActualPage] = React.useState(1);
   const [totalFormat, setTotalFormat] = React.useState();
   const [searchName, setSearchName] = React.useState("");
-  const { setUser, user, configuration } = React.useContext(UseContext);
+  const { setUser, user, configuration, setSesionInvalid } =
+    React.useContext(UseContext);
 
   const handleClick = () => {
     setOpen(true);
@@ -49,20 +54,32 @@ function AllActivity() {
     setOpen(false);
   };
 
-  const handlePDF = async (id) => {
+  const handlePDF = async (row) => {
     try {
       const response = await APIDocument.getDocument(
         configuration?.semester,
-        id
+        row.teacher_id
       );
 
       if (response.status === 200) {
-        window.open(response.config.url, "_blank");
+        const blob = response.data;
+        const url = window.URL.createObjectURL(blob);
+
+        const pdfFileName = `F-DC-54-${row?.first_name}-${row?.last_name}-Semestre${configuration?.semester}.pdf`;
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = pdfFileName;
+        a.click();
       }
     } catch (error) {
-      setMessage("Error al generar el PDF, inténtelo nuevamente");
-      setCode("error");
-      handleClick();
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        setMessage("Error al generar el PDF, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
@@ -79,7 +96,11 @@ function AllActivity() {
         setUser(actualTeacher);
         navigate("/home");
       }
-    } catch (error) {}
+    } catch (error) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      }
+    }
   };
 
   const handleSignDocument = async (id, is_signed) => {
@@ -95,9 +116,13 @@ function AllActivity() {
         handleClick();
       }
     } catch (error) {
-      setMessage("Error al actualizar, inténtelo nuevamente");
-      setCode("error");
-      handleClick();
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        setMessage("Error al actualizar, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
@@ -112,7 +137,8 @@ function AllActivity() {
         user?.program_id,
         configuration?.semester,
         searchName,
-        actualPage
+        actualPage,
+        filterState
       );
 
       if (response.status === 200) {
@@ -123,7 +149,9 @@ function AllActivity() {
       }
     } catch (error) {
       setFormatData();
-      if (error.response?.status === 404) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response?.status === 404) {
         handleClose();
         setMessage("No se encontraron actividades del semestre");
         setCode("error");
@@ -139,34 +167,62 @@ function AllActivity() {
 
   React.useEffect(() => {
     fetchData();
-  }, [user, searchName]);
+  }, [user, searchName, filterState, actualPage]);
+
+  React.useEffect(() => {
+    setActualPage(1);
+  }, [filterState]);
 
   return (
     <>
       <div className="table-form">
         <Grid xs={12}>
-          <div className="title-finish">Listado de formatos</div>
+          <div className="title-finish">
+            Listado de formatos {filterState ? "finalizados" : "en progreso"}
+          </div>
         </Grid>
 
-        <Grid xs={12}>
-          <FormControl sx={{ m: 1, width: "50%" }} size="small">
-            <TextField
-              label="Nombre del docente"
-              size="small"
-              fullWidth
-              name="name"
-              value={searchName}
-              onChange={(event) => {
-                setSearchName(event.target.value);
-              }}
-            />
-          </FormControl>
-        </Grid>
+        <Grid container rowSpacing={2} columnSpacing={1}>
+          <Grid xs={10}>
+            <FormControl sx={{ m: 1, width: "50%" }} size="small">
+              <TextField
+                label="Nombre del docente"
+                size="small"
+                fullWidth
+                name="name"
+                value={searchName}
+                onChange={(event) => {
+                  setSearchName(event.target.value);
+                }}
+              />
+            </FormControl>
+          </Grid>
 
-        <Grid xs={12} sx={{ marginLeft: 2 }}>
-          <p>
-            Mostrando {formatData?.length || 0} formatos de {totalFormat || 0}.
-          </p>
+          <Grid xs={2}>
+            <FormControl sx={{ m: 1, width: "90%" }} size="small">
+              <InputLabel id="demo-simple-select-label">Filtro</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={filterState}
+                fullWidth
+                label="Filtro"
+                onChange={(e) => {
+                  setFilterState(e.target.value);
+                }}
+              >
+                <MenuItem value={true}>Finalizados</MenuItem>
+                <MenuItem value={false}>En progreso</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid xs={12} sx={{ marginLeft: 2 }}>
+            <p>
+              Mostrando {formatData?.length || 0} formatos de {totalFormat || 0}
+              .
+            </p>
+          </Grid>
         </Grid>
 
         <TableContainer>
@@ -210,17 +266,19 @@ function AllActivity() {
                         </IconButton>
                       )}
 
-                      <IconButton
-                        aria-label="pdf"
-                        size="small"
-                        onClick={() => {
-                          handlePDF(row.teacher_id);
-                        }}
-                      >
-                        <PictureAsPdfIcon />
-                      </IconButton>
+                      {row.is_finish && (
+                        <IconButton
+                          aria-label="pdf"
+                          size="small"
+                          onClick={() => {
+                            handlePDF(row);
+                          }}
+                        >
+                          <PictureAsPdfIcon />
+                        </IconButton>
+                      )}
 
-                      {row.is_signed ? (
+                      {row.is_signed && row.is_finish && (
                         <IconButton
                           aria-label="edit"
                           size="small"
@@ -230,7 +288,9 @@ function AllActivity() {
                         >
                           <CancelIcon />
                         </IconButton>
-                      ) : (
+                      )}
+
+                      {!row.is_signed && row.is_finish && (
                         <IconButton
                           aria-label="edit"
                           size="small"

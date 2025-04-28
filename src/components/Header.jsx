@@ -10,8 +10,15 @@ import { useNavigate } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate();
-  const { setUser, user, setActivities, setDataSchedule, setConfiguration } =
-    React.useContext(UseContext);
+  const {
+    setUser,
+    user,
+    setActivities,
+    setDataSchedule,
+    setConfiguration,
+    setOption,
+    setTab,
+  } = React.useContext(UseContext);
   const [role, setRole] = React.useState(null);
 
   React.useEffect(() => {
@@ -46,11 +53,14 @@ export default function Header() {
       localStorage.removeItem("Activity");
       localStorage.removeItem("Schedule");
       localStorage.removeItem("Configuration");
+      localStorage.removeItem("Token");
       setUser();
       setActivities();
       setDataSchedule();
       setConfiguration();
       setRole(null);
+      setOption(1);
+      setTab(1);
     } else {
       localStorage.removeItem("UserEdit");
       localStorage.removeItem("Activity");
@@ -58,6 +68,8 @@ export default function Header() {
       localStorage.setItem("User", dataStr);
       setUser(data);
       setRole(null);
+      setOption(1);
+      setTab(1);
       navigate("/coordinator");
     }
   };
@@ -103,25 +115,24 @@ export default function Header() {
                       );
                     }}
                   >
-                    Manual administrador
+                    Manual coordinador
                   </Button>
                 )}
 
-                {user?.role === "teacher" ||
-                  (!user?.role && (
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      onClick={() => {
-                        window.open(
-                          "https://unidadestecno-my.sharepoint.com/:b:/g/personal/carturotoloza_uts_edu_co/EQx5AiYntqtKjtGdWVzp_OYBpPIp1vrdDm_fwiLyv7ypCw?e=snqIFl",
-                          "_blank"
-                        );
-                      }}
-                    >
-                      Manual docente
-                    </Button>
-                  ))}
+                {user?.role === "teacher" && (
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={() => {
+                      window.open(
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/carturotoloza_uts_edu_co/EQx5AiYntqtKjtGdWVzp_OYBpPIp1vrdDm_fwiLyv7ypCw?e=snqIFl",
+                        "_blank"
+                      );
+                    }}
+                  >
+                    Manual docente
+                  </Button>
+                )}
               </ThemeProvider>
             </Grid>
 

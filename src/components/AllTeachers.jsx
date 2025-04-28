@@ -29,7 +29,8 @@ import * as APIDocentes from "../API/TeacherCall";
 import { UseContext } from "../context/UseContext.js";
 
 function AllTeachers() {
-  const { user, configuration } = React.useContext(UseContext);
+  const { user, configuration, setSesionInvalid } =
+    React.useContext(UseContext);
   const [teacherData, setTeacherData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -75,10 +76,14 @@ function AllTeachers() {
         handleClick();
       }
     } catch (error) {
-      setLoading(false);
-      setMessage("Error al guardar, inténtelo nuevamente");
-      setCode("error");
-      handleClick();
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        setLoading(false);
+        setMessage("Error al guardar, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
@@ -97,9 +102,13 @@ function AllTeachers() {
         handleClick();
       }
     } catch (error) {
-      setMessage("Error al actualizar, inténtelo nuevamente");
-      setCode("error");
-      handleClick();
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        setMessage("Error al actualizar, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
@@ -123,7 +132,9 @@ function AllTeachers() {
       }
     } catch (error) {
       setTeacherData();
-      if (error.response?.status === 404) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response?.status === 404) {
         handleClose();
         setMessage("No se encontraron docentes que cumplan con el filtro");
         setCode("error");

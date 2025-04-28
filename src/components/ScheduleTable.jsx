@@ -21,7 +21,6 @@ import ListItemText from "@mui/material/ListItemText";
 import * as APIformat from "../API/FormatCall.js";
 import * as APIactividades from "../API/ActivityCall.js";
 import * as APISchedule from "../API/ScheduleCall.js";
-import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../resources/theme.js";
 import "../styles/scheduleTable.css";
@@ -29,7 +28,6 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
 function ScheduleTable() {
-  const navigate = useNavigate();
   const {
     activities,
     setActivities,
@@ -37,6 +35,8 @@ function ScheduleTable() {
     dataSchedule,
     setDataSchedule,
     configuration,
+    setSesionInvalid,
+    setTab,
   } = React.useContext(UseContext);
 
   const [loading, setLoading] = React.useState(false);
@@ -98,6 +98,15 @@ function ScheduleTable() {
   };
 
   const handleSubmitButton = async () => {
+    for (const item of activities) {
+      if (item.product.estimated_date === undefined) {
+        setMessage("Revisar fecha estimada de productos");
+        setCode("error");
+        handleClick();
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       const searchResponse = await APIformat.getByTeacherIdAndSemester(
@@ -112,10 +121,14 @@ function ScheduleTable() {
 
         if (updateResponse.status === 200) {
           setLoading(false);
-          navigate("/finish");
+          setTab(5);
         }
       }
     } catch (error) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      }
+
       if (error.response.status === 404) {
         try {
           const postResponse = await APIformat.postFormat({
@@ -127,9 +140,13 @@ function ScheduleTable() {
 
           if (postResponse.status === 200) {
             setLoading(false);
-            navigate("/finish");
+            setTab(5);
           }
-        } catch (error) {}
+        } catch (error) {
+          if (error.response.status === 401) {
+            setSesionInvalid(true);
+          }
+        }
       }
     }
   };
@@ -150,6 +167,7 @@ function ScheduleTable() {
         day: selectedColumn.dia,
         moment: selectedColumn.momento,
         teacher_id: user?.id,
+        activity_id: activity.id,
       });
 
       if (response.status === 200) {
@@ -159,6 +177,10 @@ function ScheduleTable() {
         handleClick();
       }
     } catch (error) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      }
+
       if (error.response.status === 404) {
         try {
           const response = await APISchedule.postSchedule({
@@ -168,6 +190,7 @@ function ScheduleTable() {
             day: selectedColumn.dia,
             moment: selectedColumn.momento,
             teacher_id: user?.id,
+            activity_id: activity.id,
           });
 
           if (response.status === 200) {
@@ -177,10 +200,14 @@ function ScheduleTable() {
             handleClick();
           }
         } catch (error) {
-          fetchDataSchedule();
-          setMessage("Error al agregar actividad, inténtelo nuevamente");
-          setCode("error");
-          handleClick();
+          if (error.response.status === 401) {
+            setSesionInvalid(true);
+          } else {
+            fetchDataSchedule();
+            setMessage("Error al agregar actividad, inténtelo nuevamente");
+            setCode("error");
+            handleClick();
+          }
         }
       }
     }
@@ -201,10 +228,14 @@ function ScheduleTable() {
         handleClick();
       }
     } catch (error) {
-      fetchDataSchedule();
-      setMessage("Error al eliminar, inténtelo nuevamente");
-      setCode("error");
-      handleClick();
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        fetchDataSchedule();
+        setMessage("Error al eliminar, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
@@ -221,10 +252,14 @@ function ScheduleTable() {
         handleClick();
       }
     } catch (error) {
-      fetchDataSchedule();
-      setMessage("Error al eliminar, inténtelo nuevamente");
-      setCode("error");
-      handleClick();
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        fetchDataSchedule();
+        setMessage("Error al eliminar, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
@@ -254,13 +289,21 @@ function ScheduleTable() {
             setObservation(formatResponse.data.format.observation);
           }
         } catch (errorFormat) {
+          if (errorFormat.response.status === 401) {
+            setSesionInvalid(true);
+          }
+
           if (errorFormat.response.status === 404) {
             setObservation();
           }
         }
       }
     } catch (error) {
-      setDataSchedule();
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        setDataSchedule();
+      }
     }
   };
 
@@ -286,13 +329,15 @@ function ScheduleTable() {
             await fetchDataSchedule();
           }
         } catch (error) {
-          if (!!activities) {
+          if (error.response.status === 401) {
+            setSesionInvalid(true);
+          } else if (!!activities) {
             const dataStr = localStorage.getItem("Activity");
             const data = JSON.parse(dataStr);
             if (data) {
               setActivities(data);
             } else {
-              navigate("/activity");
+              setTab(2);
             }
           }
         }
@@ -695,7 +740,7 @@ function ScheduleTable() {
                 variant="contained"
                 fullWidth
                 onClick={() => {
-                  navigate("/product");
+                  setTab(3);
                 }}
               >
                 Regresar
@@ -807,7 +852,9 @@ function ScheduleTable() {
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <ThemeProvider theme={theme}>
+            <Button onClick={handleClose}>Cancelar</Button>
+          </ThemeProvider>
         </DialogActions>
       </Dialog>
 

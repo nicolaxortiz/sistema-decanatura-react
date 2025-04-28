@@ -12,7 +12,7 @@ export const Information = () => {
         <Grid xs={12}>
           <div style={{ fontWeight: 500 }}>
             Este es un sistema encargado de la gestión del documento F-DC-54,
-            por lo tanto recuerde que:
+            por lo tanto debe tener en cuenta que:
           </div>
         </Grid>
         <Grid xs={12}>
@@ -23,19 +23,19 @@ export const Information = () => {
         </Grid>
         <Grid xs={12}>
           <div>
-            - Sus datos personales serán usados unicamente con fines académicos.
+            - Los datos personales serán usados unicamente con fines académicos.
           </div>
         </Grid>
         <Grid xs={12}>
           <div>
-            - Debe seguir las instrucciones que el sistema le indique para el
-            correcto llenado de la información.
+            - Se recomienda llenar la información siguiendo los pasos que el
+            sistema le ofrece.
           </div>
         </Grid>
         <Grid xs={12}>
           <div>
-            - Si es su primera vez usando el sistema puede revisar el manual del
-            docente.
+            - Para un correcto uso del sistema, se recomienda leer el manual de
+            usuario correspondiente.
           </div>
         </Grid>
       </Grid>

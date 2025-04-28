@@ -17,6 +17,7 @@
   height: fit-content;
   margin: 10px auto;
   border: #4b4b4b 3px solid;
+  cursor: pointer;
 }
 
 .circle-box-selected {
@@ -64,6 +65,11 @@
   }
 
   .circle-box {
+    padding: 15px 15px;
+    border: #4b4b4b 5px solid;
+  }
+
+  .circle-box-selected {
     padding: 15px 15px;
     border: #4b4b4b 5px solid;
   }

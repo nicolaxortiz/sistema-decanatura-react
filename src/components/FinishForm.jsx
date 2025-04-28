@@ -20,6 +20,9 @@ function FinishForm() {
     setDataSchedule,
     setConfiguration,
     configuration,
+    setOption,
+    setSesionInvalid,
+    setTab,
   } = React.useContext(UseContext);
 
   const [open, setOpen] = React.useState(false);
@@ -48,16 +51,23 @@ function FinishForm() {
       localStorage.removeItem("Activity");
       localStorage.removeItem("Schedule");
       localStorage.removeItem("Configuration");
+      localStorage.removeItem("Token");
       setUser();
       setActivities();
       setDataSchedule();
       setConfiguration();
+      setRole(null);
+      setOption(1);
+      setTab(1);
     } else {
       localStorage.removeItem("UserEdit");
       localStorage.removeItem("Activity");
       localStorage.removeItem("Schedule");
       localStorage.setItem("User", dataStr);
       setUser(data);
+      setRole(null);
+      setOption(1);
+      setTab(1);
       navigate("/coordinator");
     }
   };
@@ -70,12 +80,24 @@ function FinishForm() {
       );
 
       if (response.status === 200) {
-        window.open(response.config.url, "_blank");
+        const blob = response.data;
+        const url = window.URL.createObjectURL(blob);
+
+        const pdfFileName = `F-DC-54-${user?.first_name}-${user?.last_name}-Semestre${configuration?.semester}.pdf`;
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = pdfFileName;
+        a.click();
       }
     } catch (error) {
-      setMessage("Error al generar el PDF, inténtelo nuevamente");
-      setCode("error");
-      handleClick();
+      if (error.response?.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        setMessage("Error al generar el PDF, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
     }
   };
 
@@ -94,7 +116,7 @@ function FinishForm() {
       <div className="finish-box">
         <Grid container rowSpacing={2} columnSpacing={1}>
           <Grid xs={12}>
-            <div className="title-finish">Haz finalizado el registro</div>
+            <div className="title-finish">Ha finalizado el registro</div>
           </Grid>
 
           <Grid xs={12} className="img-box">
@@ -103,22 +125,22 @@ function FinishForm() {
 
           <Grid xs={12}>
             <div className="subtitle-finish">
-              El formato F-DC-54 ha sido guardado correctamente y toda la
-              informacion sera enviada a la oficina de decanatura.
+              El formato F-DC-54 ha sido guardado correctamente y sera revisado
+              por la coordinación correspondiente.
             </div>
           </Grid>
 
           <Grid xs={12}>
             <div className="subtitle-finish">
-              Gracias por cumplir con tus responsabilidades como docente,
-              recuerda que completar tus deberes nos ayuda a ser mejores y a
+              Gracias por cumplir con sus responsabilidades como docente.
+              Recordamos que completar sus deberes nos ayuda a mejorar y a
               cumplir con las expectativas de la comunidad.
             </div>
           </Grid>
 
           <Grid xs={12}>
             <div className="subtitle-finish" style={{ marginBottom: 10 }}>
-              - Unidades Tecnologicas de Santander ¡Lo hacemos posible!
+              - Unidades Tecnológicas de Santander ¡Lo hacemos posible!
             </div>
           </Grid>
 
@@ -153,7 +175,12 @@ function FinishForm() {
         </Grid>
       </div>
 
-      <Snackbar open={open} onClose={handleClose} autoHideDuration={6000}>
+      <Snackbar
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        autoHideDuration={6000}
+      >
         <Alert
           onClose={handleClose}
           severity={code}
