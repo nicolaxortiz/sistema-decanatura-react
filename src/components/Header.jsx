@@ -95,7 +95,7 @@ export default function Header() {
                     fullWidth
                     onClick={() => {
                       window.open(
-                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/carturotoloza_uts_edu_co/EcvgrZvgEx9IiSp3Wx21P-0BVdQhuVXe5hzbaEIB9OLkWQ?e=I4L1P3",
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/EW3htLVSdMBLqhDt4f8M0PIBVx-I4x2VgswTKUHG7P6EHg?e=lMLVPz",
                         "_blank"
                       );
                     }}
@@ -110,7 +110,7 @@ export default function Header() {
                     fullWidth
                     onClick={() => {
                       window.open(
-                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/carturotoloza_uts_edu_co/EcvgrZvgEx9IiSp3Wx21P-0BVdQhuVXe5hzbaEIB9OLkWQ?e=I4L1P3",
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/ERbF1-aGbQBNmERiFFpXTlkBSeyhHvG3cffADWus2RMB-w?e=43QHTY",
                         "_blank"
                       );
                     }}
@@ -125,7 +125,7 @@ export default function Header() {
                     fullWidth
                     onClick={() => {
                       window.open(
-                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/carturotoloza_uts_edu_co/EQx5AiYntqtKjtGdWVzp_OYBpPIp1vrdDm_fwiLyv7ypCw?e=snqIFl",
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/EVZPNqS2DetEh_fP9Ntfpg4Bc2k_okQVOzYxEQTnWG2sjg?e=2fQ9Ne",
                         "_blank"
                       );
                     }}

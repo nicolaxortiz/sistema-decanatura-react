@@ -234,7 +234,7 @@ function AllActivity() {
                 <TableCell>Campus</TableCell>
                 <TableCell align="center">Semestre</TableCell>
                 <TableCell align="center">Estado</TableCell>
-                <TableCell align="center">Formato</TableCell>
+                <TableCell align="center">Opciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
