@@ -168,7 +168,7 @@ export default function CoordinatorHome() {
                   handleFinalPDF();
                 }}
               >
-                Generar formato PDF acumulado para decanatura
+                Generar formato PDF acumulado
               </Button>
             </Grid>
           </ThemeProvider>

@@ -7,7 +7,7 @@ export const Facultades = [
 ];
 
 export const TipoDeContrato = [
-  "Planta",
+  "Carrera",
   "Tiempo completo",
   "Medio tiempo 11M",
   "Medio tiempo 4M",

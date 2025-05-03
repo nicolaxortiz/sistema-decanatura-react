@@ -456,7 +456,7 @@ export default function PersonalForm() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Escalafón"
+                      label="Categoría docente"
                       size="small"
                       fullWidth
                       onBlur={handleBlur}

@@ -33,10 +33,10 @@ export const Progress = ({ list }) => {
                       color="green"
                       sx={{
                         "& .MuiBadge-badge": {
-                          fontSize: "1.2rem", // Aumenta el tamaño del chulito
-                          width: 24, // Ancho del badge
-                          height: 24, // Alto del badge
-                          borderRadius: "50%", // Mantiene el badge circular
+                          fontSize: "1.2rem", 
+                          width: 24, 
+                          height: 24,
+                          borderRadius: "50%", 
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",

@@ -720,7 +720,7 @@ function ScheduleTable() {
           <Grid container rowSpacing={3} columnSpacing={1}>
             <Grid xs={12}>
               <TextField
-                label="Observacion general"
+                label="Observación general"
                 id="outlined-multiline-static"
                 size="small"
                 fullWidth
