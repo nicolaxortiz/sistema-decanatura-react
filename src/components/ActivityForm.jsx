@@ -146,10 +146,10 @@ export default function ActivityForm() {
     } catch (error) {
       if (error.response.status === 401) {
         setSesionInvalid(true);
-      } else if (!!activities) {
+      } else {
         const dataStr = localStorage.getItem("Activity");
         const data = JSON.parse(dataStr);
-        if (data) {
+        if (data?.activities.length > 0) {
           setActivities(data);
         }
       }
@@ -379,7 +379,7 @@ export default function ActivityForm() {
         open={open}
         onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
       >
         <Alert
           onClose={handleClose}

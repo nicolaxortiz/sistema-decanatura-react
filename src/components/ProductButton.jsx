@@ -63,7 +63,12 @@ function ProductButton({ state, products }) {
           </Button>
         </Grid>
       </Grid>
-      <Snackbar open={open} onClose={handleClose} autoHideDuration={6000}>
+      <Snackbar
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        autoHideDuration={3000}
+      >
         <Alert
           onClose={handleClose}
           severity={code}

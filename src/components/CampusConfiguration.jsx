@@ -365,7 +365,7 @@ export default function CampusConfiguration() {
         open={openSnack}
         onClose={handleCloseSnack}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
       >
         <Alert
           onClose={handleCloseSnack}

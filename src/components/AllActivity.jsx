@@ -326,7 +326,7 @@ function AllActivity() {
         open={open}
         onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
       >
         <Alert
           onClose={handleClose}

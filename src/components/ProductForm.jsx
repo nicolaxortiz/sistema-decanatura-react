@@ -17,7 +17,8 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
 export default function ProductForm() {
-  const isFirstRender = React.useRef(true);
+  const isFirstRenderPage = React.useRef(true);
+  const isFirstRenderSearch = React.useRef(true);
   const [backPage, setBackPage] = React.useState(0);
 
   const [products, setProducts] = React.useState([]);
@@ -87,10 +88,10 @@ export default function ProductForm() {
   } = useForm(initialForm, ProductValidation, call, type);
 
   React.useEffect(() => {
-    if (isFirstRender.current) {
+    if (isFirstRenderPage.current) {
       setPage(0);
       setBackPage(0);
-      isFirstRender.current = false;
+      isFirstRenderPage.current = false;
       return;
     }
 
@@ -145,17 +146,34 @@ export default function ProductForm() {
     } catch (error) {
       if (error.response?.status === 401) {
         setSesionInvalid(true);
-      } else if (!!activities) {
+      } else {
         const dataStr = localStorage.getItem("Activity");
         const data = JSON.parse(dataStr);
-        if (data) {
-          setActivities(data);
-        } else {
-          navigate("/activity");
+
+        if (!data || data?.activities.length === 0) {
+          setMessage("No se encontraron actividades");
+          setCode("warning");
+          handleClick();
         }
       }
     }
   };
+
+  React.useEffect(() => {
+    if (activities) {
+      if (isFirstRenderSearch.current) {
+        console.log("Primera busqueda");
+
+        activities?.forEach((activity, index) => {
+          if (activity?.product?.estimated_date) {
+            setPage(index + 1);
+            setBackPage(index + 1);
+          }
+        });
+        isFirstRenderSearch.current = false;
+      }
+    }
+  }, [activities]);
 
   React.useEffect(() => {
     if (user?.id != undefined) {
@@ -183,9 +201,10 @@ export default function ProductForm() {
               >
                 <Grid xs={12}>
                   <div className="pag-box product-row-g">
-                    {page + 1 > activities?.length
-                      ? `Productos finalizados`
-                      : `Producto ${page + 1} de ${activities?.length || 1}`}
+                    {page + 1 > activities?.length && `Productos finalizados`}
+                    {page + 1 <= activities?.length &&
+                      `Producto ${page + 1} de ${activities?.length || 0}`}
+                    {!activities && `No se han registrado actividades`}
                   </div>
                 </Grid>
 
@@ -203,7 +222,7 @@ export default function ProductForm() {
                     size="small"
                     fullWidth
                     name="description"
-                    disabled={page + 1 > activities?.length}
+                    disabled={page + 1 > activities?.length || !activities}
                     value={
                       (activities && activities[page]?.product.description) ||
                       ""
@@ -215,7 +234,7 @@ export default function ProductForm() {
                 <Grid xs={12} sm={6} md={6} lg={6}>
                   <DatePicker
                     label="Fecha estimada de entrega"
-                    disabled={page + 1 > activities?.length}
+                    disabled={page + 1 > activities?.length || !activities}
                     value={
                       form.product.estimated_date === null
                         ? null
@@ -245,7 +264,7 @@ export default function ProductForm() {
                 <Grid xs={12} sm={6} md={6} lg={6}>
                   <DatePicker
                     label="Fecha real de entrega"
-                    disabled={page + 1 > activities?.length}
+                    disabled={page + 1 > activities?.length || !activities}
                     value={
                       form.product.real_date === null
                         ? null
@@ -276,7 +295,7 @@ export default function ProductForm() {
                   <TextField
                     label="Comentario"
                     id="outlined-multiline-static"
-                    disabled={page + 1 > activities?.length}
+                    disabled={page + 1 > activities?.length || !activities}
                     size="small"
                     fullWidth
                     multiline
@@ -310,7 +329,7 @@ export default function ProductForm() {
                     variant="contained"
                     type="submit"
                     fullWidth
-                    disabled={page + 1 > activities?.length}
+                    disabled={page + 1 > activities?.length || !activities}
                   >
                     Siguiente producto
                   </Button>

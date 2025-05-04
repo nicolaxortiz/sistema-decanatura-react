@@ -230,6 +230,11 @@ function ScheduleTable() {
     } catch (error) {
       if (error.response.status === 401) {
         setSesionInvalid(true);
+      } else if (error.response.status === 404) {
+        fetchDataSchedule();
+        setMessage("No existe alguna actividad para eliminar");
+        setCode("error");
+        handleClick();
       } else {
         fetchDataSchedule();
         setMessage("Error al eliminar, inténtelo nuevamente");
@@ -254,6 +259,11 @@ function ScheduleTable() {
     } catch (error) {
       if (error.response.status === 401) {
         setSesionInvalid(true);
+      } else if (error.response.status === 404) {
+        fetchDataSchedule();
+        setMessage("No existen actividades para eliminar");
+        setCode("error");
+        handleClick();
       } else {
         fetchDataSchedule();
         setMessage("Error al eliminar, inténtelo nuevamente");
@@ -331,13 +341,14 @@ function ScheduleTable() {
         } catch (error) {
           if (error.response.status === 401) {
             setSesionInvalid(true);
-          } else if (!!activities) {
+          } else {
             const dataStr = localStorage.getItem("Activity");
             const data = JSON.parse(dataStr);
-            if (data) {
-              setActivities(data);
-            } else {
-              setTab(2);
+
+            if (!data || data?.activities.length === 0) {
+              setMessage("No se encontraron actividades");
+              setCode("warning");
+              handleClick();
             }
           }
         }
@@ -862,7 +873,7 @@ function ScheduleTable() {
         open={openSnack}
         onClose={handleCloseSnack}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
       >
         <Alert
           onClose={handleCloseSnack}

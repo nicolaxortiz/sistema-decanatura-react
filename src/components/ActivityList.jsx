@@ -55,25 +55,40 @@ export default function ActivityList() {
       const deleteResponse = await APIactividades.deleteActivity(id);
 
       if (deleteResponse.status === 200) {
-        const responseData = await APIactividades.getbyIdDocenteAndSemester(
-          user?.id,
-          configuration?.semester
-        );
-
-        if (responseData.status === 200) {
-          localStorage.setItem(
-            "Activity",
-            JSON.stringify({
-              activities: responseData.data.activities,
-              teacher_id: user?._id,
-            })
+        setMessage("Actividad eliminada correctamente");
+        setCode("success");
+        handleClick();
+        try {
+          const responseData = await APIactividades.getbyIdDocenteAndSemester(
+            user?.id,
+            configuration?.semester
           );
 
-          setActivities(responseData.data.activities);
-          setMessage("Actividad eliminada correctamente");
-          setCode("warning");
-          handleClick();
+          if (responseData.status === 200) {
+            localStorage.setItem(
+              "Activity",
+              JSON.stringify({
+                activities: responseData.data.activities,
+                teacher_id: user?._id,
+              })
+            );
 
+            setActivities(responseData.data.activities);
+          }
+        } catch (errorActivities) {
+          if (errorActivities.response.status === 404) {
+            setActivities();
+            localStorage.setItem(
+              "Activity",
+              JSON.stringify({
+                activities: [],
+                teacher_id: user?._id,
+              })
+            );
+          }
+        }
+
+        try {
           const searchResponse = await APIformat.getByTeacherIdAndSemester(
             user?.id,
             configuration?.semester
@@ -85,15 +100,14 @@ export default function ActivityList() {
               { is_finish: false }
             );
           }
-        }
+        } catch (error) {}
       }
-    } catch (error) {
-      if (error.response.status === 401) {
+    } catch (errorDelete) {
+      if (errorDelete.response.status === 401) {
         setSesionInvalid(true);
-      } else if (error.response.status === 404) {
-        setActivities();
-        setMessage("No se encontraron actividades");
-        setCode("error");
+      } else if (errorDelete.response.status === 404) {
+        setMessage("Error al eliminar la actividad");
+        setCode("warning");
         handleClick();
       }
     }
@@ -252,7 +266,7 @@ export default function ActivityList() {
         open={open}
         onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
       >
         <Alert
           onClose={handleClose}
