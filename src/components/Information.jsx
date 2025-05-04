@@ -23,7 +23,7 @@ export const Information = () => {
         </Grid>
         <Grid xs={12}>
           <div>
-            - Los datos personales serán usados unicamente con fines académicos.
+            - Los datos personales serán usados únicamente con fines académicos.
           </div>
         </Grid>
         <Grid xs={12}>

@@ -136,7 +136,7 @@ export const LoginForm = () => {
       }
     } catch (error) {
       if (error.response.status === 401) {
-        setMessage("Error: no tiene permisos para acceder a esta sección");
+        setMessage("No tiene permisos para acceder a esta sección");
         setLoading(false);
         setOpen(true);
       } else if (error.response.status === 404) {

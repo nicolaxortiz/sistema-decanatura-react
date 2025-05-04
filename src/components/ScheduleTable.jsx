@@ -350,7 +350,7 @@ function ScheduleTable() {
   React.useEffect(() => {
     if (user?.id !== undefined) {
       if (
-        user?.employment_type === "Planta" ||
+        user?.employment_type === "Carrera" ||
         user?.employment_type === "Tiempo completo"
       ) {
         setDecimal(
@@ -707,7 +707,7 @@ function ScheduleTable() {
                 >
                   {dataSchedule === undefined
                     ? "0"
-                    : user?.employment_type === "Planta" ||
+                    : user?.employment_type === "Carrera" ||
                       user?.employment_type === "Tiempo completo"
                     ? (dataSchedule?.length + decimal).toLocaleString()
                     : (dataSchedule?.length + decimal).toLocaleString()}
@@ -750,7 +750,7 @@ function ScheduleTable() {
             <Grid xs={6}>
               <Button
                 disabled={
-                  (user?.employment_type === "Planta" ||
+                  (user?.employment_type === "Carrera" ||
                   user?.employment_type === "Tiempo completo"
                     ? dataSchedule?.length + decimal !==
                       parseFloat(configuration?.tc_hours)
@@ -795,7 +795,7 @@ function ScheduleTable() {
             </ListItem>
             {selectedColumn.dia === "Sábado"
               ? activities
-                  ?.filter((item) => item.consolidated === "Docencia") // Filtrar solo las actividades con "Docencia"
+                  ?.filter((item) => item.consolidated === "Docencia")
                   .map((item, index) => {
                     const count = dataSchedule?.filter(
                       (element) =>

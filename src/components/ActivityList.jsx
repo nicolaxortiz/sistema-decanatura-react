@@ -186,9 +186,9 @@ export default function ActivityList() {
             </Grid>
 
             <Grid xs={12} mt={1}>
-              Recuerde: El numero total de horas semanales para docentes con
+              Recuerde: El número total de horas semanales para docentes con
               vinculación de {user?.employment_type} debe ser igual a{" "}
-              {user?.employment_type === "Planta" ||
+              {user?.employment_type === "Carrera" ||
               user?.employment_type === "Tiempo completo"
                 ? configuration?.tc_hours?.replace(".", ",")
                 : configuration?.mt_hours?.replace(".", ",")}
@@ -209,7 +209,7 @@ export default function ActivityList() {
             </Grid>
 
             <Grid xs={6} sm={6} md={6} lg={6}>
-              {user?.employment_type === "Planta" ||
+              {user?.employment_type === "Carrera" ||
               user?.employment_type === "Tiempo completo" ? (
                 <Button
                   variant="contained"
