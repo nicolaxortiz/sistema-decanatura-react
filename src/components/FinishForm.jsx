@@ -125,7 +125,7 @@ function FinishForm() {
 
           <Grid xs={12}>
             <div className="subtitle-finish">
-              El formato F-DC-54 ha sido guardado correctamente y sera revisado
+              El formato F-DC-54 ha sido guardado correctamente y será revisado
               por la coordinación correspondiente.
             </div>
           </Grid>
