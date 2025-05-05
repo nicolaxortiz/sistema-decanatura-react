@@ -200,7 +200,7 @@ export default function CampusConfiguration() {
 
             <Grid xs={12} sm={6} md={6} lg={6}>
               <TextField
-                label="Horas docente planta y tiempo completo"
+                label="Horas docente carrera y tiempo completo"
                 size="small"
                 fullWidth
                 name="tc_hours"

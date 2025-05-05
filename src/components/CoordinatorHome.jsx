@@ -67,6 +67,13 @@ export default function CoordinatorHome() {
   };
 
   const handleMissionPDF = async () => {
+    if (mission === null) {
+      setMessage("Debe seleccionar una misional primero");
+      setCode("warning");
+      handleClick();
+      return;
+    }
+
     try {
       const response = await APIDocument.getReporteByMission(
         user?.program_id,

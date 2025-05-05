@@ -97,7 +97,7 @@ export default function ActivityList() {
           if (searchResponse.status === 200) {
             const updateResponse = await APIformat.putSchedule(
               searchResponse.data.format.id,
-              { is_finish: false }
+              { is_finish: false, is_signed: false }
             );
           }
         } catch (error) {}
@@ -199,15 +199,17 @@ export default function ActivityList() {
               actividades de aula, el equivalente a 45 minutos".
             </Grid>
 
-            <Grid xs={12} mt={1}>
-              Recuerde: El número total de horas semanales para docentes con
-              vinculación de {user?.employment_type} debe ser igual a{" "}
-              {user?.employment_type === "Carrera" ||
-              user?.employment_type === "Tiempo completo"
-                ? configuration?.tc_hours?.replace(".", ",")
-                : configuration?.mt_hours?.replace(".", ",")}
-              .
-            </Grid>
+            {user?.employment_type && (
+              <Grid xs={12} mt={1}>
+                Recuerde: El número total de horas semanales para docentes con
+                vinculación de {user?.employment_type} debe ser igual a{" "}
+                {user?.employment_type === "Carrera" ||
+                user?.employment_type === "Tiempo completo"
+                  ? configuration?.tc_hours?.replace(".", ",")
+                  : configuration?.mt_hours?.replace(".", ",")}
+                .
+              </Grid>
+            )}
 
             <Grid xs={6} sm={6} md={6} lg={6}>
               <Button

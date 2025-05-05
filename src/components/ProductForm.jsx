@@ -151,7 +151,7 @@ export default function ProductForm() {
         const data = JSON.parse(dataStr);
 
         if (!data || data?.activities.length === 0) {
-          setMessage("No se encontraron actividades");
+          setMessage("Debe ingresar actividades para registrar productos");
           setCode("warning");
           handleClick();
         }
@@ -162,8 +162,6 @@ export default function ProductForm() {
   React.useEffect(() => {
     if (activities) {
       if (isFirstRenderSearch.current) {
-        console.log("Primera busqueda");
-
         activities?.forEach((activity, index) => {
           if (activity?.product?.estimated_date) {
             setPage(index + 1);

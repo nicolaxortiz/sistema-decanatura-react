@@ -176,6 +176,14 @@ export default function ActivityForm() {
   React.useEffect(() => {
     if (user?.id != undefined) {
       fetchData();
+
+      if (!user?.employment_type) {
+        setMessage(
+          "Debe ingresar sus datos personales para registrar actividades"
+        );
+        setCode("warning");
+        handleClick();
+      }
     }
   }, [user]);
 
@@ -230,6 +238,7 @@ export default function ActivityForm() {
                   disablePortal
                   id="combo-box-demo"
                   options={arrayNombres}
+                  disabled={loading || !user?.employment_type}
                   value={form?.name || ""}
                   renderInput={(params) => (
                     <TextField
@@ -271,6 +280,7 @@ export default function ActivityForm() {
                     size="small"
                     fullWidth
                     name="description"
+                    disabled={loading || !user?.employment_type}
                     onBlur={handleBlur}
                     value={defaultDescription}
                     onChange={handleChange}
@@ -283,6 +293,7 @@ export default function ActivityForm() {
                     disablePortal
                     id="combo-box-demo"
                     options={campos?.Asignaturas || []}
+                    disabled={loading || !user?.employment_type}
                     value={form?.description}
                     renderInput={(params) => (
                       <TextField
@@ -306,6 +317,7 @@ export default function ActivityForm() {
                   <Autocomplete
                     disablePortal
                     id="combo-box-demo"
+                    disabled={loading || !user?.employment_type}
                     value={form?.group_name}
                     options={campos?.Grupos || []}
                     renderInput={(params) => (
@@ -332,6 +344,7 @@ export default function ActivityForm() {
                   fullWidth
                   type="number"
                   name="hours"
+                  disabled={loading || !user?.employment_type}
                   onBlur={handleBlur}
                   value={form?.hours}
                   onChange={handleChange}
@@ -356,7 +369,7 @@ export default function ActivityForm() {
               <Grid xs={12}>
                 <Button
                   variant="contained"
-                  disabled={loading}
+                  disabled={loading || !user?.employment_type}
                   type="submit"
                   fullWidth
                 >

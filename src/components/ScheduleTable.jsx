@@ -346,7 +346,7 @@ function ScheduleTable() {
             const data = JSON.parse(dataStr);
 
             if (!data || data?.activities.length === 0) {
-              setMessage("No se encontraron actividades");
+              setMessage("Debe ingresar actividades para registrar el horario");
               setCode("warning");
               handleClick();
             }
