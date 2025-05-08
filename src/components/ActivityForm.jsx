@@ -226,7 +226,7 @@ export default function ActivityForm() {
       <div className="form-box">
         <Grid container>
           <Grid xs={12}>
-            <div className="title-form">Nueva actividad</div>
+            <div className="title-finish">Nueva actividad</div>
           </Grid>
         </Grid>
 

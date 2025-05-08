@@ -16,6 +16,20 @@ export async function getDocument(semester, id) {
   return response;
 }
 
+export async function getDocumentByMission(semester, id, mission) {
+  const response = await axios.get(
+    `${apiUrl}/api/documento/pdf/${semester}/${id}/${mission}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("Token")}`,
+      },
+      responseType: "blob",
+    }
+  );
+
+  return response;
+}
+
 export async function getReporte(program_id, semester, title) {
   const response = await axios.get(
     `${apiUrl}/api/documento/pdfFinal/${program_id}/${semester}/${title}`,

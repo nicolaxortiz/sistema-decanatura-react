@@ -32,7 +32,6 @@ export async function getByCampusId(campus_id) {
 export async function postCoordinator(coordinator) {
   const response = await axios.post(apiUrl + "/api/coordinador", coordinator, {
     headers: {
-      "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${localStorage.getItem("Token")}`,
     },
   });

@@ -185,7 +185,7 @@ export default function ProductForm() {
       <div className="form-product">
         <Grid container>
           <Grid xs={12}>
-            <div className="title-form">Lista de productos</div>
+            <div className="title-finish">Lista de productos</div>
           </Grid>
         </Grid>
         <ThemeProvider theme={theme}>

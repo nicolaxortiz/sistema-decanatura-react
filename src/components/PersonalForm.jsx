@@ -12,7 +12,6 @@ import { theme } from "../resources/theme.js";
 import Button from "@mui/material/Button";
 import { useForm } from "../hooks/UseForms.js";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useNavigate } from "react-router-dom";
 import { TeacherValidation } from "../validations/TeacherValidation.js";
 import * as APIdocentes from "../API/TeacherCall.js";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -212,7 +211,7 @@ export default function PersonalForm() {
       <div className="form-box">
         <Grid container>
           <Grid xs={12}>
-            <div className="title-form">Información Personal</div>
+            <div className="title-finish">Información Personal</div>
           </Grid>
         </Grid>
 
@@ -288,6 +287,7 @@ export default function PersonalForm() {
                   fullWidth
                   type="number"
                   name="document"
+                  disabled
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={form?.document || ""}

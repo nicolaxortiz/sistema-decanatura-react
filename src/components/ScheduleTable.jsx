@@ -381,7 +381,7 @@ function ScheduleTable() {
       <div className="table-form">
         <Grid container>
           <Grid xs={12}>
-            <div className="title-form">Horario semanal</div>
+            <div className="title-finish">Horario semanal</div>
           </Grid>
         </Grid>
 

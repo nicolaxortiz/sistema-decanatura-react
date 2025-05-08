@@ -9,6 +9,7 @@ import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import * as APIDocument from "../API/DocumentCall.js";
+import * as APIFormat from "../API/FormatCall.js";
 import { UseContext } from "../context/UseContext.js";
 import { Misionales } from "../resources/bucaramanga.js";
 
@@ -62,6 +63,68 @@ export default function CoordinatorHome() {
         setMessage("Error al generar el PDF, inténtelo nuevamente");
         setCode("error");
         handleClick();
+      }
+    }
+  };
+
+  const handleFormatMissionPDF = async (data) => {
+    if (mission === null) {
+      setMessage("Debe seleccionar una misional primero");
+      setCode("warning");
+      handleClick();
+      return;
+    }
+
+    try {
+      const searchResponse = await APIFormat.getByProgramIdAndSemester(
+        user?.program_id,
+        configuration?.semester,
+        null,
+        null,
+        true
+      );
+
+      if (searchResponse.status === 200) {
+        let newMission = "";
+        if (mission === "Otras") {
+          newMission = "Otros";
+        } else {
+          newMission = mission;
+        }
+
+        searchResponse.data.format.forEach(async (element) => {
+          try {
+            const response = await APIDocument.getDocumentByMission(
+              configuration?.semester,
+              element.teacher_id,
+              newMission
+            );
+
+            if (response.status === 200) {
+              const blob = response.data;
+              const url = window.URL.createObjectURL(blob);
+
+              const pdfFileName = `F-DC-54-${element?.first_name}-${element?.last_name}-Semestre${configuration?.semester}.pdf`;
+
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = pdfFileName;
+              a.click();
+            }
+          } catch (error) {
+            if (error.response.status === 401) {
+              setSesionInvalid(true);
+            } else {
+              setMessage("Aún no ha registrado una firma en la configuración");
+              setCode("error");
+              handleClick();
+            }
+          }
+        });
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
       }
     }
   };
@@ -137,7 +200,7 @@ export default function CoordinatorHome() {
           </Grid>
 
           <ThemeProvider theme={theme}>
-            <Grid xs={6} style={{ marginBottom: 5 }}>
+            <Grid xs={4} style={{ marginBottom: 5 }}>
               <Autocomplete
                 disablePortal
                 options={Misionales}
@@ -153,7 +216,7 @@ export default function CoordinatorHome() {
               />
             </Grid>
 
-            <Grid xs={6} style={{ marginBottom: 5 }}>
+            <Grid xs={4} style={{ marginBottom: 5 }}>
               <Button
                 variant="contained"
                 color="search"
@@ -162,7 +225,20 @@ export default function CoordinatorHome() {
                   handleMissionPDF();
                 }}
               >
-                Generar acumulado PDF por misional
+                Acumulado por misional
+              </Button>
+            </Grid>
+
+            <Grid xs={4} style={{ marginBottom: 5 }}>
+              <Button
+                variant="contained"
+                color="search"
+                fullWidth
+                onClick={() => {
+                  handleFormatMissionPDF();
+                }}
+              >
+                F-DC-54 por misional
               </Button>
             </Grid>
 
@@ -175,7 +251,7 @@ export default function CoordinatorHome() {
                   handleFinalPDF();
                 }}
               >
-                Generar formato PDF acumulado
+                Generar formato acumulado
               </Button>
             </Grid>
           </ThemeProvider>

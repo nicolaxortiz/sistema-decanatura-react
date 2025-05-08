@@ -42,8 +42,6 @@ export default function AllCoordinators() {
   const [totalCoordinator, setTotalCoordinator] = React.useState(0);
   const [programList, setProgramList] = React.useState();
   const [selectedProgram, setSelectedProgram] = React.useState(null);
-  const [previewSignature, setPreviewSignature] = React.useState();
-  const [signature, setSignature] = React.useState();
 
   const handleClick = () => {
     setOpenSnack(true);
@@ -65,8 +63,6 @@ export default function AllCoordinators() {
     setOpen(false);
     setSelectedCoordinator();
     setSelectedProgram(null);
-    setPreviewSignature();
-    setSignature();
   };
 
   const handleCoordinator = async (form) => {
@@ -131,15 +127,6 @@ export default function AllCoordinators() {
           handleClick();
         }
       }
-    }
-  };
-
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-
-      setPreviewSignature(imageUrl);
     }
   };
 
@@ -242,12 +229,6 @@ export default function AllCoordinators() {
                         onClick={() => {
                           setFormOption("put");
                           setSelectedCoordinator(item);
-                          setPreviewSignature(
-                            `${APIURL}/api/images/${
-                              item.document
-                            }firma.jpg?v=${new Date().getTime()}`
-                          );
-
                           handleClickOpen();
                         }}
                       >
@@ -307,7 +288,6 @@ export default function AllCoordinators() {
               last_name: formJson.last_name,
               email: formJson.email,
               program_id: formJson.program,
-              signature: formJson.signature,
             });
           },
         }}
@@ -322,36 +302,6 @@ export default function AllCoordinators() {
             Ingrese los datos del coordinador (Recuerde asignar un programa)
           </DialogContentText>
           <ThemeProvider theme={theme}>
-            <Grid container rowSpacing={1} columnSpacing={1}>
-              <Grid xs={12}>
-                <p>Firma del coordinador</p>
-              </Grid>
-
-              <Grid xs={12} marginBottom={2}>
-                <img
-                  src={previewSignature}
-                  alt={"Firma coordinador"}
-                  className="signatureImg-form"
-                />
-              </Grid>
-
-              <Grid xs={12}>
-                <Button
-                  variant="contained"
-                  component="label"
-                  color="primary"
-                  size="small"
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    name="signature"
-                    onChange={handleImageChange}
-                  />
-                </Button>
-              </Grid>
-            </Grid>
-
             <TextField
               required
               margin="dense"

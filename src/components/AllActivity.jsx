@@ -26,6 +26,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
+import Checkbox from "@mui/material/Checkbox";
+import { Button } from "@mui/material";
 
 function AllActivity() {
   const navigate = useNavigate();
@@ -76,7 +78,7 @@ function AllActivity() {
       if (error.response.status === 401) {
         setSesionInvalid(true);
       } else {
-        setMessage("Error al generar el PDF, inténtelo nuevamente");
+        setMessage("Aún no ha registrado una firma en la configuración");
         setCode("error");
         handleClick();
       }
@@ -124,6 +126,12 @@ function AllActivity() {
         handleClick();
       }
     }
+  };
+
+  const handleSetAllSigned = async () => {
+    formatData.forEach(async (element) => {
+      handleSignDocument(element.id, false);
+    });
   };
 
   const handleChangePage = (event, value) => {
@@ -183,8 +191,8 @@ function AllActivity() {
         </Grid>
 
         <Grid container rowSpacing={2} columnSpacing={1}>
-          <Grid xs={10}>
-            <FormControl sx={{ m: 1, width: "50%" }} size="small">
+          <Grid xs={8}>
+            <FormControl sx={{ m: 1, width: "70%" }} size="small">
               <TextField
                 label="Nombre del docente"
                 size="small"
@@ -216,6 +224,24 @@ function AllActivity() {
               </Select>
             </FormControl>
           </Grid>
+
+          <ThemeProvider theme={theme}>
+            <Grid xs={2}>
+              <FormControl sx={{ m: 1, width: "100%" }} size="small">
+                <Button
+                  disabled={filterState === false}
+                  variant="contained"
+                  color="search"
+                  fullWidth
+                  onClick={() => {
+                    handleSetAllSigned();
+                  }}
+                >
+                  Firmar pagina
+                </Button>
+              </FormControl>
+            </Grid>
+          </ThemeProvider>
 
           <Grid xs={12} sx={{ marginLeft: 2 }}>
             <p>

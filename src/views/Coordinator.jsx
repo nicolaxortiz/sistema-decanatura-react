@@ -9,8 +9,10 @@ import AllActivity from "../components/AllActivity.jsx";
 import CoordinatorHome from "../components/CoordinatorHome.jsx";
 import PersonIcon from "@mui/icons-material/Person";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import BuildIcon from "@mui/icons-material/Build";
 import ArticleIcon from "@mui/icons-material/Article";
 import FinishSesionModal from "../components/FinishSesionModal.jsx";
+import CoordinatorConfiguration from "../components/CoordinatorConfiguration.jsx";
 
 export default function Coordinator() {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ export default function Coordinator() {
     { id: 1, name: "Documentos", icon: ArticleIcon },
     { id: 2, name: "Docentes", icon: PersonIcon },
     { id: 3, name: "Formatos", icon: LibraryBooksIcon },
+    { id: 4, name: "Configuración", icon: BuildIcon },
   ];
 
   React.useEffect(() => {
@@ -59,6 +62,7 @@ export default function Coordinator() {
       {option === 1 && <CoordinatorHome />}
       {option === 2 && <AllTeachers />}
       {option === 3 && <AllActivity />}
+      {option === 4 && <CoordinatorConfiguration />}
       <Footer />
       <FinishSesionModal />
     </>

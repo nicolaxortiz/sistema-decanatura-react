@@ -13,7 +13,7 @@ function Options({ list }) {
         <ThemeProvider theme={theme}>
           {list?.map((item) => {
             return (
-              <Grid xs={4} key={item.id}>
+              <Grid xs={list.length === 3 ? 4 : 3} key={item.id}>
                 <div
                   className={option !== item.id ? "option" : "option-selected"}
                   onClick={() => {
