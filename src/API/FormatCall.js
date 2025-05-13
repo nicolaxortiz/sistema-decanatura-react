@@ -38,6 +38,34 @@ export async function getByProgramIdAndSemester(
   return response;
 }
 
+export async function getSignedByProgramIdAndSemester(
+  id,
+  semester,
+  searchName,
+  actualPage,
+  is_coord_signed,
+  is_dean_signed
+) {
+  const response = await axios.post(
+    `${apiUrl}/api/formato/getAllSigned`,
+    {
+      id,
+      semester,
+      searchName,
+      actualPage,
+      is_coord_signed,
+      is_dean_signed,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("Token")}`,
+      },
+    }
+  );
+
+  return response;
+}
+
 export async function postFormat(format) {
   const response = await axios.post(apiUrl + "/api/formato/", format, {
     headers: {

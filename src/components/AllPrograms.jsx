@@ -23,9 +23,15 @@ import Alert from "@mui/material/Alert";
 import * as APIprogram from "../API/ProgramCall";
 import EditIcon from "@mui/icons-material/Edit";
 import { UseContext } from "../context/UseContext.js";
+import * as camposBucaramanga from "../resources/bucaramanga.js";
+import * as camposVelez from "../resources/velez.js";
+import * as camposBarranca from "../resources/velez.js";
+import * as camposPiedecuesta from "../resources/velez.js";
+import { Autocomplete } from "@mui/material";
 
 export default function AllPrograms() {
-  const { user, setSesionInvalid } = React.useContext(UseContext);
+  const { user, setSesionInvalid, configuration } =
+    React.useContext(UseContext);
   const [programData, setProgramData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -37,6 +43,7 @@ export default function AllPrograms() {
   const [totalPages, setTotalPages] = React.useState(0);
   const [actualPage, setActualPage] = React.useState(1);
   const [totalPrograms, setTotalPrograms] = React.useState(0);
+  const [campos, setCampos] = React.useState(null);
 
   const handleClick = () => {
     setOpenSnack(true);
@@ -145,6 +152,18 @@ export default function AllPrograms() {
       fetchData();
     }
   }, [user, loading, actualPage]);
+
+  React.useEffect(() => {
+    if (configuration?.information === "bucaramanga.js") {
+      setCampos(camposBucaramanga);
+    } else if (configuration?.information === "velez.js") {
+      setCampos(camposVelez);
+    } else if (configuration?.information === "piedecuesta.js") {
+      setCampos(camposPiedecuesta);
+    } else if (configuration?.information === "barranca.js") {
+      setCampos(camposBarranca);
+    }
+  }, [configuration]);
   return (
     <>
       <div className="table-form">
@@ -153,9 +172,7 @@ export default function AllPrograms() {
         </Grid>
 
         <Grid xs={12} sx={{ marginLeft: 2 }}>
-          <p>
-            Mostrando {programData?.length || 0} programas de {totalPrograms}
-          </p>
+          <p>Número total de programas: {totalPrograms}</p>
         </Grid>
 
         <TableContainer>
@@ -165,6 +182,7 @@ export default function AllPrograms() {
                 <TableCell>Nombre del programa</TableCell>
                 <TableCell>Nombre del coordinador</TableCell>
                 <TableCell>Campus</TableCell>
+                <TableCell>Facultad</TableCell>
                 <TableCell align="center">Opciones</TableCell>
               </TableRow>
             </TableHead>
@@ -181,6 +199,7 @@ export default function AllPrograms() {
                       : "Sin asignar"}
                   </TableCell>
                   <TableCell>{user?.name}</TableCell>
+                  <TableCell>{item.program_faculty}</TableCell>
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
                       <IconButton
@@ -242,6 +261,7 @@ export default function AllPrograms() {
             const formJson = Object.fromEntries(formData.entries());
             handleProgram({
               name: formJson.name,
+              faculty: formJson.faculty,
               campus_id: user?.id,
             });
           },
@@ -270,6 +290,26 @@ export default function AllPrograms() {
               variant="standard"
             />
             <br />
+
+            <Autocomplete
+              sx={{ mt: 2 }}
+              disablePortal
+              id="combo-box-demo"
+              options={campos?.Facultades || []}
+              defaultValue={selectedProgram?.program_faculty}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  required
+                  label="Facultad"
+                  id="faculty"
+                  name="faculty"
+                  size="small"
+                  fullWidth
+                  variant="standard"
+                />
+              )}
+            />
             <br />
 
             {formOption === "put" && (

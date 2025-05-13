@@ -7,10 +7,12 @@ import Options from "../components/Options.jsx";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import BuildIcon from "@mui/icons-material/Build";
+import SchoolIcon from "@mui/icons-material/School";
 import AllPrograms from "../components/AllPrograms.jsx";
 import AllCoordinators from "../components/AllCoordinators.jsx";
 import CampusConfiguration from "../components/CampusConfiguration.jsx";
 import FinishSesionModal from "../components/FinishSesionModal.jsx";
+import AllDeans from "../components/AllDeans.jsx";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -20,7 +22,8 @@ export default function Admin() {
   const optionList = [
     { id: 1, name: "Programas", icon: AccountBalanceIcon },
     { id: 2, name: "Coordinadores", icon: RecordVoiceOverIcon },
-    { id: 3, name: "Configuración", icon: BuildIcon },
+    { id: 3, name: "Decanos", icon: SchoolIcon },
+    { id: 4, name: "Configuración", icon: BuildIcon },
   ];
 
   React.useEffect(() => {
@@ -37,13 +40,7 @@ export default function Admin() {
         setConfiguration();
       } else {
         if (data.role !== "campus") {
-          setUser(data);
-          setConfiguration(confData);
-          if (data.role === "coordinator") {
-            navigate("/coordinator");
-          } else {
-            navigate("/home");
-          }
+          navigate("/");
         } else {
           setUser(data);
           setConfiguration(confData);
@@ -58,7 +55,8 @@ export default function Admin() {
       <Options list={optionList} />
       {option === 1 && <AllPrograms />}
       {option === 2 && <AllCoordinators />}
-      {option === 3 && <CampusConfiguration />}
+      {option === 3 && <AllDeans />}
+      {option === 4 && <CampusConfiguration />}
       <Footer />
       <FinishSesionModal />
     </>

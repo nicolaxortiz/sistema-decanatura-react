@@ -19,6 +19,7 @@ import * as APIdocentes from "../API/TeacherCall.js";
 import * as APIcoordinador from "../API/CoordinatorCall.js";
 import * as APIConfiguracion from "../API/ConfigurationCall.js";
 import * as APIcampus from "../API/CampusCall.js";
+import * as APIdean from "../API/DeanCall.js";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
@@ -64,22 +65,38 @@ export const LoginForm = () => {
           } catch (errorCoordinator) {
             if (errorCoordinator?.response?.status === 404) {
               try {
-                const responseCampus = await APIcampus.getByCredential(
+                const responseDean = await APIdean.getByCredential(
                   email,
                   password
                 );
 
-                if (responseCampus.status === 200) {
+                if (responseDean.status === 200) {
                   handleSetUser(
-                    responseCampus.data.campus,
-                    responseCampus.data.token
+                    responseDean.data.dean,
+                    responseDean.data.token
                   );
                 }
-              } catch (errorCampus) {
-                if (errorCampus?.response?.status === 404) {
-                  setMessage("Los datos ingresados son incorrectos");
-                  setLoading(false);
-                  setOpen(true);
+              } catch (errorDean) {
+                if (errorDean?.response?.status === 404) {
+                  try {
+                    const responseCampus = await APIcampus.getByCredential(
+                      email,
+                      password
+                    );
+
+                    if (responseCampus.status === 200) {
+                      handleSetUser(
+                        responseCampus.data.campus,
+                        responseCampus.data.token
+                      );
+                    }
+                  } catch (errorCampus) {
+                    if (errorCampus?.response?.status === 404) {
+                      setMessage("Los datos ingresados son incorrectos");
+                      setLoading(false);
+                      setOpen(true);
+                    }
+                  }
                 }
               }
             }
@@ -111,6 +128,8 @@ export const LoginForm = () => {
 
     if (userData.role && userData.role === "campus") {
       handleConfigurationByCampusId(userData);
+    } else if (userData.role && userData.role === "dean") {
+      handleConfigurationByDean(userData);
     } else if (userData.role && userData.role === "coordinator") {
       handleConfigurationByProgramId(userData, "coordinator");
     } else {
@@ -145,6 +164,35 @@ export const LoginForm = () => {
 
         setLoading(false);
         navigate("/admin");
+      }
+    }
+  };
+
+  const handleConfigurationByDean = async (data) => {
+    try {
+      const response = await APIConfiguracion.getByIdCampus(data.campus_id);
+
+      if (response.status === 200) {
+        const stringUser = JSON.stringify(data);
+        localStorage.setItem("User", stringUser);
+
+        const actualConfiguration = response.data.configurations;
+        const StringConfiguration = JSON.stringify(actualConfiguration);
+        localStorage.setItem("Configuration", StringConfiguration);
+        setConfiguration(actualConfiguration);
+
+        setLoading(false);
+        navigate("/dean");
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        setMessage("Error: no tiene permisos para acceder a esta sección");
+        setLoading(false);
+        setOpen(true);
+      } else if (error.response.status === 404) {
+        setMessage("No se encuentran fechas activas de semestre");
+        setLoading(false);
+        setOpen(true);
       }
     }
   };
@@ -206,11 +254,21 @@ export const LoginForm = () => {
         navigate("/");
         setUser();
         setConfiguration();
+      } else if (data?.role === "campus") {
+        setUser(data);
+        setConfiguration(confData);
+        navigate("/admin");
+      } else if (data?.role === "dean") {
+        setUser(data);
+        setConfiguration(confData);
+        navigate("/dean");
       } else if (data?.role === "coordinator") {
         setUser(data);
         setConfiguration(confData);
         navigate("/coordinator");
       } else {
+        setUser(data);
+        setConfiguration(confData);
         navigate("/home");
       }
     }

@@ -12,20 +12,23 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import * as APIDocument from "../API/DocumentCall.js";
 import * as APIFormat from "../API/FormatCall.js";
+import * as APIprogram from "../API/ProgramCall.js";
 import { UseContext } from "../context/UseContext.js";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
 import * as camposVelez from "../resources/velez.js";
 import * as camposBarranca from "../resources/velez.js";
 import * as camposPiedecuesta from "../resources/velez.js";
 
-export default function CoordinatorHome() {
+export default function DeanHome() {
   const { user, configuration, setSesionInvalid } =
     React.useContext(UseContext);
   const [mission, setMission] = React.useState(null);
+  const [program, setProgram] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
   const [campos, setCampos] = React.useState(null);
+  const [programData, setProgramData] = React.useState([]);
 
   const handleClick = () => {
     setOpen(true);
@@ -42,7 +45,7 @@ export default function CoordinatorHome() {
   const handleFinalPDF = async () => {
     try {
       let response = await APIDocument.getReporte(
-        user?.program_id,
+        program.id,
         configuration?.semester,
         configuration?.title
       );
@@ -51,7 +54,7 @@ export default function CoordinatorHome() {
         const blob = response.data;
         const url = window.URL.createObjectURL(blob);
 
-        const pdfFileName = `${configuration.title}.pdf`;
+        const pdfFileName = `${configuration.title} - ${program.name}.pdf`;
 
         const a = document.createElement("a");
         a.href = url;
@@ -73,17 +76,10 @@ export default function CoordinatorHome() {
     }
   };
 
-  const handleFormatMissionPDF = async (data) => {
-    if (mission === null) {
-      setMessage("Debe seleccionar una misional primero");
-      setCode("warning");
-      handleClick();
-      return;
-    }
-
+  const handleFormatMissionPDF = async () => {
     try {
       const searchResponse = await APIFormat.getByProgramIdAndSemester(
-        user?.program_id,
+        program.id,
         configuration?.semester,
         null,
         null,
@@ -136,7 +132,7 @@ export default function CoordinatorHome() {
         });
 
         const zipBlob = await zip.generateAsync({ type: "blob" });
-        const zipFileName = `F-DC-54 - Semestre ${configuration?.semester} - ${newMission}.zip`;
+        const zipFileName = `F-DC-54 - Semestre ${configuration?.semester} - ${program.name} - ${newMission}.zip`;
         saveAs(zipBlob, zipFileName);
       }
     } catch (error) {
@@ -151,16 +147,9 @@ export default function CoordinatorHome() {
   };
 
   const handleMissionPDF = async () => {
-    if (mission === null) {
-      setMessage("Debe seleccionar una misional primero");
-      setCode("warning");
-      handleClick();
-      return;
-    }
-
     try {
       const response = await APIDocument.getReporteByMission(
-        user?.program_id,
+        program.id,
         configuration?.semester,
         mission,
         configuration?.title
@@ -170,7 +159,7 @@ export default function CoordinatorHome() {
         const blob = response.data;
         const url = window.URL.createObjectURL(blob);
 
-        const pdfFileName = `${configuration.title} - ${mission}.pdf`;
+        const pdfFileName = `${configuration.title} - ${program.name} - ${mission}.pdf`;
 
         const a = document.createElement("a");
         a.href = url;
@@ -192,6 +181,39 @@ export default function CoordinatorHome() {
     }
   };
 
+  const fetchProgramsData = async () => {
+    try {
+      const response = await APIprogram.getByFacultyAndCampusId(
+        user?.campus_id,
+        user?.faculty
+      );
+      if (response.status === 200) {
+        setProgramData(response.data.programs);
+      }
+    } catch (error) {
+      setProgramData([]);
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response?.status === 404) {
+        handleClose();
+        setMessage("No se encontraron programas");
+        setCode("error");
+        handleClick();
+      } else {
+        handleClose();
+        setMessage("Error al traer los datos, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    if (user) {
+      fetchProgramsData();
+    }
+  }, [user]);
+
   React.useEffect(() => {
     if (configuration?.information === "bucaramanga.js") {
       setCampos(camposBucaramanga);
@@ -203,7 +225,6 @@ export default function CoordinatorHome() {
       setCampos(camposBarranca);
     }
   }, [configuration]);
-
   return (
     <>
       <div className="finish-box">
@@ -233,9 +254,28 @@ export default function CoordinatorHome() {
           </Grid>
 
           <ThemeProvider theme={theme}>
-            <Grid xs={4} style={{ marginBottom: 5 }}>
+            <Grid xs={6} style={{ marginBottom: 5 }}>
               <Autocomplete
                 disablePortal
+                id="combo-box-demo"
+                disabled={!programData}
+                options={programData}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                value={program}
+                onChange={(event, newValue) => setProgram(newValue)}
+                size="small"
+                fullWidth
+                renderInput={(params) => (
+                  <TextField {...params} label="Programa" />
+                )}
+              />
+            </Grid>
+
+            <Grid xs={6} style={{ marginBottom: 5 }}>
+              <Autocomplete
+                disablePortal
+                disabled={!campos}
                 options={campos?.Misionales}
                 value={mission}
                 onChange={(event, newValue) => {
@@ -249,12 +289,12 @@ export default function CoordinatorHome() {
               />
             </Grid>
 
-            <Grid xs={4} style={{ marginBottom: 5 }}>
+            <Grid xs={6} style={{ marginBottom: 5 }}>
               <Button
                 variant="contained"
                 color="search"
                 fullWidth
-                disabled={!mission}
+                disabled={!program || !mission}
                 onClick={() => {
                   handleMissionPDF();
                 }}
@@ -263,12 +303,12 @@ export default function CoordinatorHome() {
               </Button>
             </Grid>
 
-            <Grid xs={4} style={{ marginBottom: 5 }}>
+            <Grid xs={6} style={{ marginBottom: 5 }}>
               <Button
                 variant="contained"
                 color="search"
                 fullWidth
-                disabled={!mission}
+                disabled={!program || !mission}
                 onClick={() => {
                   handleFormatMissionPDF();
                 }}
@@ -282,6 +322,7 @@ export default function CoordinatorHome() {
                 variant="contained"
                 color="pdf"
                 fullWidth
+                disabled={!program}
                 onClick={() => {
                   handleFinalPDF();
                 }}

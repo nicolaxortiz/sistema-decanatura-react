@@ -97,7 +97,11 @@ export default function ActivityList() {
           if (searchResponse.status === 200) {
             const updateResponse = await APIformat.putSchedule(
               searchResponse.data.format.id,
-              { is_finish: false, is_signed: false }
+              {
+                is_finish: false,
+                is_coord_signed: false,
+                is_dean_signed: false,
+              }
             );
           }
         } catch (error) {}

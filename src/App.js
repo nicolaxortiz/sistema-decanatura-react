@@ -11,6 +11,7 @@ import ChangePassword from "./views/ChangePassword.jsx";
 import Coordinator from "./views/Coordinator.jsx";
 import Admin from "./views/Admin.jsx";
 import Teacher from "./views/Teacher.jsx";
+import Dean from "./views/Dean.jsx";
 
 function App() {
   const initial = States();
@@ -23,6 +24,7 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/recovery" element={<ForgotPassword />} />
             <Route path="/change" element={<ChangePassword />} />
+            <Route path="/dean" element={<Dean />} />
             <Route path="/coordinator" element={<Coordinator />} />
             <Route path="/home" element={<Teacher />} />
             <Route path="*" element={<Login />} />

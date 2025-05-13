@@ -28,6 +28,19 @@ export async function getAllByCampusId(campus_id) {
   return response;
 }
 
+export async function getByFacultyAndCampusId(campus_id, faculty) {
+  const response = await axios.get(
+    `${apiUrl}/api/programa/getByFacultyAndCampusId/${campus_id}/${faculty}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("Token")}`,
+      },
+    }
+  );
+
+  return response;
+}
+
 export async function postProgram(program) {
   const response = await axios.post(`${apiUrl}/api/programa/`, program, {
     headers: {

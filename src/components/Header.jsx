@@ -152,6 +152,7 @@ export default function Header() {
 
                     {user?.role === "campus" && "Cerrar sesión"}
                     {user?.role === "coordinator" && "Cerrar sesión"}
+                    {user?.role === "dean" && "Cerrar sesión"}
                     {user?.role === "teacher" &&
                       role === null &&
                       "Cerrar sesión"}

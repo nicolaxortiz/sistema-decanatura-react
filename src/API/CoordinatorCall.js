@@ -19,12 +19,15 @@ export async function getCoordinatorByEmail(email) {
   return response;
 }
 
-export async function getByCampusId(campus_id) {
-  const response = await axios.get(`${apiUrl}/api/coordinador/${campus_id}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("Token")}`,
-    },
-  });
+export async function getByCampusId(campus_id, actualPage) {
+  const response = await axios.get(
+    `${apiUrl}/api/coordinador/${campus_id}/${actualPage}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("Token")}`,
+      },
+    }
+  );
 
   return response;
 }

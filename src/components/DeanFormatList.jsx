@@ -17,6 +17,7 @@ import IconButton from "@mui/material/IconButton";
 import * as APIFormat from "../API/FormatCall.js";
 import * as APIDocument from "../API/DocumentCall.js";
 import * as APITeacher from "../API/TeacherCall.js";
+import * as APIprogram from "../API/ProgramCall.js";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -26,9 +27,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Autocomplete, Button } from "@mui/material";
 
-function AllActivity() {
+function DeanFormatList() {
   const navigate = useNavigate();
   const [formatData, setFormatData] = React.useState();
   const [open, setOpen] = React.useState(false);
@@ -36,10 +37,11 @@ function AllActivity() {
   const [code, setCode] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [totalPages, setTotalPages] = React.useState(0);
-  const [filterState, setFilterState] = React.useState(true);
   const [actualPage, setActualPage] = React.useState(1);
   const [totalFormat, setTotalFormat] = React.useState();
   const [searchName, setSearchName] = React.useState("");
+  const [programData, setProgramData] = React.useState([]);
+  const [program, setProgram] = React.useState(null);
   const { setUser, user, configuration, setSesionInvalid } =
     React.useContext(UseContext);
 
@@ -84,30 +86,10 @@ function AllActivity() {
     }
   };
 
-  const handleEdit = async (program_id, document) => {
-    try {
-      const response = await APITeacher.getByDocument(program_id, document);
-
-      if (response.status === 200) {
-        const actualTeacher = response.data.teacher;
-        const StringTeacher = JSON.stringify(actualTeacher);
-        const userEdit = JSON.parse(localStorage.getItem("User"));
-        localStorage.setItem("UserEdit", JSON.stringify(userEdit));
-        localStorage.setItem("User", StringTeacher);
-        setUser(actualTeacher);
-        navigate("/home");
-      }
-    } catch (error) {
-      if (error.response.status === 401) {
-        setSesionInvalid(true);
-      }
-    }
-  };
-
-  const handleSignDocument = async (id, is_coord_signed) => {
+  const handleSignDocument = async (id, is_dean_signed) => {
     try {
       const response = await APIFormat.putSchedule(id, {
-        is_coord_signed: !is_coord_signed,
+        is_dean_signed: !is_dean_signed,
       });
 
       if (response.status === 200) {
@@ -128,9 +110,36 @@ function AllActivity() {
   };
 
   const handleSetAllSigned = async () => {
-    formatData.forEach(async (element) => {
-      handleSignDocument(element.id, false);
-    });
+    try {
+      const response = await APIFormat.getSignedByProgramIdAndSemester(
+        program?.id,
+        configuration?.semester,
+        null,
+        null,
+        true,
+        false
+      );
+
+      if (response.status === 200) {
+        response.data.format.forEach(async (element) => {
+          handleSignDocument(element.id, false);
+        });
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response?.status === 404) {
+        handleClose();
+        setMessage("No se encontraron formatos para firmar");
+        setCode("warning");
+        handleClick();
+      } else {
+        handleClose();
+        setMessage("Error al traer los datos, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
+    }
   };
 
   const handleChangePage = (event, value) => {
@@ -140,12 +149,13 @@ function AllActivity() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await APIFormat.getByProgramIdAndSemester(
-        user?.program_id,
+      const response = await APIFormat.getSignedByProgramIdAndSemester(
+        program?.id,
         configuration?.semester,
         searchName,
         actualPage,
-        filterState
+        true,
+        null
       );
 
       if (response.status === 200) {
@@ -172,28 +182,63 @@ function AllActivity() {
     }
   };
 
+  const fetchProgramsData = async () => {
+    try {
+      const response = await APIprogram.getByFacultyAndCampusId(
+        user?.campus_id,
+        user?.faculty
+      );
+      if (response.status === 200) {
+        setProgramData(response.data.programs);
+      }
+    } catch (error) {
+      setProgramData([]);
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response?.status === 404) {
+        handleClose();
+        setMessage("No se encontraron programas");
+        setCode("error");
+        handleClick();
+      } else {
+        handleClose();
+        setMessage("Error al traer los datos, inténtelo nuevamente");
+        setCode("error");
+        handleClick();
+      }
+    }
+  };
+
   React.useEffect(() => {
-    fetchData();
-  }, [user, searchName, filterState, actualPage]);
+    if (user) {
+      setTotalFormat(0);
+      fetchData();
+    }
+  }, [user, searchName, program, actualPage]);
+
+  React.useEffect(() => {
+    if (user) {
+      fetchProgramsData();
+    }
+  }, []);
 
   React.useEffect(() => {
     setActualPage(1);
-  }, [filterState]);
+  }, [program]);
 
   return (
     <>
       <div className="table-form">
         <Grid xs={12}>
-          <div className="title-finish">
-            Listado de formatos {filterState ? "finalizados" : "en progreso"}
-          </div>
+          <div className="title-finish">Listado de formatos</div>
         </Grid>
 
         <Grid container rowSpacing={2} columnSpacing={1}>
-          <Grid xs={8}>
+          <Grid xs={7}>
             <FormControl sx={{ m: 1, width: "70%" }} size="small">
               <TextField
                 label="Nombre del docente"
+                disabled={!program}
                 size="small"
                 fullWidth
                 name="name"
@@ -205,22 +250,23 @@ function AllActivity() {
             </FormControl>
           </Grid>
 
-          <Grid xs={2}>
-            <FormControl sx={{ m: 1, width: "90%" }} size="small">
-              <InputLabel id="demo-simple-select-label">Filtro</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={filterState}
+          <Grid xs={3}>
+            <FormControl sx={{ m: 1, width: "100%" }} size="small">
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                disabled={!programData}
+                options={programData}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                value={program}
+                onChange={(event, newValue) => setProgram(newValue)}
+                size="small"
                 fullWidth
-                label="Filtro"
-                onChange={(e) => {
-                  setFilterState(e.target.value);
-                }}
-              >
-                <MenuItem value={true}>Finalizados</MenuItem>
-                <MenuItem value={false}>En progreso</MenuItem>
-              </Select>
+                renderInput={(params) => (
+                  <TextField {...params} label="Programa" />
+                )}
+              />
             </FormControl>
           </Grid>
 
@@ -228,15 +274,15 @@ function AllActivity() {
             <Grid xs={2}>
               <FormControl sx={{ m: 1, width: "100%" }} size="small">
                 <Button
-                  disabled={filterState === false || formatData === undefined}
                   variant="contained"
                   color="search"
+                  disabled={!program || formatData === undefined}
                   fullWidth
                   onClick={() => {
                     handleSetAllSigned();
                   }}
                 >
-                  Firmar pagina
+                  Firmar todos
                 </Button>
               </FormControl>
             </Grid>
@@ -280,18 +326,6 @@ function AllActivity() {
                   </TableCell>
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
-                      {!row.is_coord_signed && (
-                        <IconButton
-                          aria-label="edit"
-                          size="small"
-                          onClick={() => {
-                            handleEdit(user?.program_id, row.document);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      )}
-
                       {row.is_finish && (
                         <IconButton
                           aria-label="pdf"
@@ -304,26 +338,24 @@ function AllActivity() {
                         </IconButton>
                       )}
 
-                      {!row.is_dean_signed &&
-                        row.is_coord_signed &&
-                        row.is_finish && (
-                          <IconButton
-                            aria-label="edit"
-                            size="small"
-                            onClick={() => {
-                              handleSignDocument(row.id, row.is_coord_signed);
-                            }}
-                          >
-                            <CancelIcon />
-                          </IconButton>
-                        )}
-
-                      {!row.is_coord_signed && row.is_finish && (
+                      {row.is_dean_signed && (
                         <IconButton
                           aria-label="edit"
                           size="small"
                           onClick={() => {
-                            handleSignDocument(row.id, row.is_coord_signed);
+                            handleSignDocument(row.id, row.is_dean_signed);
+                          }}
+                        >
+                          <CancelIcon />
+                        </IconButton>
+                      )}
+
+                      {!row.is_dean_signed && (
+                        <IconButton
+                          aria-label="edit"
+                          size="small"
+                          onClick={() => {
+                            handleSignDocument(row.id, row.is_dean_signed);
                           }}
                         >
                           <CheckCircleIcon />
@@ -369,4 +401,4 @@ function AllActivity() {
   );
 }
 
-export default AllActivity;
+export default DeanFormatList;

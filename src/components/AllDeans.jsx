@@ -21,26 +21,29 @@ import { theme } from "../resources/theme.js";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import * as APIprogram from "../API/ProgramCall";
-import * as APIcoordinator from "../API/CoordinatorCall.js";
+import * as APIdean from "../API/DeanCall.js";
 import EditIcon from "@mui/icons-material/Edit";
 import { UseContext } from "../context/UseContext.js";
+import * as camposBucaramanga from "../resources/bucaramanga.js";
+import * as camposVelez from "../resources/velez.js";
+import * as camposBarranca from "../resources/velez.js";
+import * as camposPiedecuesta from "../resources/velez.js";
 
-export default function AllCoordinators() {
-  const { user, setSesionInvalid } = React.useContext(UseContext);
-  const [coordinatorData, setCoordinatorData] = React.useState();
+export default function AllDeans() {
+  const { user, setSesionInvalid, configuration } =
+    React.useContext(UseContext);
+  const [deanData, setDeanData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [openSnack, setOpenSnack] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
-  const [selectedCoordinator, setSelectedCoordinator] = React.useState();
+  const [selectedDean, setSelectedDean] = React.useState();
   const [formOption, setFormOption] = React.useState();
   const [totalPages, setTotalPages] = React.useState(0);
   const [actualPage, setActualPage] = React.useState(1);
-  const [totalCoordinator, setTotalCoordinator] = React.useState(0);
-  const [programList, setProgramList] = React.useState();
-  const [selectedProgram, setSelectedProgram] = React.useState(null);
+  const [totalDean, setTotalDean] = React.useState(0);
+  const [campos, setCampos] = React.useState(null);
 
   const handleClick = () => {
     setOpenSnack(true);
@@ -60,21 +63,20 @@ export default function AllCoordinators() {
 
   const handleClose = () => {
     setOpen(false);
-    setSelectedCoordinator();
-    setSelectedProgram(null);
+    setSelectedDean();
   };
 
-  const handleCoordinator = async (form) => {
+  const handleDean = async (form) => {
     setLoading(true);
 
     if (formOption === "post") {
       try {
-        const response = await APIcoordinator.postCoordinator(form);
+        const response = await APIdean.postDean(form);
 
         if (response.status === 200) {
           setLoading(false);
           handleClose();
-          setMessage("Coordinador creado correctamente");
+          setMessage("Decano creado correctamente");
           setCode("success");
           handleClick();
         }
@@ -83,9 +85,7 @@ export default function AllCoordinators() {
           setSesionInvalid(true);
         } else if (error.response.status === 409) {
           setLoading(false);
-          setMessage(
-            "Ya existe un coordinador con ese documento, email o programa"
-          );
+          setMessage("Ya existe un decano con ese documento, email o facultad");
           setCode("error");
           handleClick();
         } else {
@@ -97,15 +97,12 @@ export default function AllCoordinators() {
       }
     } else {
       try {
-        const response = await APIcoordinator.updateCoordinator(
-          selectedCoordinator?.coordinator_id,
-          form
-        );
+        const response = await APIdean.updateDean(selectedDean?.id, form);
 
         if (response.status === 200) {
           setLoading(false);
           handleClose();
-          setMessage("Coordinador actualizado correctamente");
+          setMessage("Decano actualizado correctamente");
           setCode("success");
           handleClick();
         }
@@ -114,9 +111,7 @@ export default function AllCoordinators() {
           setSesionInvalid(true);
         } else if (error.response.status === 409) {
           setLoading(false);
-          setMessage(
-            "Ya existe un coordinador con ese documento, email o programa"
-          );
+          setMessage("Ya existe un decano con ese documento, email o facultad");
           setCode("error");
           handleClick();
         } else {
@@ -135,19 +130,19 @@ export default function AllCoordinators() {
 
   const fetchData = async () => {
     try {
-      const response = await APIcoordinator.getByCampusId(user?.id, actualPage);
+      const response = await APIdean.getByCampusId(user?.id, actualPage);
       if (response.status === 200) {
-        setCoordinatorData(response.data.coordinators);
+        setDeanData(response.data.deans);
         setTotalPages(Math.ceil(response.data.count / 8));
-        setTotalCoordinator(response.data.count);
+        setTotalDean(response.data.count);
       }
     } catch (error) {
-      setCoordinatorData();
+      setDeanData();
       if (error.response.status === 401) {
         setSesionInvalid(true);
       } else if (error.response?.status === 404) {
         handleClose();
-        setMessage("No se encontraron coordinadores");
+        setMessage("No se encontraron decanos");
         setCode("error");
         handleClick();
       } else {
@@ -159,56 +154,47 @@ export default function AllCoordinators() {
     }
   };
 
-  const fetchProgramsData = async () => {
-    try {
-      const response = await APIprogram.getAllByCampusId(user?.id);
-      if (response.status === 200) {
-        const options = response.data.programs.map((program) => ({
-          label: program.program_name,
-          id: program.program_id,
-        }));
-
-        setProgramList(options);
-      }
-    } catch (error) {
-      if (error.response.status === 401) {
-        setSesionInvalid(true);
-      } else {
-        setProgramList();
-      }
-    }
-  };
-
   React.useEffect(() => {
     fetchData();
-    fetchProgramsData();
   }, [user, loading, actualPage]);
+
+  React.useEffect(() => {
+    if (configuration?.information === "bucaramanga.js") {
+      setCampos(camposBucaramanga);
+    } else if (configuration?.information === "velez.js") {
+      setCampos(camposVelez);
+    } else if (configuration?.information === "piedecuesta.js") {
+      setCampos(camposPiedecuesta);
+    } else if (configuration?.information === "barranca.js") {
+      setCampos(camposBarranca);
+    }
+  }, [configuration]);
   return (
     <>
       <div className="table-form">
         <Grid xs={12}>
-          <div className="title-finish">Listado de Coordinadores</div>
+          <div className="title-finish">Listado de Decanos</div>
         </Grid>
 
         <Grid xs={12} sx={{ marginLeft: 2 }}>
-          <p>Número total de coordinadores: {totalCoordinator}</p>
+          <p>Número total de decanos: {totalDean}</p>
         </Grid>
 
         <TableContainer>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Nombre del coordinador</TableCell>
+                <TableCell>Nombre del Decano</TableCell>
                 <TableCell>Documento</TableCell>
                 <TableCell>Correo electrónico</TableCell>
-                <TableCell>Programa</TableCell>
+                <TableCell>Facultad</TableCell>
                 <TableCell align="center">Opciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {coordinatorData?.map((item) => (
+              {deanData?.map((item) => (
                 <TableRow
-                  key={item.coordinator_id}
+                  key={item.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>
@@ -216,7 +202,7 @@ export default function AllCoordinators() {
                   </TableCell>
                   <TableCell>{item?.document}</TableCell>
                   <TableCell>{item?.email}</TableCell>
-                  <TableCell>{item?.program_name}</TableCell>
+                  <TableCell>{item?.faculty}</TableCell>
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
                       <IconButton
@@ -224,7 +210,7 @@ export default function AllCoordinators() {
                         size="small"
                         onClick={() => {
                           setFormOption("put");
-                          setSelectedCoordinator(item);
+                          setSelectedDean(item);
                           handleClickOpen();
                         }}
                       >
@@ -260,7 +246,7 @@ export default function AllCoordinators() {
                   handleClickOpen();
                 }}
               >
-                Agregar coordinador
+                Agregar decano
               </Button>
             </Grid>
           </Grid>
@@ -269,6 +255,8 @@ export default function AllCoordinators() {
 
       <Dialog
         open={open}
+        maxWidth={"sm"}
+        fullWidth={true}
         onClose={handleClose}
         PaperProps={{
           component: "form",
@@ -278,25 +266,24 @@ export default function AllCoordinators() {
 
             const formJson = Object.fromEntries(formData.entries());
 
-            handleCoordinator({
+            handleDean({
               document: formJson.document,
               first_name: formJson.name,
               last_name: formJson.last_name,
               email: formJson.email,
-              program_id: formJson.program,
+              faculty: formJson.faculty,
+              campus_id: user?.id,
             });
           },
         }}
       >
         <DialogTitle>
           {formOption === "post"
-            ? "Registro de nuevo coordinador"
-            : "Actualización de coordinador"}
+            ? "Registro de nuevo decano"
+            : "Actualización de decano"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Ingrese los datos del coordinador (Recuerde asignar un programa)
-          </DialogContentText>
+          <DialogContentText>Ingrese los datos del decano</DialogContentText>
           <ThemeProvider theme={theme}>
             <TextField
               required
@@ -305,7 +292,7 @@ export default function AllCoordinators() {
               name="document"
               label="Documento"
               type="number"
-              defaultValue={selectedCoordinator?.document}
+              defaultValue={selectedDean?.document}
               fullWidth
               variant="standard"
             />
@@ -318,7 +305,7 @@ export default function AllCoordinators() {
               name="name"
               label="Nombre"
               type="text"
-              defaultValue={selectedCoordinator?.first_name}
+              defaultValue={selectedDean?.first_name}
               fullWidth
               variant="standard"
             />
@@ -331,7 +318,7 @@ export default function AllCoordinators() {
               name="last_name"
               label="Apellido"
               type="text"
-              defaultValue={selectedCoordinator?.last_name}
+              defaultValue={selectedDean?.last_name}
               fullWidth
               variant="standard"
             />
@@ -344,41 +331,26 @@ export default function AllCoordinators() {
               name="email"
               label="Correo electrónico"
               type="email"
-              defaultValue={selectedCoordinator?.email}
+              defaultValue={selectedDean?.email}
               fullWidth
               variant="standard"
             />
             <br />
 
-            <input
-              name="program"
-              type="hidden"
-              value={
-                selectedProgram?.id || selectedCoordinator?.program_id || ""
-              }
-            />
-
             <Autocomplete
+              sx={{ mt: 2 }}
               disablePortal
               id="combo-box-demo"
-              disabled={!programList}
-              options={programList}
-              getOptionLabel={(option) => option.label}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              value={
-                programList?.find(
-                  (program) => program.id === selectedCoordinator?.program_id
-                ) || selectedProgram
-              }
-              onChange={(event, newValue) => setSelectedProgram(newValue)}
+              options={campos?.Facultades || []}
+              defaultValue={selectedDean?.faculty}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   required
-                  margin="dense"
-                  id="program_display"
-                  name="program_display"
-                  label="Programa"
+                  label="Facultad"
+                  id="faculty"
+                  name="faculty"
+                  size="small"
                   fullWidth
                   variant="standard"
                 />

@@ -9,11 +9,11 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../resources/theme.js";
 import Button from "@mui/material/Button";
 import { useForm } from "../hooks/UseForms.js";
-import * as APIcoordinator from "../API/CoordinatorCall.js";
+import * as APIdean from "../API/DeanCall.js";
 import { CoordinatorValidation } from "../validations/CoordinatorValidation.js";
 import defaultSignature from "../resources/defaultSignature.png";
 
-export default function CoordinatorConfiguration() {
+function DeanConfiguration() {
   const APIURL = process.env.REACT_APP_API_URL;
   const { user, setUser, setSesionInvalid } = React.useContext(UseContext);
   const [openSnack, setOpenSnack] = React.useState(false);
@@ -38,6 +38,7 @@ export default function CoordinatorConfiguration() {
     first_name: "",
     last_name: "",
     email: "",
+    faculty: "",
   });
 
   const [previewSignature, setPreviewSignature] =
@@ -92,6 +93,7 @@ export default function CoordinatorConfiguration() {
       first_name: user?.first_name,
       last_name: user?.last_name,
       email: user?.email,
+      faculty: user?.faculty,
       signature: getSignature,
     });
   };
@@ -104,7 +106,7 @@ export default function CoordinatorConfiguration() {
     if (user) updateForm();
   }, [user]);
 
-  const call = APIcoordinator.updateCoordinator;
+  const call = APIdean.updateDean;
   const type = "put";
 
   const {
@@ -120,10 +122,10 @@ export default function CoordinatorConfiguration() {
 
   React.useEffect(() => {
     if (response?.status === 200) {
-      const actualCoordinator = response.data.updatedCoordinator;
-      const StringCoordinator = JSON.stringify(actualCoordinator);
-      localStorage.setItem("User", StringCoordinator);
-      setUser(actualCoordinator);
+      const actualDean = response.data.updatedDean;
+      const StringDean = JSON.stringify(actualDean);
+      localStorage.setItem("User", StringDean);
+      setUser(actualDean);
       setMessage("Datos guardados correctamente ");
       setCode("success");
       handleClick();
@@ -138,13 +140,12 @@ export default function CoordinatorConfiguration() {
       handleClick();
     }
   }, [response]);
-
   return (
     <>
       <div className="form-box">
         <Grid container sx={{ pt: 1 }}>
           <Grid xs={12}>
-            <div className="title-finish">Perfil coordinador</div>
+            <div className="title-finish">Perfil decano</div>
           </Grid>
         </Grid>
 
@@ -193,6 +194,21 @@ export default function CoordinatorConfiguration() {
                   value={form?.document || ""}
                   error={errors?.states.document}
                   helperText={errors?.messages.document}
+                />
+              </Grid>
+
+              <Grid xs={12} sm={6} md={6} lg={6}>
+                <TextField
+                  label="Facultad"
+                  size="small"
+                  disabled
+                  fullWidth
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={form?.faculty || ""}
+                  error={errors?.states.faculty}
+                  helperText={errors?.messages.faculty}
+                  name="email"
                 />
               </Grid>
 
@@ -275,3 +291,5 @@ export default function CoordinatorConfiguration() {
     </>
   );
 }
+
+export default DeanConfiguration;

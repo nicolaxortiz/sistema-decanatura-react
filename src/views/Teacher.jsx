@@ -61,24 +61,11 @@ function Teacher() {
         setUser();
         setConfiguration();
       } else {
-        setUser(data);
-        setConfiguration(confData);
-      }
-    }
-
-    if (!user) {
-      if (!data) {
-        navigate("/");
-        setUser();
-        setConfiguration();
-      } else {
-        setUser(data);
-        setConfiguration(confData);
-
-        if (data?.role === "campus") {
-          navigate("/admin");
+        if (data.role !== "teacher") {
+          navigate("/");
         } else {
-          navigate("/home");
+          setUser(data);
+          setConfiguration(confData);
         }
       }
     }

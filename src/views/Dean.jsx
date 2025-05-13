@@ -6,24 +6,25 @@ import { Footer } from "../components/Footer";
 import Options from "../components/Options";
 import AllTeachers from "../components/AllTeachers.jsx";
 import AllActivity from "../components/AllActivity.jsx";
-import CoordinatorHome from "../components/CoordinatorHome.jsx";
 import PersonIcon from "@mui/icons-material/Person";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import BuildIcon from "@mui/icons-material/Build";
 import ArticleIcon from "@mui/icons-material/Article";
 import FinishSesionModal from "../components/FinishSesionModal.jsx";
 import CoordinatorConfiguration from "../components/CoordinatorConfiguration.jsx";
+import DeanHome from "../components/DeanHome.jsx";
+import DeanFormatList from "../components/DeanFormatList.jsx";
+import DeanConfiguration from "../components/DeanConfiguration.jsx";
 
-export default function Coordinator() {
+function Dean() {
   const navigate = useNavigate();
   const { setUser, user, option, setConfiguration } =
     React.useContext(UseContext);
 
   const optionList = [
     { id: 1, name: "Documentos", icon: ArticleIcon },
-    { id: 2, name: "Docentes", icon: PersonIcon },
-    { id: 3, name: "Formatos", icon: LibraryBooksIcon },
-    { id: 4, name: "Configuración", icon: BuildIcon },
+    { id: 2, name: "Formatos", icon: LibraryBooksIcon },
+    { id: 3, name: "Configuración", icon: BuildIcon },
   ];
 
   React.useEffect(() => {
@@ -39,7 +40,7 @@ export default function Coordinator() {
         setUser();
         setConfiguration();
       } else {
-        if (data.role !== "coordinator") {
+        if (data.role !== "dean") {
           navigate("/");
         } else {
           setUser(data);
@@ -48,17 +49,17 @@ export default function Coordinator() {
       }
     }
   }, []);
-
   return (
     <>
       <Header />
       <Options list={optionList} />
-      {option === 1 && <CoordinatorHome />}
-      {option === 2 && <AllTeachers />}
-      {option === 3 && <AllActivity />}
-      {option === 4 && <CoordinatorConfiguration />}
+      {option === 1 && <DeanHome />}
+      {option === 2 && <DeanFormatList />}
+      {option === 3 && <DeanConfiguration />}
       <Footer />
       <FinishSesionModal />
     </>
   );
 }
+
+export default Dean;
