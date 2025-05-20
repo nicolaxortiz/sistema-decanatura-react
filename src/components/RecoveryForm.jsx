@@ -14,6 +14,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Collapse from "@mui/material/Collapse";
 import * as APIdocentes from "../API/TeacherCall.js";
 import * as APIcoordinador from "../API/CoordinatorCall.js";
+import * as APIdean from "../API/DeanCall.js";
 import * as APIcampus from "../API/CampusCall.js";
 
 function RecoveryForm() {
@@ -58,9 +59,9 @@ function RecoveryForm() {
           } catch (errorCoordinator) {
             if (errorCoordinator.response.status === 404) {
               try {
-                const responseCampus = await APIcampus.getCampusByEmail(email);
+                const responseDean = await APIdean.getDeanByEmail(email);
 
-                if (responseCampus.status === 200) {
+                if (responseDean.status === 200) {
                   setMessage(
                     "La nueva contraseña ha sido enviada al correo electrónico"
                   );
@@ -68,11 +69,28 @@ function RecoveryForm() {
                   setLoading(false);
                   setOpen(true);
                 }
-              } catch (error) {
-                setMessage("El correo ingresado es incorrecto");
-                setSeverity("error");
-                setLoading(false);
-                setOpen(true);
+              } catch (errorDean) {
+                if (errorDean.response.status === 404) {
+                  try {
+                    const responseCampus = await APIcampus.getCampusByEmail(
+                      email
+                    );
+
+                    if (responseCampus.status === 200) {
+                      setMessage(
+                        "La nueva contraseña ha sido enviada al correo electrónico"
+                      );
+                      setSeverity("success");
+                      setLoading(false);
+                      setOpen(true);
+                    }
+                  } catch (error) {
+                    setMessage("El correo ingresado es incorrecto");
+                    setSeverity("error");
+                    setLoading(false);
+                    setOpen(true);
+                  }
+                }
               }
             }
           }

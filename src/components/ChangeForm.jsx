@@ -17,6 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Collapse from "@mui/material/Collapse";
 import * as APIdocentes from "../API/TeacherCall.js";
 import * as APIcoordinador from "../API/CoordinatorCall.js";
+import * as APIdean from "../API/DeanCall.js";
 import * as APIcampus from "../API/CampusCall.js";
 
 function ChangeForm() {
@@ -99,15 +100,15 @@ function ChangeForm() {
             } catch (errorCoordinator) {
               if (errorCoordinator.response.status === 404) {
                 try {
-                  const responseCampus = await APIcampus.getByCredential(
+                  const responseDean = await APIdean.getByCredential(
                     email,
                     firstPassword
                   );
 
-                  if (responseCampus.status === 200) {
+                  if (responseDean.status === 200) {
                     try {
-                      const changeResponse = await APIcampus.updateCampus(
-                        responseCampus.data.campus.id,
+                      const changeResponse = await APIdean.updateDean(
+                        responseDean.data.dean.id,
                         { password: password }
                       );
 
@@ -124,12 +125,42 @@ function ChangeForm() {
                       setOpenCollapse(true);
                     }
                   }
-                } catch (errorCoordinator) {
-                  if (errorCoordinator.response.status === 404) {
-                    setLoading(false);
-                    setSeverity("error");
-                    setMessage("Los datos ingresados son incorrectos");
-                    setOpenCollapse(true);
+                } catch (errorDean) {
+                  if (errorDean.response.status === 404) {
+                    try {
+                      const responseCampus = await APIcampus.getByCredential(
+                        email,
+                        firstPassword
+                      );
+
+                      if (responseCampus.status === 200) {
+                        try {
+                          const changeResponse = await APIcampus.updateCampus(
+                            responseCampus.data.campus.id,
+                            { password: password }
+                          );
+
+                          if (changeResponse.status === 200) {
+                            setSeverity("success");
+                            setMessage("Contraseña actualizada correctamente");
+                            setLoading(false);
+                            setOpenCollapse(true);
+                          }
+                        } catch (error) {
+                          setLoading(false);
+                          setSeverity("error");
+                          setMessage("Error: inténtelo mas tarde");
+                          setOpenCollapse(true);
+                        }
+                      }
+                    } catch (errorCampus) {
+                      if (errorCampus.response.status === 404) {
+                        setLoading(false);
+                        setSeverity("error");
+                        setMessage("Los datos ingresados son incorrectos");
+                        setOpenCollapse(true);
+                      }
+                    }
                   }
                 }
               }
