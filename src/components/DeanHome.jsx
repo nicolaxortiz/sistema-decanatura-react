@@ -15,9 +15,10 @@ import * as APIFormat from "../API/FormatCall.js";
 import * as APIprogram from "../API/ProgramCall.js";
 import { UseContext } from "../context/UseContext.js";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
-import * as camposVelez from "../resources/velez.js";
-import * as camposBarranca from "../resources/velez.js";
-import * as camposPiedecuesta from "../resources/velez.js";
+import * as camposVelez from "../resources/vélez.js";
+import * as camposBarrancabermeja from "../resources/barrancabermeja.js";
+import * as camposPiedecuesta from "../resources/piedecuesta.js";
+import * as camposVirtual from "../resources/virtual.js";
 
 export default function DeanHome() {
   const { user, configuration, setSesionInvalid } =
@@ -217,12 +218,14 @@ export default function DeanHome() {
   React.useEffect(() => {
     if (configuration?.information === "bucaramanga.js") {
       setCampos(camposBucaramanga);
-    } else if (configuration?.information === "velez.js") {
+    } else if (configuration?.information === "vélez.js") {
       setCampos(camposVelez);
     } else if (configuration?.information === "piedecuesta.js") {
       setCampos(camposPiedecuesta);
-    } else if (configuration?.information === "barranca.js") {
-      setCampos(camposBarranca);
+    } else if (configuration?.information === "barrancabermeja.js") {
+      setCampos(camposBarrancabermeja);
+    } else if (configuration?.information === "virtual.js") {
+      setCampos(camposVirtual);
     }
   }, [configuration]);
   return (

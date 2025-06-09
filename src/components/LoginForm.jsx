@@ -190,9 +190,10 @@ export const LoginForm = () => {
         setLoading(false);
         setOpen(true);
       } else if (error.response.status === 404) {
-        setMessage("No se encuentran fechas activas de semestre");
+        const stringUser = JSON.stringify(data);
+        localStorage.setItem("User", stringUser);
         setLoading(false);
-        setOpen(true);
+        navigate("/dean");
       }
     }
   };
@@ -234,10 +235,15 @@ export const LoginForm = () => {
         setMessage("Error: no tiene permisos para acceder a esta sección");
         setLoading(false);
         setOpen(true);
-      } else if (error.response.status === 404) {
+      } else if (error.response.status === 404 && role !== "coordinator") {
         setMessage("No se encuentran fechas activas de semestre");
         setLoading(false);
         setOpen(true);
+      } else if (error.response.status === 404 && role === "coordinator") {
+        const stringUser = JSON.stringify(data);
+        localStorage.setItem("User", stringUser);
+
+        navigate("/coordinator");
       }
     }
   };

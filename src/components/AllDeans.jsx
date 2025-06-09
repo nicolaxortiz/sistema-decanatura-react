@@ -25,9 +25,10 @@ import * as APIdean from "../API/DeanCall.js";
 import EditIcon from "@mui/icons-material/Edit";
 import { UseContext } from "../context/UseContext.js";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
-import * as camposVelez from "../resources/velez.js";
-import * as camposBarranca from "../resources/velez.js";
-import * as camposPiedecuesta from "../resources/velez.js";
+import * as camposVelez from "../resources/vélez.js";
+import * as camposBarrancabermeja from "../resources/barrancabermeja.js";
+import * as camposPiedecuesta from "../resources/piedecuesta.js";
+import * as camposVirtual from "../resources/virtual.js";
 
 export default function AllDeans() {
   const { user, setSesionInvalid, configuration } =
@@ -166,7 +167,9 @@ export default function AllDeans() {
     } else if (user?.name === "Piedecuesta") {
       setCampos(camposPiedecuesta);
     } else if (user?.name === "Barrancabermeja") {
-      setCampos(camposBarranca);
+      setCampos(camposBarrancabermeja);
+    } else if (user?.name === "Virtual") {
+      setCampos(camposVirtual);
     }
   }, [user]);
   return (

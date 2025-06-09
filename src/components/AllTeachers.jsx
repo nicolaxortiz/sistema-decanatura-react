@@ -271,7 +271,12 @@ function AllTeachers() {
 
           <Grid container rowSpacing={3} columnSpacing={1} marginTop={5}>
             <Grid xs={12}>
-              <Button variant="contained" fullWidth onClick={handleClickOpen}>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleClickOpen}
+                disabled={!configuration}
+              >
                 Agregar docente
               </Button>
             </Grid>

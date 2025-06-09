@@ -119,6 +119,21 @@ export default function Header() {
                   </Button>
                 )}
 
+                {user?.role === "dean" && (
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={() => {
+                      window.open(
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/ERbF1-aGbQBNmERiFFpXTlkBSeyhHvG3cffADWus2RMB-w?e=43QHTY",
+                        "_blank"
+                      );
+                    }}
+                  >
+                    Manual decano
+                  </Button>
+                )}
+
                 {user?.role === "teacher" && (
                   <Button
                     variant="outlined"

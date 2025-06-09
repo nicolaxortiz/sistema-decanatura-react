@@ -29,16 +29,6 @@ export const ConfigurationValidation = (form, fieldName, errors) => {
     }
   }
 
-  if (fieldName === "docencia" || fieldName === "all") {
-    if (!form.docencia) {
-      errors.messages.docencia = "El campo 'Docencia' es requerido";
-      errors.states.docencia = true;
-    } else {
-      delete errors.messages.docencia;
-      delete errors.states.docencia;
-    }
-  }
-
   if (fieldName === "investigacion" || fieldName === "all") {
     if (!form.investigacion) {
       errors.messages.investigacion = "El campo 'Investigación' es requerido";
@@ -76,26 +66,6 @@ export const ConfigurationValidation = (form, fieldName, errors) => {
     } else {
       delete errors.messages.oda;
       delete errors.states.oda;
-    }
-  }
-
-  if (fieldName === "comites" || fieldName === "all") {
-    if (!form.comites) {
-      errors.messages.comites = "El campo 'Comités' es requerido";
-      errors.states.comites = true;
-    } else {
-      delete errors.messages.comites;
-      delete errors.states.comites;
-    }
-  }
-
-  if (fieldName === "otras" || fieldName === "all") {
-    if (!form.otras) {
-      errors.messages.otras = "El campo 'Otras' es requerido";
-      errors.states.otras = true;
-    } else {
-      delete errors.messages.otras;
-      delete errors.states.otras;
     }
   }
 

@@ -12,9 +12,10 @@ import * as APIactividades from "../API/ActivityCall.js";
 import * as APIprogram from "../API/ProgramCall.js";
 import Autocomplete from "@mui/material/Autocomplete";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
-import * as camposVelez from "../resources/velez.js";
-import * as camposBarranca from "../resources/velez.js";
-import * as camposPiedecuesta from "../resources/velez.js";
+import * as camposVelez from "../resources/vélez.js";
+import * as camposBarrancabermeja from "../resources/barrancabermeja.js";
+import * as camposPiedecuesta from "../resources/piedecuesta.js";
+import * as camposVirtual from "../resources/virtual.js";
 import Snackbar from "@mui/material/Snackbar";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
@@ -230,7 +231,7 @@ export default function ActivityForm() {
       setArrayNombres(
         camposBucaramanga.Actividades.map((actividad) => actividad.name)
       );
-    } else if (configuration?.information === "velez.js") {
+    } else if (configuration?.information === "vélez.js") {
       setCampos(camposVelez);
       setArrayNombres(
         camposVelez.Actividades.map((actividad) => actividad.name)
@@ -240,10 +241,15 @@ export default function ActivityForm() {
       setArrayNombres(
         camposPiedecuesta.Actividades.map((actividad) => actividad.name)
       );
-    } else if (configuration?.information === "barranca.js") {
-      setCampos(camposBarranca);
+    } else if (configuration?.information === "barrancabermeja.js") {
+      setCampos(camposBarrancabermeja);
       setArrayNombres(
-        camposBarranca.Actividades.map((actividad) => actividad.name)
+        camposBarrancabermeja.Actividades.map((actividad) => actividad.name)
+      );
+    } else if (configuration?.information === "virtual.js") {
+      setCampos(camposVirtual);
+      setArrayNombres(
+        camposVirtual.Actividades.map((actividad) => actividad.name)
       );
     }
   }, [configuration, coordinator]);

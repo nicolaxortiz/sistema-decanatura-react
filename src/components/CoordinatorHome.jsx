@@ -14,9 +14,10 @@ import * as APIDocument from "../API/DocumentCall.js";
 import * as APIFormat from "../API/FormatCall.js";
 import { UseContext } from "../context/UseContext.js";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
-import * as camposVelez from "../resources/velez.js";
-import * as camposBarranca from "../resources/velez.js";
-import * as camposPiedecuesta from "../resources/velez.js";
+import * as camposVelez from "../resources/vélez.js";
+import * as camposBarrancabermeja from "../resources/barrancabermeja.js";
+import * as camposPiedecuesta from "../resources/piedecuesta.js";
+import * as camposVirtual from "../resources/virtual.js";
 
 export default function CoordinatorHome() {
   const { user, configuration, setSesionInvalid } =
@@ -195,12 +196,14 @@ export default function CoordinatorHome() {
   React.useEffect(() => {
     if (configuration?.information === "bucaramanga.js") {
       setCampos(camposBucaramanga);
-    } else if (configuration?.information === "velez.js") {
+    } else if (configuration?.information === "vélez.js") {
       setCampos(camposVelez);
     } else if (configuration?.information === "piedecuesta.js") {
       setCampos(camposPiedecuesta);
-    } else if (configuration?.information === "barranca.js") {
-      setCampos(camposBarranca);
+    } else if (configuration?.information === "barrancabermeja.js") {
+      setCampos(camposBarrancabermeja);
+    } else if (configuration?.information === "virtual.js") {
+      setCampos(camposVirtual);
     }
   }, [configuration]);
 
@@ -236,6 +239,7 @@ export default function CoordinatorHome() {
             <Grid xs={4} style={{ marginBottom: 5 }}>
               <Autocomplete
                 disablePortal
+                disabled={!campos}
                 options={campos?.Misionales}
                 value={mission}
                 onChange={(event, newValue) => {
@@ -280,6 +284,7 @@ export default function CoordinatorHome() {
             <Grid xs={12} style={{ marginBottom: 10 }}>
               <Button
                 variant="contained"
+                disabled={!campos}
                 color="pdf"
                 fullWidth
                 onClick={() => {
