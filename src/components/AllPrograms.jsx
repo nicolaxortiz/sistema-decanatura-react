@@ -154,16 +154,16 @@ export default function AllPrograms() {
   }, [user, loading, actualPage]);
 
   React.useEffect(() => {
-    if (configuration?.information === "bucaramanga.js") {
+    if (user?.name === "Bucaramanga") {
       setCampos(camposBucaramanga);
-    } else if (configuration?.information === "velez.js") {
+    } else if (user?.name === "Vélez") {
       setCampos(camposVelez);
-    } else if (configuration?.information === "piedecuesta.js") {
+    } else if (user?.name === "Piedecuesta") {
       setCampos(camposPiedecuesta);
-    } else if (configuration?.information === "barranca.js") {
+    } else if (user?.name === "Barrancabermeja") {
       setCampos(camposBarranca);
     }
-  }, [configuration]);
+  }, [user]);
   return (
     <>
       <div className="table-form">

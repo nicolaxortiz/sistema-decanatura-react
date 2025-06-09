@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import { useForm } from "../hooks/UseForms.js";
 import { ActivityValidation } from "../validations/ActivityValidation.js";
 import * as APIactividades from "../API/ActivityCall.js";
+import * as APIprogram from "../API/ProgramCall.js";
 import Autocomplete from "@mui/material/Autocomplete";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
 import * as camposVelez from "../resources/velez.js";
@@ -21,6 +22,7 @@ import Alert from "@mui/material/Alert";
 export default function ActivityForm() {
   const [campos, setCampos] = React.useState(null);
   const [arrayNombres, setArrayNombres] = React.useState([]);
+  const [coordinator, setCoordinator] = React.useState(null);
   const { activities, setActivities, user, configuration, setSesionInvalid } =
     React.useContext(UseContext);
   const [initialForm, setInitialForm] = React.useState({
@@ -173,9 +175,34 @@ export default function ActivityForm() {
     }
   }, [response]);
 
+  const fetchProgramData = async () => {
+    try {
+      const responseProgram = await APIprogram.getById(user?.program_id);
+
+      if (responseProgram.status === 200) {
+        setCoordinator(
+          responseProgram.data.program.coordinator_first_name +
+            " " +
+            responseProgram.data.program.coordinator_last_name
+        );
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else {
+        setMessage(
+          "No se encontró el responsable de la actividad, por favor intente más tarde."
+        );
+        setCode("error");
+        handleClick();
+      }
+    }
+  };
+
   React.useEffect(() => {
     if (user?.id != undefined) {
       fetchData();
+      fetchProgramData();
 
       if (!user?.employment_type) {
         setMessage(
@@ -189,13 +216,13 @@ export default function ActivityForm() {
 
   React.useEffect(() => {
     setResponsibles({
-      Docenciadirecta: configuration?.docencia,
+      Docenciadirecta: coordinator,
       Investigación: configuration?.investigacion,
       Extensión: configuration?.extension,
       ProcesosOACA: configuration?.oaca,
       ProcesosODA: configuration?.oda,
-      Comités: configuration?.comites,
-      Otras: configuration?.otras,
+      Comités: coordinator,
+      Otras: coordinator,
     });
 
     if (configuration?.information === "bucaramanga.js") {
@@ -219,7 +246,7 @@ export default function ActivityForm() {
         camposBarranca.Actividades.map((actividad) => actividad.name)
       );
     }
-  }, [configuration]);
+  }, [configuration, coordinator]);
 
   return (
     <>

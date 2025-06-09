@@ -40,13 +40,10 @@ export default function CampusConfiguration() {
     end_date: null,
     campus_id: user?.id,
     campus_name: user?.name,
-    docencia: "",
     investigacion: "",
     extension: "",
     oaca: "",
     oda: "",
-    comites: "",
-    otras: "",
     title: "",
     tc_hours: 0,
     mt_hours: 0,
@@ -94,13 +91,10 @@ export default function CampusConfiguration() {
       campus_name: user?.name,
       start_date: configuration?.start_date || null,
       end_date: configuration?.end_date || null,
-      docencia: configuration?.docencia,
       investigacion: configuration?.investigacion,
       extension: configuration?.extension,
       oaca: configuration?.oaca,
       oda: configuration?.oda,
-      comites: configuration?.comites,
-      otras: configuration?.otras,
       title: configuration?.title,
       tc_hours: configuration?.tc_hours,
       mt_hours: configuration?.mt_hours,
@@ -232,20 +226,6 @@ export default function CampusConfiguration() {
 
             <Grid xs={12} sm={6} md={6} lg={6}>
               <TextField
-                label="Docencia"
-                size="small"
-                fullWidth
-                name="docencia"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={form?.docencia || ""}
-                error={errors?.states.docencia}
-                helperText={errors?.messages.docencia}
-              />
-            </Grid>
-
-            <Grid xs={12} sm={6} md={6} lg={6}>
-              <TextField
                 label="Investigación"
                 size="small"
                 fullWidth
@@ -297,34 +277,6 @@ export default function CampusConfiguration() {
                 value={form?.oda || ""}
                 error={errors?.states.oda}
                 helperText={errors?.messages.oda}
-              />
-            </Grid>
-
-            <Grid xs={12} sm={6} md={6} lg={6}>
-              <TextField
-                label="Comités"
-                size="small"
-                fullWidth
-                name="comites"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={form?.comites || ""}
-                error={errors?.states.comites}
-                helperText={errors?.messages.comites}
-              />
-            </Grid>
-
-            <Grid xs={12} sm={6} md={6} lg={6}>
-              <TextField
-                label="Otras"
-                size="small"
-                fullWidth
-                name="otras"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={form?.otras || ""}
-                error={errors?.states.otras}
-                helperText={errors?.messages.otras}
               />
             </Grid>
 

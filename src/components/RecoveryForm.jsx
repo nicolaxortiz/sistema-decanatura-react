@@ -134,7 +134,8 @@ function RecoveryForm() {
           <Grid xs={12}>
             <div>
               - Para realizar el cambio de contraseña, se debe revisar el correo
-              electrónico, donde se recibirá una contraseña temporal.
+              electrónico, donde se recibirá una contraseña temporal. Se
+              recomienda revisar la bandeja de correos no deseados o spam.
             </div>
           </Grid>
           <Grid xs={12}>
