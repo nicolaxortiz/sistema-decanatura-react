@@ -95,7 +95,7 @@ export default function Header() {
                     fullWidth
                     onClick={() => {
                       window.open(
-                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/EW3htLVSdMBLqhDt4f8M0PIBVx-I4x2VgswTKUHG7P6EHg?e=lMLVPz",
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/EVVuVaCDutdNr8ZIVlx1nXYBgKMT1hL_IqxgS1A8vldfVw?e=fzxdS2",
                         "_blank"
                       );
                     }}
@@ -110,7 +110,7 @@ export default function Header() {
                     fullWidth
                     onClick={() => {
                       window.open(
-                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/ERbF1-aGbQBNmERiFFpXTlkBSeyhHvG3cffADWus2RMB-w?e=43QHTY",
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/EVw3duZXlIFFqj1oiVwBgwsBwLPf2jBXGU6o72Tl8P-L2w?e=o9vPCN",
                         "_blank"
                       );
                     }}
@@ -125,7 +125,7 @@ export default function Header() {
                     fullWidth
                     onClick={() => {
                       window.open(
-                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/ERbF1-aGbQBNmERiFFpXTlkBSeyhHvG3cffADWus2RMB-w?e=43QHTY",
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/EZOUvAQ3rR1KrUsdZCTxO3QBJve6MX4HPfU1c3AcaALU0A?e=DENPqK",
                         "_blank"
                       );
                     }}
@@ -140,7 +140,7 @@ export default function Header() {
                     fullWidth
                     onClick={() => {
                       window.open(
-                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/EVZPNqS2DetEh_fP9Ntfpg4Bc2k_okQVOzYxEQTnWG2sjg?e=2fQ9Ne",
+                        "https://unidadestecno-my.sharepoint.com/:b:/g/personal/nsortiz_uts_edu_co/EWrClYRJOD9MutpLlJpM6AoBZnPPf2VAQ9g_Mcc2AhDY7A?e=CeJNm6",
                         "_blank"
                       );
                     }}

@@ -201,10 +201,7 @@ function AllTeachers() {
           </Grid>
 
           <Grid xs={12} sx={{ marginLeft: 2 }}>
-            <p>
-              Mostrando {teacherData?.length || 0} docentes de{" "}
-              {totalTeachers || 0}.
-            </p>
+            <p>Número total de docentes: {totalTeachers || 0}</p>
           </Grid>
         </Grid>
 
