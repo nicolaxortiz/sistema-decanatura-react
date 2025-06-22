@@ -234,7 +234,10 @@ export default function ActivityList() {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={totalHoras !== configuration?.tc_hours}
+                  disabled={
+                    totalHoras !== parseFloat(configuration?.tc_hours) ||
+                    loading
+                  }
                   onClick={() => handleSubmitButton()}
                 >
                   {loading ? (

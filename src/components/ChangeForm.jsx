@@ -21,8 +21,6 @@ import * as APIdean from "../API/DeanCall.js";
 import * as APIcampus from "../API/CampusCall.js";
 
 function ChangeForm() {
-  const navigate = useNavigate();
-  const { setUser, user } = React.useContext(UseContext);
   const [severity, setSeverity] = React.useState();
   const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);

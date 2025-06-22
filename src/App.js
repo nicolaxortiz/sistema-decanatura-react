@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { UseContext } from "./context/UseContext.js";
 import States from "./hooks/states.js";
 import { Login } from "./views/Login.jsx";
@@ -18,7 +18,7 @@ function App() {
   return (
     <UseContext.Provider value={initial}>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
-        <Router>
+        <Router basename="/">
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/admin" element={<Admin />} />

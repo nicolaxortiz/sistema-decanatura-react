@@ -3,7 +3,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../resources/theme.js";
 import Button from "@mui/material/Button";
-import logoUTS from "../resources/UTSescudo.jpg";
+import logoUTS from "../resources/logo.png";
 import { UseContext } from "../context/UseContext.js";
 import * as APIDocument from "../API/DocumentCall.js";
 import { useNavigate } from "react-router-dom";

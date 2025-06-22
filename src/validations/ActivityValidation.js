@@ -1,7 +1,7 @@
 export const ActivityValidation = (form, fieldName, errors) => {
   let errorsData = errors;
   let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
-  let regexNumber = /^(0*(?:[1-9]|1[0-5])(?:\.\d+)?)$/;
+  let regexNumber = /^(?:[1-9]|[1-3][0-9]|40)(?:\.\d+)?$/;
 
   if (fieldName === "name" || fieldName === "all") {
     if (!form.name.trim()) {
@@ -29,7 +29,7 @@ export const ActivityValidation = (form, fieldName, errors) => {
       errors.states.hours = true;
     } else if (!regexNumber.test(form.hours)) {
       errors.messages.hours =
-        "El campo 'Horas' solo acepta números del 1 al 10 y números decimales de dos cifras";
+        "El campo 'Horas' solo acepta números del 1 al 40 y números decimales de dos cifras";
       errors.states.hours = true;
     } else {
       delete errors.messages.hours;
