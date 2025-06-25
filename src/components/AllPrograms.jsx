@@ -29,6 +29,7 @@ import * as camposBarrancabermeja from "../resources/barrancabermeja.js";
 import * as camposPiedecuesta from "../resources/piedecuesta.js";
 import * as camposVirtual from "../resources/virtual.js";
 import { Autocomplete } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function AllPrograms() {
   const { user, setSesionInvalid, configuration } =
@@ -205,17 +206,19 @@ export default function AllPrograms() {
                   <TableCell>{item.program_faculty}</TableCell>
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
-                      <IconButton
-                        aria-label="edit"
-                        size="small"
-                        onClick={() => {
-                          setFormOption("put");
-                          setSelectedProgram(item);
-                          handleClickOpen();
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
+                      <Tooltip title="Editar programa" arrow>
+                        <IconButton
+                          aria-label="edit"
+                          size="small"
+                          onClick={() => {
+                            setFormOption("put");
+                            setSelectedProgram(item);
+                            handleClickOpen();
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
                     </ThemeProvider>
                   </TableCell>
                 </TableRow>

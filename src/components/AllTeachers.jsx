@@ -25,6 +25,7 @@ import Alert from "@mui/material/Alert";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import { Tooltip } from "@mui/material";
 import * as APIDocentes from "../API/TeacherCall";
 import { UseContext } from "../context/UseContext.js";
 
@@ -231,21 +232,25 @@ function AllTeachers() {
                   <TableCell>{row.program_name}</TableCell>
                   <TableCell>{row.employment_type}</TableCell>
                   <TableCell align="center">
-                    {filterState ? (
-                      <PersonOffIcon
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          handleChangeStatus(row.id, row.is_active);
-                        }}
-                      />
-                    ) : (
-                      <PersonAddIcon
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          handleChangeStatus(row.id, row.is_active);
-                        }}
-                      />
-                    )}
+                    <ThemeProvider theme={theme}>
+                      <Tooltip title="Cambiar estado docente" arrow>
+                        {filterState ? (
+                          <PersonOffIcon
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              handleChangeStatus(row.id, row.is_active);
+                            }}
+                          />
+                        ) : (
+                          <PersonAddIcon
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              handleChangeStatus(row.id, row.is_active);
+                            }}
+                          />
+                        )}
+                      </Tooltip>
+                    </ThemeProvider>
                   </TableCell>
                 </TableRow>
               ))}

@@ -353,19 +353,6 @@ export const LoginForm = () => {
             </Grid>
 
             <Grid xs={12}>
-              <div
-                className="txt-contra"
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  navigate("/recovery");
-                  setUser({ role: "recovery" });
-                }}
-              >
-                Recuperar contraseña
-              </div>
-            </Grid>
-
-            <Grid xs={12}>
               <Button
                 variant="contained"
                 disabled={loading}
@@ -381,6 +368,17 @@ export const LoginForm = () => {
                   "Iniciar sesión"
                 )}
               </Button>
+            </Grid>
+
+            <Grid xs={12}>
+              <div
+                onClick={() => {
+                  navigate("/recovery");
+                  setUser({ role: "recovery" });
+                }}
+              >
+                <p className="txt-contra">Recuperar contraseña</p>
+              </div>
             </Grid>
           </ThemeProvider>
           <Grid xs={4}></Grid>

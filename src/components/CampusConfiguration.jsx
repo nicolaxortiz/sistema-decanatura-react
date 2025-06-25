@@ -196,6 +196,7 @@ export default function CampusConfiguration() {
               <TextField
                 label="Horas docente carrera y tiempo completo"
                 size="small"
+                type="number"
                 fullWidth
                 name="tc_hours"
                 onBlur={handleBlur}
@@ -210,6 +211,7 @@ export default function CampusConfiguration() {
               <TextField
                 label="Horas docente medio tiempo"
                 size="small"
+                type="number"
                 fullWidth
                 name="mt_hours"
                 onBlur={handleBlur}

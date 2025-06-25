@@ -25,6 +25,7 @@ import * as APIprogram from "../API/ProgramCall";
 import * as APIcoordinator from "../API/CoordinatorCall.js";
 import EditIcon from "@mui/icons-material/Edit";
 import { UseContext } from "../context/UseContext.js";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function AllCoordinators() {
   const { user, setSesionInvalid } = React.useContext(UseContext);
@@ -219,17 +220,19 @@ export default function AllCoordinators() {
                   <TableCell>{item?.program_name}</TableCell>
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
-                      <IconButton
-                        aria-label="edit"
-                        size="small"
-                        onClick={() => {
-                          setFormOption("put");
-                          setSelectedCoordinator(item);
-                          handleClickOpen();
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
+                      <Tooltip title="Editar coordinador" arrow>
+                        <IconButton
+                          aria-label="edit"
+                          size="small"
+                          onClick={() => {
+                            setFormOption("put");
+                            setSelectedCoordinator(item);
+                            handleClickOpen();
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
                     </ThemeProvider>
                   </TableCell>
                 </TableRow>

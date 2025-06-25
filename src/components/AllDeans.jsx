@@ -23,6 +23,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import * as APIdean from "../API/DeanCall.js";
 import EditIcon from "@mui/icons-material/Edit";
+import Tooltip from "@mui/material/Tooltip";
 import { UseContext } from "../context/UseContext.js";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
 import * as camposVelez from "../resources/vélez.js";
@@ -208,17 +209,19 @@ export default function AllDeans() {
                   <TableCell>{item?.faculty}</TableCell>
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
-                      <IconButton
-                        aria-label="edit"
-                        size="small"
-                        onClick={() => {
-                          setFormOption("put");
-                          setSelectedDean(item);
-                          handleClickOpen();
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
+                      <Tooltip title="Editar Decano" arrow>
+                        <IconButton
+                          aria-label="edit"
+                          size="small"
+                          onClick={() => {
+                            setFormOption("put");
+                            setSelectedDean(item);
+                            handleClickOpen();
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
                     </ThemeProvider>
                   </TableCell>
                 </TableRow>

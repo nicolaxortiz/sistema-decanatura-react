@@ -26,7 +26,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 
 function AllActivity() {
   const navigate = useNavigate();
@@ -280,33 +280,52 @@ function AllActivity() {
                   </TableCell>
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
-                      {!row.is_coord_signed && (
-                        <IconButton
-                          aria-label="edit"
-                          size="small"
-                          onClick={() => {
-                            handleEdit(user?.program_id, row.document);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      )}
+                      <Tooltip title="Editar formato" arrow>
+                        {!row.is_coord_signed && (
+                          <IconButton
+                            aria-label="edit"
+                            size="small"
+                            onClick={() => {
+                              handleEdit(user?.program_id, row.document);
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        )}
+                      </Tooltip>
 
-                      {row.is_finish && (
-                        <IconButton
-                          aria-label="pdf"
-                          size="small"
-                          onClick={() => {
-                            handlePDF(row);
-                          }}
-                        >
-                          <PictureAsPdfIcon />
-                        </IconButton>
-                      )}
+                      <Tooltip title="Ver formato" arrow>
+                        {row.is_finish && (
+                          <IconButton
+                            aria-label="pdf"
+                            size="small"
+                            onClick={() => {
+                              handlePDF(row);
+                            }}
+                          >
+                            <PictureAsPdfIcon />
+                          </IconButton>
+                        )}
+                      </Tooltip>
 
                       {!row.is_dean_signed &&
                         row.is_coord_signed &&
                         row.is_finish && (
+                          <Tooltip title="Quitar firma" arrow>
+                            <IconButton
+                              aria-label="edit"
+                              size="small"
+                              onClick={() => {
+                                handleSignDocument(row.id, row.is_coord_signed);
+                              }}
+                            >
+                              <CancelIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+
+                      {!row.is_coord_signed && row.is_finish && (
+                        <Tooltip title="Firmar formato" arrow>
                           <IconButton
                             aria-label="edit"
                             size="small"
@@ -314,20 +333,9 @@ function AllActivity() {
                               handleSignDocument(row.id, row.is_coord_signed);
                             }}
                           >
-                            <CancelIcon />
+                            <CheckCircleIcon />
                           </IconButton>
-                        )}
-
-                      {!row.is_coord_signed && row.is_finish && (
-                        <IconButton
-                          aria-label="edit"
-                          size="small"
-                          onClick={() => {
-                            handleSignDocument(row.id, row.is_coord_signed);
-                          }}
-                        >
-                          <CheckCircleIcon />
-                        </IconButton>
+                        </Tooltip>
                       )}
                     </ThemeProvider>
                   </TableCell>

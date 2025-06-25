@@ -23,6 +23,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
 import { Autocomplete, Button } from "@mui/material";
+import { Tooltip } from "@mui/material";
 
 function DeanFormatList() {
   const navigate = useNavigate();
@@ -322,39 +323,45 @@ function DeanFormatList() {
                   <TableCell align="center">
                     <ThemeProvider theme={theme}>
                       {row.is_finish && (
-                        <IconButton
-                          aria-label="pdf"
-                          size="small"
-                          onClick={() => {
-                            handlePDF(row);
-                          }}
-                        >
-                          <PictureAsPdfIcon />
-                        </IconButton>
+                        <Tooltip title="Ver formato" arrow>
+                          <IconButton
+                            aria-label="pdf"
+                            size="small"
+                            onClick={() => {
+                              handlePDF(row);
+                            }}
+                          >
+                            <PictureAsPdfIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
 
                       {row.is_dean_signed && (
-                        <IconButton
-                          aria-label="edit"
-                          size="small"
-                          onClick={() => {
-                            handleSignDocument(row.id, row.is_dean_signed);
-                          }}
-                        >
-                          <CancelIcon />
-                        </IconButton>
+                        <Tooltip title="Quitar firma" arrow>
+                          <IconButton
+                            aria-label="edit"
+                            size="small"
+                            onClick={() => {
+                              handleSignDocument(row.id, row.is_dean_signed);
+                            }}
+                          >
+                            <CancelIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
 
                       {!row.is_dean_signed && (
-                        <IconButton
-                          aria-label="edit"
-                          size="small"
-                          onClick={() => {
-                            handleSignDocument(row.id, row.is_dean_signed);
-                          }}
-                        >
-                          <CheckCircleIcon />
-                        </IconButton>
+                        <Tooltip title="Firmar formato" arrow>
+                          <IconButton
+                            aria-label="edit"
+                            size="small"
+                            onClick={() => {
+                              handleSignDocument(row.id, row.is_dean_signed);
+                            }}
+                          >
+                            <CheckCircleIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
                     </ThemeProvider>
                   </TableCell>
