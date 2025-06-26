@@ -88,7 +88,18 @@ export default function DeanHome() {
       );
 
       if (searchResponse.status === 200) {
-        let newMission = mission === "Otras" ? "Otros" : mission;
+        let newMission = "";
+        if (mission === "Otras") {
+          newMission = "Otros";
+        } else if (mission === "Docencia") {
+          newMission = "Docencia directa";
+        } else if (mission === "ODA") {
+          newMission = "Procesos ODA";
+        } else if (mission === "OACA") {
+          newMission = "Procesos OACA";
+        } else {
+          newMission = mission;
+        }
 
         const pdfFiles = [];
 

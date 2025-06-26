@@ -75,13 +75,6 @@ export default function CoordinatorHome() {
   };
 
   const handleFormatMissionPDF = async (data) => {
-    if (mission === null) {
-      setMessage("Debe seleccionar una misional primero");
-      setCode("warning");
-      handleClick();
-      return;
-    }
-
     try {
       const searchResponse = await APIFormat.getByProgramIdAndSemester(
         user?.program_id,
@@ -92,7 +85,18 @@ export default function CoordinatorHome() {
       );
 
       if (searchResponse.status === 200) {
-        let newMission = mission === "Otras" ? "Otros" : mission;
+        let newMission = "";
+        if (mission === "Otras") {
+          newMission = "Otros";
+        } else if (mission === "Docencia") {
+          newMission = "Docencia directa";
+        } else if (mission === "ODA") {
+          newMission = "Procesos ODA";
+        } else if (mission === "OACA") {
+          newMission = "Procesos OACA";
+        } else {
+          newMission = mission;
+        }
 
         const pdfFiles = [];
 
@@ -144,7 +148,7 @@ export default function CoordinatorHome() {
       if (error.response?.status === 401) {
         setSesionInvalid(true);
       } else {
-        setMessage("No se encontraron formatos para descargar");
+        setMessage("No se encontraron formatos firmados para descargar");
         setCode("error");
         handleClick();
       }
@@ -152,13 +156,6 @@ export default function CoordinatorHome() {
   };
 
   const handleMissionPDF = async () => {
-    if (mission === null) {
-      setMessage("Debe seleccionar una misional primero");
-      setCode("warning");
-      handleClick();
-      return;
-    }
-
     try {
       const response = await APIDocument.getReporteByMission(
         user?.program_id,

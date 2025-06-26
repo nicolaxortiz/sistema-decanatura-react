@@ -112,8 +112,7 @@ function DeanFormatList() {
         configuration?.semester,
         null,
         null,
-        true,
-        false
+        true
       );
 
       if (response.status === 200) {
@@ -150,8 +149,7 @@ function DeanFormatList() {
         configuration?.semester,
         searchName,
         actualPage,
-        true,
-        null
+        true
       );
 
       if (response.status === 200) {

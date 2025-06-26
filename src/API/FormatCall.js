@@ -43,8 +43,7 @@ export async function getSignedByProgramIdAndSemester(
   semester,
   searchName,
   actualPage,
-  is_coord_signed,
-  is_dean_signed
+  is_coord_signed
 ) {
   const response = await axios.post(
     `${apiUrl}/api/formato/getAllSigned`,
@@ -54,7 +53,6 @@ export async function getSignedByProgramIdAndSemester(
       searchName,
       actualPage,
       is_coord_signed,
-      is_dean_signed,
     },
     {
       headers: {

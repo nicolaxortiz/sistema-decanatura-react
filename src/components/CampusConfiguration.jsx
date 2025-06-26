@@ -48,6 +48,7 @@ export default function CampusConfiguration() {
     tc_hours: 0,
     mt_hours: 0,
   });
+
   let type = "post";
   let call = APIconfiguracion.createConfiguration;
 
@@ -78,7 +79,7 @@ export default function CampusConfiguration() {
     }
 
     if (response?.status === "error") {
-      setMessage("Error al guardar la configuración");
+      setMessage("Todos los campos son obligatorios");
       setCode("error");
       handleClick();
     }

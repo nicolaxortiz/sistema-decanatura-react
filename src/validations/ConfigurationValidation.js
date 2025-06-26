@@ -1,4 +1,7 @@
 export const ConfigurationValidation = (form, fieldName, errors) => {
+  let errorsData = errors;
+  let regexNumber = /^(?!0(\.0{1,3})?$)\d+(\.\d{1,3})?$/;
+
   if (fieldName === "semester" || fieldName === "all") {
     if (!form.semester) {
       errors.messages.semester = "El campo 'Semestre' es requerido";
@@ -26,6 +29,34 @@ export const ConfigurationValidation = (form, fieldName, errors) => {
     } else {
       delete errors.messages.end_date;
       delete errors.states.end_date;
+    }
+  }
+
+  if (fieldName === "tc_hours" || fieldName === "all") {
+    if (!form.tc_hours) {
+      errors.messages.tc_hours = "El campo 'Horas' es requerido";
+      errors.states.tc_hours = true;
+    } else if (!regexNumber.test(form.tc_hours)) {
+      errors.messages.tc_hours =
+        "El campo 'Horas' solo acepta números mayores a 0 y números decimales de dos cifras";
+      errors.states.tc_hours = true;
+    } else {
+      delete errors.messages.tc_hours;
+      delete errors.states.tc_hours;
+    }
+  }
+
+  if (fieldName === "mt_hours" || fieldName === "all") {
+    if (!form.mt_hours) {
+      errors.messages.mt_hours = "El campo 'Horas' es requerido";
+      errors.states.mt_hours = true;
+    } else if (!regexNumber.test(form.mt_hours)) {
+      errors.messages.mt_hours =
+        "El campo 'Horas' solo acepta números mayores a 0 y números decimales de dos cifras";
+      errors.states.mt_hours = true;
+    } else {
+      delete errors.messages.mt_hours;
+      delete errors.states.mt_hours;
     }
   }
 
