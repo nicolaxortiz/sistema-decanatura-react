@@ -258,7 +258,7 @@ export const Actividades = [
     product: "Informe de la gestión del SICCES",
     description:
       "Implementar módulos de los procesos de Autoevaluación y Autoregulación del SICCES",
-    consolidated: "OACA6",
+    consolidated: "OACA2",
   },
   {
     name: "OACA: Soporte Técnico y Logístico para SICCES",
@@ -267,7 +267,7 @@ export const Actividades = [
     product: "Informe de las atenciones técnicas realizadas del SICCES",
     description:
       "Dar soporte técnico y logístico a los usuarios del SICCES de la institución",
-    consolidated: "OACA6",
+    consolidated: "OACA2",
   },
   {
     name: "OACA: Gestionar Copias de Seguridad para SICCES",
@@ -276,7 +276,7 @@ export const Actividades = [
     product:
       "Entrega de Copias de Seguridad del SICCES - Informes de la Gestión del SICCES",
     description: "Gestionar las copias de seguridad periódicas para SICCES",
-    consolidated: "OACA6",
+    consolidated: "OACA2",
   },
   {
     name: "OACA: Administrar Sitio Web OACA",
@@ -285,7 +285,7 @@ export const Actividades = [
     product: "Informe de gestión de la administración del Sitio Web OACA",
     description:
       "Administrar el sitio web de la oficina de Autoevaluación y Calidad",
-    consolidated: "OACA6",
+    consolidated: "OACA2",
   },
   {
     name: "OACA: Gestionar Copias de Seguridad Sitio Web OACA",
@@ -294,7 +294,7 @@ export const Actividades = [
     product: "Entrega de Copias de Seguridad del Sitio Web OACA",
     description:
       "Gestionar las copias de seguridad periódicas para el sitio web de OACA",
-    consolidated: "OACA6",
+    consolidated: "OACA2",
   },
   {
     name: "Comité: Curricular",
