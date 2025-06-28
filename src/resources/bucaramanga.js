@@ -156,7 +156,7 @@ export const Actividades = [
     name: "ODA: Capacitación Docente",
     mission: "Docencia",
     convention: "Procesos ODA",
-    product: "producto final del seminario o módulo",
+    product: "Producto final del seminario o módulo",
     description: "Participación de los cursos ofertados por la ODA",
     consolidated: "ODA8",
   },
@@ -365,7 +365,7 @@ export const Actividades = [
     consolidated: "Otras3",
   },
   {
-    name: "Oficina de las Tic: Diseño de Módulos",
+    name: "Oficina de las TIC: Diseño de Módulos",
     mission: "Docencia",
     convention: "Otras",
     product: "Diseño de módulos del área de conocimiento",

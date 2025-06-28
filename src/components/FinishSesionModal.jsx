@@ -1,13 +1,15 @@
 import React from "react";
 import { UseContext } from "../context/UseContext.js";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  ThemeProvider,
+} from "@mui/material";
 import { theme } from "../resources/theme.js";
-import { ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
 function FinishSesionModal() {

@@ -1,18 +1,20 @@
-import React, { useCallback } from "react";
+import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import TextField from "@mui/material/TextField";
+import {
+  TextField,
+  Button,
+  CircularProgress,
+  ThemeProvider,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Button from "@mui/material/Button";
 import { useForm } from "../hooks/UseForms.js";
-import CircularProgress from "@mui/material/CircularProgress";
 import { UseContext } from "../context/UseContext.js";
 import { ConfigurationValidation } from "../validations/ConfigurationValidation.js";
-import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../resources/theme.js";
 import * as APIconfiguracion from "../API/ConfigurationCall.js";
 import dayjs from "dayjs";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 
 export default function CampusConfiguration() {
   const { user, setConfiguration, configuration, setSesionInvalid } =

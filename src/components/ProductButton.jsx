@@ -2,30 +2,10 @@ import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import "../styles/productForm.css";
 import { UseContext } from "../context/UseContext.js";
-import CircularProgress from "@mui/material/CircularProgress";
-import Button from "@mui/material/Button";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import { Button } from "@mui/material";
 
-function ProductButton({ state, products }) {
-  const [loading, setLoading] = React.useState(false);
-  const { activities, user, setTab, tab } = React.useContext(UseContext);
-
-  const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState("");
-  const [code, setCode] = React.useState("");
-
-  const handleClick = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
+function ProductButton({ state }) {
+  const { activities, user, setTab } = React.useContext(UseContext);
 
   const handleSubmitButton = async () => {
     if (user && activities) {
@@ -55,29 +35,10 @@ function ProductButton({ state, products }) {
             disabled={!state}
             onClick={() => handleSubmitButton()}
           >
-            {loading ? (
-              <CircularProgress color="inherit" size={24} />
-            ) : (
-              "Continuar"
-            )}
+            Continuar
           </Button>
         </Grid>
       </Grid>
-      <Snackbar
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        autoHideDuration={3000}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={code}
-          variant="outlined"
-          sx={{ width: "100%", backgroundColor: "white" }}
-        >
-          {message}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

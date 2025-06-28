@@ -1,32 +1,35 @@
 import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Snackbar from "@mui/material/Snackbar";
-import Pagination from "@mui/material/Pagination";
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Snackbar,
+  Pagination,
+  Alert,
+  TextField,
+  FormControl,
+  IconButton,
+  ThemeProvider,
+  InputLabel,
+  MenuItem,
+  Select,
+  Button,
+  Tooltip,
+} from "@mui/material";
 import { theme } from "../resources/theme.js";
-import Alert from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import IconButton from "@mui/material/IconButton";
 import * as APIFormat from "../API/FormatCall.js";
 import * as APIDocument from "../API/DocumentCall.js";
 import * as APITeacher from "../API/TeacherCall.js";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
-import { Button, Tooltip } from "@mui/material";
 
 function AllActivity() {
   const navigate = useNavigate();

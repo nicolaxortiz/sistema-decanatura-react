@@ -2,19 +2,21 @@ import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import dayjs from "dayjs";
 import "../styles/productForm.css";
-import TextField from "@mui/material/TextField";
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  TextField,
+  ThemeProvider,
+  Button,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { UseContext } from "../context/UseContext.js";
 import { theme } from "../resources/theme.js";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Button from "@mui/material/Button";
 import { ProductValidation } from "../validations/ProductValidation.js";
 import { useForm } from "../hooks/UseForms.js";
 import { useNavigate } from "react-router-dom";
 import * as APIactividades from "../API/ActivityCall.js";
 import ProductButton from "./ProductButton.jsx";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 
 export default function ProductForm() {
   const isFirstRenderPage = React.useRef(true);
@@ -22,7 +24,6 @@ export default function ProductForm() {
   const [backPage, setBackPage] = React.useState(0);
 
   const [products, setProducts] = React.useState([]);
-  const navigate = useNavigate();
   const {
     activities,
     setActivities,

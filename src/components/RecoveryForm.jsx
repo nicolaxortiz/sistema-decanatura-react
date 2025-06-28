@@ -3,15 +3,17 @@ import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
 import "../styles/loginForm.css";
 import Grid from "@mui/material/Unstable_Grid2";
-import TextField from "@mui/material/TextField";
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  TextField,
+  Button,
+  Alert,
+  IconButton,
+  Collapse,
+  ThemeProvider,
+  CircularProgress,
+} from "@mui/material";
 import { theme } from "../resources/theme.js";
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import Collapse from "@mui/material/Collapse";
 import * as APIdocentes from "../API/TeacherCall.js";
 import * as APIcoordinador from "../API/CoordinatorCall.js";
 import * as APIdean from "../API/DeanCall.js";

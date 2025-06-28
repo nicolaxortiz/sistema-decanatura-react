@@ -1,31 +1,33 @@
 import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import { ThemeProvider } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import Pagination from "@mui/material/Pagination";
-import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Snackbar,
+  Pagination,
+  Alert,
+  TextField,
+  ThemeProvider,
+  Button,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { theme } from "../resources/theme.js";
-import CircularProgress from "@mui/material/CircularProgress";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { Tooltip } from "@mui/material";
 import * as APIDocentes from "../API/TeacherCall";
 import { UseContext } from "../context/UseContext.js";
 

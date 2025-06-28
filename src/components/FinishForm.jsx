@@ -1,15 +1,12 @@
 import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import { ThemeProvider } from "@mui/material/styles";
+import { Button, Snackbar, Alert, ThemeProvider } from "@mui/material";
 import { theme } from "../resources/theme.js";
-import Button from "@mui/material/Button";
 import logoUTS from "../resources/logo.png";
 import { UseContext } from "../context/UseContext.js";
 import * as APIDocument from "../API/DocumentCall.js";
 import { useNavigate } from "react-router-dom";
 import "../styles/finishForm.css";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 
 function FinishForm() {
   const navigate = useNavigate();

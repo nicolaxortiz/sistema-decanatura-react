@@ -89,9 +89,7 @@ export default function DeanHome() {
 
       if (searchResponse.status === 200) {
         let newMission = "";
-        if (mission === "Otras") {
-          newMission = "Otros";
-        } else if (mission === "Docencia") {
+        if (mission === "Docencia") {
           newMission = "Docencia directa";
         } else if (mission === "ODA") {
           newMission = "Procesos ODA";

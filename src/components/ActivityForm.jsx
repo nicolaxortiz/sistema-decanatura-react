@@ -1,30 +1,32 @@
 import React from "react";
 import "../styles/personalForm.css";
 import Grid from "@mui/material/Unstable_Grid2";
-import TextField from "@mui/material/TextField";
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  TextField,
+  ThemeProvider,
+  Button,
+  Autocomplete,
+  Snackbar,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 import { UseContext } from "../context/UseContext.js";
 import { theme } from "../resources/theme.js";
-import Button from "@mui/material/Button";
 import { useForm } from "../hooks/UseForms.js";
 import { ActivityValidation } from "../validations/ActivityValidation.js";
 import * as APIactividades from "../API/ActivityCall.js";
 import * as APIprogram from "../API/ProgramCall.js";
-import Autocomplete from "@mui/material/Autocomplete";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
 import * as camposVelez from "../resources/vélez.js";
 import * as camposBarrancabermeja from "../resources/barrancabermeja.js";
 import * as camposPiedecuesta from "../resources/piedecuesta.js";
 import * as camposVirtual from "../resources/virtual.js";
-import Snackbar from "@mui/material/Snackbar";
-import CircularProgress from "@mui/material/CircularProgress";
-import Alert from "@mui/material/Alert";
 
 export default function ActivityForm() {
   const [campos, setCampos] = React.useState(null);
   const [arrayNombres, setArrayNombres] = React.useState([]);
   const [coordinator, setCoordinator] = React.useState(null);
-  const { activities, setActivities, user, configuration, setSesionInvalid } =
+  const { setActivities, user, configuration, setSesionInvalid } =
     React.useContext(UseContext);
   const [initialForm, setInitialForm] = React.useState({
     teacher_id: "",
@@ -171,6 +173,14 @@ export default function ActivityForm() {
       handleClick();
     }
 
+    if (response?.status === 409) {
+      setMessage(
+        "Esa actividad ya fue registrada, por favor verifique los datos"
+      );
+      setCode("error");
+      handleClick();
+    }
+
     if (response?.status === 401) {
       setSesionInvalid(true);
     }
@@ -201,7 +211,7 @@ export default function ActivityForm() {
   };
 
   React.useEffect(() => {
-    if (user?.id != undefined) {
+    if (user?.id !== undefined) {
       fetchData();
       fetchProgramData();
 

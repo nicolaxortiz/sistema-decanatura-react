@@ -2,21 +2,26 @@ import React from "react";
 import "../styles/personalForm.css";
 import { UseContext } from "../context/UseContext.js";
 import Grid from "@mui/material/Unstable_Grid2";
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  ThemeProvider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  TextField,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { theme } from "../resources/theme.js";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Button from "@mui/material/Button";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import CircularProgress from "@mui/material/CircularProgress";
+import CheckIcon from "@mui/icons-material/Check";
 import * as APIactividades from "../API/ActivityCall.js";
+import * as APIschedule from "../API/ScheduleCall.js";
 import * as APIformat from "../API/FormatCall.js";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 
 export default function ActivityList() {
   const [loading, setLoading] = React.useState(false);
@@ -29,14 +34,21 @@ export default function ActivityList() {
     setSesionInvalid,
   } = React.useContext(UseContext);
 
+  const [editingId, setEditingId] = React.useState(null);
+  const [editHours, setEditHours] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const [message, setMessage] = React.useState("");
+  const [code, setCode] = React.useState("");
+
   const totalHoras = activities?.reduce(
     (total, actividad) => total + parseFloat(actividad.hours),
     0
   );
 
-  const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState("");
-  const [code, setCode] = React.useState("");
+  const handleEditClick = (id, hours) => {
+    setEditingId(id);
+    setEditHours(hours.toString());
+  };
 
   const handleClick = () => {
     setOpen(true);
@@ -58,35 +70,7 @@ export default function ActivityList() {
         setMessage("Actividad eliminada correctamente");
         setCode("success");
         handleClick();
-        try {
-          const responseData = await APIactividades.getbyIdDocenteAndSemester(
-            user?.id,
-            configuration?.semester
-          );
-
-          if (responseData.status === 200) {
-            localStorage.setItem(
-              "Activity",
-              JSON.stringify({
-                activities: responseData.data.activities,
-                teacher_id: user?._id,
-              })
-            );
-
-            setActivities(responseData.data.activities);
-          }
-        } catch (errorActivities) {
-          if (errorActivities.response.status === 404) {
-            setActivities();
-            localStorage.setItem(
-              "Activity",
-              JSON.stringify({
-                activities: [],
-                teacher_id: user?._id,
-              })
-            );
-          }
-        }
+        fetchActivities();
 
         try {
           const searchResponse = await APIformat.getByTeacherIdAndSemester(
@@ -117,9 +101,91 @@ export default function ActivityList() {
     }
   };
 
+  const handleUpdateActivity = async (id) => {
+    try {
+      const response = await APIactividades.updateActivity(id, {
+        hours: editHours,
+      });
+      if (response.status === 200) {
+        setMessage("Actividad actualizada correctamente");
+        setCode("success");
+        handleClick();
+        setEditingId(null);
+        setEditHours("");
+        fetchActivities();
+
+        try {
+          const deleteResponse = await APIschedule.deleteScheduleByActivityId(
+            id
+          );
+        } catch (error) {}
+
+        try {
+          const searchResponse = await APIformat.getByTeacherIdAndSemester(
+            user?.id,
+            configuration?.semester
+          );
+
+          if (searchResponse.status === 200) {
+            const updateResponse = await APIformat.putSchedule(
+              searchResponse.data.format.id,
+              {
+                is_finish: false,
+                is_coord_signed: false,
+                is_dean_signed: false,
+              }
+            );
+          }
+        } catch (error) {}
+      }
+    } catch (error) {
+      setEditingId(null);
+      setEditHours("");
+      if (error.response.status === 401) {
+        setSesionInvalid(true);
+      } else if (error.response.status === 404) {
+        setMessage("Error al actualizar la actividad");
+        setCode("warning");
+        handleClick();
+      }
+    }
+  };
+
   const handleSubmitButton = async () => {
     if (user && activities) {
       setTab(3);
+    }
+  };
+
+  const fetchActivities = async () => {
+    try {
+      const responseData = await APIactividades.getbyIdDocenteAndSemester(
+        user?.id,
+        configuration?.semester
+      );
+
+      if (responseData.status === 200) {
+        localStorage.setItem(
+          "Activity",
+          JSON.stringify({
+            activities: responseData.data.activities,
+            teacher_id: user?._id,
+          })
+        );
+
+        setActivities(responseData.data.activities);
+      }
+    } catch (errorActivities) {
+      if (errorActivities.response.status === 404) {
+        setActivities();
+        localStorage.setItem(
+          "Activity",
+          JSON.stringify({
+            activities: [],
+            teacher_id: user?._id,
+          })
+        );
+      }
     }
   };
 
@@ -128,7 +194,16 @@ export default function ActivityList() {
       <div className="form-box">
         <Grid container>
           <Grid xs={12}>
-            <div className="title-form">Actividades registradas</div>
+            <div className="title-finish">Actividades registradas</div>
+          </Grid>
+          <Grid xs={12}>
+            <div style={{ textAlign: "right", marginBottom: "10px" }}>
+              {user?.employment_type === "Carrera" ||
+              user?.employment_type === "Tiempo completo"
+                ? (configuration?.tc_hours - totalHoras).toLocaleString()
+                : (configuration?.mt_hours - totalHoras).toLocaleString()}{" "}
+              horas por registrar
+            </div>
           </Grid>
         </Grid>
 
@@ -141,7 +216,7 @@ export default function ActivityList() {
                 <TableCell align="center">Descripción</TableCell>
                 <TableCell align="center">Grupo</TableCell>
                 <TableCell align="center">Horas</TableCell>
-                <TableCell align="center">Eliminar</TableCell>
+                <TableCell align="center">Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -154,20 +229,41 @@ export default function ActivityList() {
                   <TableCell align="left" style={{ fontWeight: "bold" }}>
                     {row.name}
                   </TableCell>
-                  <TableCell align="center">{row.description}</TableCell>
+                  <TableCell>{row.description}</TableCell>
                   <TableCell align="center">
                     {row.group_name || "No aplica"}
                   </TableCell>
                   <TableCell align="center">
-                    {parseFloat(row.hours).toLocaleString()}
+                    {editingId === row.id ? (
+                      <TextField
+                        value={editHours}
+                        onChange={(e) => setEditHours(e.target.value)}
+                        size="small"
+                        type="number"
+                        inputProps={{ step: "0.1" }}
+                        sx={{ width: "80px", fontSize: "10px" }}
+                      />
+                    ) : (
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleEditClick(row.id, row.hours)}
+                      >
+                        {parseFloat(row.hours).toLocaleString()}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell align="center">
-                    <DeleteOutlineIcon
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        handleDeleteActivity(row.id);
-                      }}
-                    />
+                    {editingId === row.id ? (
+                      <CheckIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleUpdateActivity(row.id)}
+                      />
+                    ) : (
+                      <DeleteOutlineIcon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleDeleteActivity(row.id)}
+                      />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -180,7 +276,6 @@ export default function ActivityList() {
                 <TableCell align="center"></TableCell>
                 <TableCell align="center"></TableCell>
                 <TableCell align="center"></TableCell>
-
                 <TableCell align="center" style={{ fontWeight: "bold" }}>
                   Total horas semanales:
                 </TableCell>

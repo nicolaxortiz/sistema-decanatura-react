@@ -1,8 +1,7 @@
 import React from "react";
 import "../styles/header.css";
 import Grid from "@mui/material/Unstable_Grid2";
-import Button from "@mui/material/Button";
-import { ThemeProvider } from "@mui/material/styles";
+import { Button, ThemeProvider } from "@mui/material";
 import { theme } from "../resources/theme.js";
 import logoimg from "../resources/logo.png";
 import { UseContext } from "../context/UseContext.js";

@@ -45,6 +45,16 @@ export async function deleteSchedule(teacher_id, semester, day, moment) {
   return response;
 }
 
+export async function deleteScheduleByActivityId(activity_id) {
+  const response = await axios.delete(`${apiUrl}/api/horario/${activity_id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("Token")}`,
+    },
+  });
+
+  return response;
+}
+
 export async function deleteAllSchedule(teacher_id, semester) {
   const response = await axios.delete(
     `${apiUrl}/api/horario/${teacher_id}/${semester}`,

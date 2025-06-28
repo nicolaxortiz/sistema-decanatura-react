@@ -2,17 +2,19 @@ import React from "react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Grid from "@mui/material/Unstable_Grid2";
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  ThemeProvider,
+  Button,
+  Snackbar,
+  Alert,
+  TextField,
+  Autocomplete,
+} from "@mui/material";
 import { theme } from "../resources/theme.js";
-import Button from "@mui/material/Button";
 import logoUTS from "../resources/logo.png";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
+import { UseContext } from "../context/UseContext.js";
 import * as APIDocument from "../API/DocumentCall.js";
 import * as APIFormat from "../API/FormatCall.js";
-import { UseContext } from "../context/UseContext.js";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
 import * as camposVelez from "../resources/vélez.js";
 import * as camposBarrancabermeja from "../resources/barrancabermeja.js";
@@ -86,9 +88,7 @@ export default function CoordinatorHome() {
 
       if (searchResponse.status === 200) {
         let newMission = "";
-        if (mission === "Otras") {
-          newMission = "Otros";
-        } else if (mission === "Docencia") {
+        if (mission === "Docencia") {
           newMission = "Docencia directa";
         } else if (mission === "ODA") {
           newMission = "Procesos ODA";

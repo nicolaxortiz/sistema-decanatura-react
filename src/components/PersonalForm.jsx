@@ -4,17 +4,19 @@ import defaultProfile from "../resources/defaulProfile.png";
 import defaultSignature from "../resources/defaultSignature.png";
 import { UseContext } from "../context/UseContext.js";
 import Grid from "@mui/material/Unstable_Grid2";
-import TextField from "@mui/material/TextField";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  TextField,
+  Snackbar,
+  Alert,
+  Button,
+  CircularProgress,
+  Autocomplete,
+  ThemeProvider,
+} from "@mui/material";
 import { theme } from "../resources/theme.js";
-import Button from "@mui/material/Button";
 import { useForm } from "../hooks/UseForms.js";
-import CircularProgress from "@mui/material/CircularProgress";
 import { TeacherValidation } from "../validations/TeacherValidation.js";
 import * as APIdocentes from "../API/TeacherCall.js";
-import Autocomplete from "@mui/material/Autocomplete";
 import * as camposBucaramanga from "../resources/bucaramanga.js";
 import * as camposVelez from "../resources/vélez.js";
 import * as camposBarrancabermeja from "../resources/barrancabermeja.js";

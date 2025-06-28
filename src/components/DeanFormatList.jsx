@@ -1,19 +1,24 @@
 import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Snackbar from "@mui/material/Snackbar";
-import Pagination from "@mui/material/Pagination";
-import { ThemeProvider } from "@mui/material/styles";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Snackbar,
+  Pagination,
+  Alert,
+  TextField,
+  ThemeProvider,
+  Button,
+  Tooltip,
+  FormControl,
+  IconButton,
+  Autocomplete,
+} from "@mui/material";
 import { theme } from "../resources/theme.js";
-import Alert from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import IconButton from "@mui/material/IconButton";
 import * as APIFormat from "../API/FormatCall.js";
 import * as APIDocument from "../API/DocumentCall.js";
 import * as APIprogram from "../API/ProgramCall.js";
@@ -22,11 +27,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { UseContext } from "../context/UseContext.js";
 import { useNavigate } from "react-router-dom";
-import { Autocomplete, Button } from "@mui/material";
-import { Tooltip } from "@mui/material";
 
 function DeanFormatList() {
-  const navigate = useNavigate();
   const [formatData, setFormatData] = React.useState();
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -38,7 +40,7 @@ function DeanFormatList() {
   const [searchName, setSearchName] = React.useState("");
   const [programData, setProgramData] = React.useState([]);
   const [program, setProgram] = React.useState(null);
-  const { setUser, user, configuration, setSesionInvalid } =
+  const { user, configuration, setSesionInvalid } =
     React.useContext(UseContext);
 
   const handleClick = () => {

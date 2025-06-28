@@ -1,13 +1,15 @@
 import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import { TextField } from "@mui/material";
-import { Snackbar } from "@mui/material";
-import { Alert } from "@mui/material";
-import { CircularProgress } from "@mui/material";
+import {
+  TextField,
+  Button,
+  CircularProgress,
+  ThemeProvider,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { UseContext } from "../context/UseContext.js";
-import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../resources/theme.js";
-import Button from "@mui/material/Button";
 import { useForm } from "../hooks/UseForms.js";
 import * as APIcoordinator from "../API/CoordinatorCall.js";
 import { CoordinatorValidation } from "../validations/CoordinatorValidation.js";

@@ -20,10 +20,12 @@ import * as APIcoordinador from "../API/CoordinatorCall.js";
 import * as APIConfiguracion from "../API/ConfigurationCall.js";
 import * as APIcampus from "../API/CampusCall.js";
 import * as APIdean from "../API/DeanCall.js";
+import * as APIformat from "../API/FormatCall.js";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const { setUser, user, setConfiguration } = React.useContext(UseContext);
+  const { setUser, user, setConfiguration, configuration } =
+    React.useContext(UseContext);
   const [showPassword, setShowPassword] = React.useState(false);
   const [message, setMessage] = React.useState();
   const [loading, setLoading] = React.useState(false);
@@ -220,9 +222,7 @@ export const LoginForm = () => {
           const endDate = new Date(actualConfiguration.end_date);
 
           if (now >= startDate && now <= endDate) {
-            const stringUser = JSON.stringify(data);
-            localStorage.setItem("User", stringUser);
-            navigate("/home");
+            handleValidateFormat(data, actualConfiguration);
           } else {
             setMessage("No se encuentra en fecha de registro");
             setLoading(false);
@@ -244,6 +244,35 @@ export const LoginForm = () => {
         localStorage.setItem("User", stringUser);
 
         navigate("/coordinator");
+      }
+    }
+  };
+
+  const handleValidateFormat = async (data, actualConfiguration) => {
+    try {
+      const response = await APIformat.getByTeacherIdAndSemester(
+        data?.id,
+        actualConfiguration?.semester
+      );
+
+      if (response.status === 200) {
+        if (response.data.format.is_coord_signed) {
+          setMessage("El formato ya fue firmado por el coordinador");
+          setOpen(true);
+        } else {
+          const stringUser = JSON.stringify(data);
+          localStorage.setItem("User", stringUser);
+          navigate("/home");
+        }
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        setMessage("No tiene permisos para acceder a esta sección");
+        setOpen(true);
+      } else if (error.response.status === 404) {
+        const stringUser = JSON.stringify(data);
+        localStorage.setItem("User", stringUser);
+        navigate("/home");
       }
     }
   };
