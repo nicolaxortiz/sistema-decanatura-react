@@ -3,11 +3,18 @@ import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-// export async function getAll() {
-//   const response = await axios.get(apiUrl + "/api/actividad/");
+export async function getAll(campus, semester) {
+  const response = await axios.get(
+    `${apiUrl}/api/actividad/getAll/${campus}/${semester}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("Token")}`,
+      },
+    }
+  );
 
-//   return response;
-// }
+  return response;
+}
 
 export async function saveActivitys(activity) {
   const response = await axios.post(apiUrl + "/api/actividad/save", activity, {

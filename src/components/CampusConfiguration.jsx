@@ -14,6 +14,7 @@ import { UseContext } from "../context/UseContext.js";
 import { ConfigurationValidation } from "../validations/ConfigurationValidation.js";
 import { theme } from "../resources/theme.js";
 import * as APIconfiguracion from "../API/ConfigurationCall.js";
+import * as APIactivity from "../API/ActivityCall.js";
 import dayjs from "dayjs";
 
 export default function CampusConfiguration() {
@@ -65,6 +66,37 @@ export default function CampusConfiguration() {
     handleSubmit,
   } = useForm(initialForm, ConfigurationValidation, call, type);
 
+  const handleChangeActivityResponsible = async (actualConfiguration) => {
+    try {
+      const searchResponse = await APIactivity.getAll(
+        user?.name,
+        configuration?.semester
+      );
+
+      if (searchResponse.status === 200) {
+        const activities = searchResponse.data.activities;
+
+        for (const activity of activities) {
+          if (activity.convention === "Investigación") {
+            activity.responsible = actualConfiguration?.investigacion;
+          } else if (activity.convention === "Extensión") {
+            activity.responsible = actualConfiguration?.extension;
+          } else if (activity.convention === "Procesos OACA") {
+            activity.responsible = actualConfiguration?.oaca;
+          } else if (activity.convention === "Procesos ODA") {
+            activity.responsible = actualConfiguration?.oda;
+          }
+
+          await APIactivity.updateActivity(activity.id, activity);
+        }
+      }
+    } catch (error) {
+      setMessage("Error al actualizar las actividades");
+      setCode("error");
+      handleClick();
+    }
+  };
+
   React.useEffect(() => {
     if (response?.status === 200) {
       const actualConfiguration = response.data.configurations;
@@ -74,6 +106,7 @@ export default function CampusConfiguration() {
       setMessage("Configuración guardada correctamente");
       setCode("success");
       handleClick();
+      handleChangeActivityResponsible(actualConfiguration);
     }
 
     if (response?.status === 401) {

@@ -177,6 +177,22 @@ function ScheduleTable() {
         setMessage("Actividad agregada al horario");
         setCode("success");
         handleClick();
+
+        try {
+          const searchResponse = await APIformat.getByTeacherIdAndSemester(
+            user?.id,
+            configuration?.semester
+          );
+
+          if (searchResponse.status === 200) {
+            const updateResponse = await APIformat.putSchedule(
+              searchResponse.data.format.id,
+              {
+                is_finish: false,
+              }
+            );
+          }
+        } catch (error) {}
       }
     } catch (error) {
       if (error.response.status === 401) {
@@ -228,6 +244,22 @@ function ScheduleTable() {
         setMessage("Actividad eliminada del horario");
         setCode("warning");
         handleClick();
+
+        try {
+          const searchResponse = await APIformat.getByTeacherIdAndSemester(
+            user?.id,
+            configuration?.semester
+          );
+
+          if (searchResponse.status === 200) {
+            const updateResponse = await APIformat.putSchedule(
+              searchResponse.data.format.id,
+              {
+                is_finish: false,
+              }
+            );
+          }
+        } catch (error) {}
       }
     } catch (error) {
       if (error.response.status === 401) {
@@ -257,6 +289,22 @@ function ScheduleTable() {
         setMessage("Horario eliminado correctamente");
         setCode("warning");
         handleClick();
+
+        try {
+          const searchResponse = await APIformat.getByTeacherIdAndSemester(
+            user?.id,
+            configuration?.semester
+          );
+
+          if (searchResponse.status === 200) {
+            const updateResponse = await APIformat.putSchedule(
+              searchResponse.data.format.id,
+              {
+                is_finish: false,
+              }
+            );
+          }
+        } catch (error) {}
       }
     } catch (error) {
       if (error.response.status === 401) {

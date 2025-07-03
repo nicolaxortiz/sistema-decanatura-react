@@ -21,11 +21,14 @@ import * as APIConfiguracion from "../API/ConfigurationCall.js";
 import * as APIcampus from "../API/CampusCall.js";
 import * as APIdean from "../API/DeanCall.js";
 import * as APIformat from "../API/FormatCall.js";
+import * as APIDocument from "../API/DocumentCall.js";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
   const { setUser, user, setConfiguration, configuration } =
     React.useContext(UseContext);
+  const [showButton, setShowButton] = React.useState(false);
+  const [userId, setUserId] = React.useState();
   const [showPassword, setShowPassword] = React.useState(false);
   const [message, setMessage] = React.useState();
   const [loading, setLoading] = React.useState(false);
@@ -126,7 +129,6 @@ export const LoginForm = () => {
 
   const handleSetUser = (userData, userToken) => {
     localStorage.setItem("Token", userToken);
-    setUser(userData);
 
     if (userData.role && userData.role === "campus") {
       handleConfigurationByCampusId(userData);
@@ -257,8 +259,10 @@ export const LoginForm = () => {
 
       if (response.status === 200) {
         if (response.data.format.is_coord_signed) {
+          setUserId(data);
           setMessage("El formato ya fue firmado por el coordinador");
           setOpen(true);
+          setShowButton(true);
         } else {
           const stringUser = JSON.stringify(data);
           localStorage.setItem("User", stringUser);
@@ -275,6 +279,27 @@ export const LoginForm = () => {
         navigate("/home");
       }
     }
+  };
+
+  const handlePDF = async () => {
+    try {
+      const response = await APIDocument.getDocument(
+        configuration?.semester,
+        userId?.id
+      );
+
+      if (response.status === 200) {
+        const blob = response.data;
+        const url = window.URL.createObjectURL(blob);
+
+        const pdfFileName = `F-DC-54-${userId?.first_name}-${userId?.last_name}-Semestre${configuration?.semester}.pdf`;
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = pdfFileName;
+        a.click();
+      }
+    } catch (error) {}
   };
 
   React.useEffect(() => {
@@ -341,6 +366,21 @@ export const LoginForm = () => {
               </Collapse>
             </Grid>
 
+            {showButton && (
+              <Grid xs={12}>
+                <Button
+                  variant="contained"
+                  color="pdf"
+                  fullWidth
+                  onClick={() => {
+                    handlePDF();
+                  }}
+                >
+                  Guardar formato PDF
+                </Button>
+              </Grid>
+            )}
+
             <Grid xs={12}>
               <TextField
                 label="Email"
@@ -388,6 +428,8 @@ export const LoginForm = () => {
                 fullWidth
                 onClick={() => {
                   setOpen(false);
+                  setShowButton(false);
+                  setUserId();
                   handleSubmitLogin();
                 }}
               >

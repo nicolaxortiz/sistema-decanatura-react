@@ -40,11 +40,12 @@ export default function ActivityList() {
   const [message, setMessage] = React.useState("");
   const [code, setCode] = React.useState("");
 
-  const totalHoras = activities?.reduce(
-    (total, actividad) => total + parseFloat(actividad.hours),
-    0
-  );
-
+  const totalHoras = Array.isArray(activities)
+    ? activities.reduce((total, actividad) => {
+        const hours = parseFloat(actividad?.hours) || 0;
+        return total + hours;
+      }, 0)
+    : 0;
   const handleEditClick = (id, hours) => {
     setEditingId(id);
     setEditHours(hours.toString());
