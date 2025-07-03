@@ -1,6 +1,6 @@
 export const TeacherValidation = (form, fieldName, errors) => {
   let errorsData = errors;
-  let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
+let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s\.\,\-']+$/;
   let regexNumber = /^\d{10}$/;
   let regexEmail = /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/;
 
